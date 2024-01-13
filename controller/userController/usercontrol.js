@@ -59,7 +59,7 @@ const loginload = async (req,res)=>{
   
   
 
-  const userdata= await userModel.findOne({email:email1,password:password1}) 
+  const userdata= await userModel.findOne({email:email1,password:password1,status:0}) 
   console.log(userdata);
 
   if(userdata){
@@ -73,6 +73,7 @@ else{
     res.redirect("/login")
 } 
 }
+
 
 
 

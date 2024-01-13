@@ -15,7 +15,9 @@ adminRouter.use(bodyparser.json())
 
 adminRouter.get("/admin",controllers.adminlogin)
 adminRouter.post("/adminhome",controllers.adminload)
-
+adminRouter.get("/userdetails",controllers.userdeatails)
+adminRouter.get("/admin/block-user",controllers.userblock)
+adminRouter.get("/admin/unblock-user",controllers.userUnblock)
 
 
 

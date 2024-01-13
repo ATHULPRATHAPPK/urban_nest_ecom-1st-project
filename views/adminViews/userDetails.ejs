@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        @media only screen and (max-width: 600px) {
+            table {
+                border-collapse: collapse;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+
+            th, td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+    <title>Responsive User Table</title>
+</head>
+<body>
+
+    <h2>User Details</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>serial id</th>
+                <th>Name</th>
+                <th>email</th>
+                <th>status</th>
+                <!-- Add more headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            <% if(users.length > 0) { %>
+                <% for(let i = 0; i < users.length; i++) { %>
+                    <tr>
+                        <td><%= i+10000 %></td>
+                        <td><%= users[i].name %></td>
+                        <td><%= users[i].email %></td>
+                        
+                        <!-- Example EJS template -->
+<% if (users[i].status==0) { %>
+    <td><button    style="background-color: green"  type="button" onclick="location.href='/admin/unblock-user?id=<%= users[i]._id %>'">Unblock</button></td>
+<% } else { %>
+    <td><button    style="background-color: rgb(246, 2, 2)"  type="button" onclick="location.href='/admin/unblock-user?id=<%= users[i]._id %>'">Unblock</button></td>
+
+<% } %>
+
+                        
+
+                            <td><button type="button" onclick="location.href='/admin/block-user?id=<%= users[i]._id %>'">Block</button>
+                            </td>
+
+                        <!-- Add more cells with user details as needed -->
+                    </tr>
+                    <!-- Add more rows with user details as needed -->
+                <% } %>
+            <% } %>
+            
+
+        </tbody>
+    </table>
+
+</body>
+</html>

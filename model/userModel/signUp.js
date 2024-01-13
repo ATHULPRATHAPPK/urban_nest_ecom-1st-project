@@ -15,6 +15,11 @@ const userData= new mongoose.Schema({
     password:{
         type: Number,
         require:true
+    },
+    status:{
+    type:Number,    
+    default:0,
+    requeire: true
     }
 })
 
