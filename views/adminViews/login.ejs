@@ -1,88 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Purple Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="../../admin/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../admin/assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="../../admin/assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="../../admin/assets/images/favicon.ico" />
+  </head>
+  <body>
+    <div class="container-scroller">
+     
+      <div class="container-fluid page-body-wrapper full-page-wrapper">
 
-        .login-container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-        }
+     
+      
+        <div class="content-wrapper d-flex align-items-center auth">
+          <div class="row flex-grow">
+            <div class="col-lg-4 mx-auto">
+              <div class="auth-form-light text-left p-5">
+                <div class="brand-logo">
+                  
+                  <img src="\admin\assets\images\logo nest.png">
 
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .form-group button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-    </style>
-    <title>Admin Login</title>
-</head>
-<body>
-
-<div class="login-container">
-    <h2>Admin Login</h2>
-
-    <form action="/adminhome" method="post">
-        <div class="form-group">
-            <label for="username">Email:</label>
-            <input type="email" id="username" name="email" required>
+                  <% if (typeof message !== "undefined") { %>
+                    <h4 style="color: darkred;"><%= message %></h4>
+                <% } %>
+                
+                </div>
+                <h4>Admin Login</h4>
+                <h6 class="font-weight-light">Sign in to continue.</h6>
+                <form class="pt-3" action="/adminhome" method="post">
+                
+                  
+                  <div class="form-group">
+                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Username" name="email">
+                  </div>
+                  <div class="form-group">
+                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password">
+                  </div>
+                  <div class="mt-3">
+                    <button type="submit" class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+                  </div>
+                  <!-- <div class="my-2 d-flex justify-content-between align-items-center">
+                    <div class="form-check">
+                      <label class="form-check-label text-muted">
+                        <input type="checkbox" class="form-check-input"> Keep me signed in </label>
+                    </div>
+                    <a href="#" class="auth-link text-black">Forgot password?</a>
+                  </div> -->
+                  <!-- <div class="mb-2">
+                    <button type="button" class="btn btn-block btn-facebook auth-form-btn">
+                      <i class="mdi mdi-facebook me-2"></i>Connect using facebook </button>
+                  </div> -->
+                  <!-- <div class="text-center mt-4 font-weight-light"> Don't have an account? <a href="register.html" class="text-primary">Create</a>
+                  </div> -->
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-
-        <div class="form-group">
-            <button type="submit">Login</button>
-        </div>
-    </form>
-    <% if (typeof message !== "undefined") { %>
-        <h3><%= message %></h3>
-    <% } %>
-    
-</div>
-
-</body>
+        <!-- content-wrapper ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>
+    <!-- endinject -->
+    <!-- Plugin js for this page -->
+    <!-- End plugin js for this page -->
+    <!-- inject:js -->
+    <script src="../../admin/assets/js/off-canvas.js"></script>
+    <script src="../../admin/assets/js/hoverable-collapse.js"></script>
+    <script src="../../admin/assets/js/misc.js"></script>
+    <!-- endinject -->
+  </body>
 </html>

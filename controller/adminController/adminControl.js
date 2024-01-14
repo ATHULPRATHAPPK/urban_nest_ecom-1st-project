@@ -33,7 +33,7 @@ console.log(email1);
                   console.log(password1);    
         const admindata= await admin.findOne({email:email1,password:password1})
       if(admindata){
-                  res.render("home")
+                  res.render("adminHome")
 }
      
 else{
@@ -48,7 +48,7 @@ const userdeatails= async (req,res)=>{
     const userdata= await userModel.find({})
     console.log(userdata);
 
-    res.render("userdetails",{users:userdata})
+    res.render("userTable",{users:userdata})
 
 }
 
@@ -68,7 +68,7 @@ const userblock = async (req,res)=>{
 
 
     }   const userdata= await userModel.find({})
-    res.render("userDetails",{users:userdata} )
+    res.render("userTable",{users:userdata} )
 
 }
 //------------------------------------------admin dash usertable to unblock----------------------------------------------  
@@ -82,9 +82,42 @@ const userUnblock= async (req,res)=>{
 
 
   }  const userdata= await userModel.find({})
-  res.render("userDetails",{users:userdata} )
+  res.render("userTable",{users:userdata} )
 
 }
+
+
+//----------------------------------------admin to delete user----------------------------------------------------
+
+const userdelete =  async (req,res)=>{
+ 
+     const userDelete = req.query.id
+
+     const deleteUser= await userModel.deleteOne({_id:userDelete})
+
+     if(deleteUser){
+        await userModel.deleteOne({_id:userDelete})
+     }
+
+     const userdata= await userModel.find({})
+  res.render("userTable",{users:userdata})
+
+}
+
+
+//--------------------------------------------------------------------------category--------------------------------------------- 
+
+
+//-----------------------------------categoryManagment---------------------------------------------------
+
+
+const loadCategoryManage = (req,res)=>{
+
+    res.render("categoryManagment")
+
+
+}
+
 
 
 module.exports={
@@ -92,5 +125,7 @@ module.exports={
  adminload,
 userdeatails,
 userblock,
-userUnblock
+userUnblock,
+userdelete,
+loadCategoryManage
 }
