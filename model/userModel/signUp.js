@@ -13,13 +13,23 @@ const userData= new mongoose.Schema({
         require:true
     },
     password:{
+        type: String,
+        require:true
+    },
+    mobile:{
         type: Number,
         require:true
     },
+
     status:{
     type:Number,    
     default:0,
-    requeire: true
+    require: true
+    },
+    is_verified:{
+    type :Number,
+    default:0,
+    require:true
     }
 })
 

@@ -12,11 +12,17 @@ userRouter.use(bodyparser.urlencoded({extended:true}))
 userRouter.use(bodyparser.json())
 userRouter.use(session({secret:config.sessionSecret}))
 
+
 userRouter.get("/home",controllers.loadhome)
 userRouter.get("/login",controllers.loadlogin)
 userRouter.get("/register",controllers.loadRegister)
 userRouter.post("/register",controllers.insertdata)
+userRouter.post("/otp",controllers.otpVerify)
 userRouter.post("/login",controllers.loginload)
+userRouter.get("/forgotpassword",controllers.forgotpassword)
+userRouter.post("/forgotpassword",controllers.otpForgotpass)
+userRouter.post("/otpForgotpassword",controllers.otpVerifyForgot)
+userRouter.post("/passwordReset",controllers.resetPassword)
 
 
 

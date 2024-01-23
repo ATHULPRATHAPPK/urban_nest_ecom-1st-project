@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #a23ed8, #b078cf);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .otp-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .otp-input {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            margin: 0 8px;
+            text-align: center;
+            border: 1px solid #3498db;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .otp-input:focus {
+            border-color: #2980b9;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .otp-input {
+                width: 30px;
+                height: 30px;
+                font-size: 14px;
+            }
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="otp-container">
+    <h2 style="color: #a134db;">OTP Verification</h2>
+    <p>Enter the 4-digit code sent to your mobile number.</p>
+
+    <form action="/otpForgotpassword" method="post">
+        <input type="text" class="otp-input" name="digit1" maxlength="1" required>
+        <input type="text" class="otp-input" name="digit2" maxlength="1" required>
+        <input type="text" class="otp-input" name="digit3" maxlength="1" required>
+        <input type="text" class="otp-input" name="digit4" maxlength="1" required>
+        
+          
+        <% if(typeof data !== "undefined") { %>
+            <input type="hidden" name="email" value="<%= data %>">
+        <% } %>
+
+        
+        <button type="submit">Verify OTP</button>
+    </form>
+    <div id="timer-container">
+        <p>Resend OTP in <span id="timer">1:00</span></p>
+        <button id="resend-btn" onclick="resendOTP()" enabled>Resend OTP</button>
+      
+        
+        <script>
+            // JavaScript for timer and resend button
+            let countdown;
+            let timer = 60; 
+        
+            function startTimer() {
+                countdown = setInterval(function () {
+                    const minutes = Math.floor(timer / 60);
+                    const seconds = timer % 60;
+                    document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    timer--;
+        
+                    if (timer < 0) {
+                        clearInterval(countdown);
+                        document.getElementById('resend-btn').disabled = false;
+                        document.getElementById('timer-container').style.display = 'none';
+                    }
+                }, 1000);
+            }
+        
+            function resendOTP() {
+                // Implement the logic to resend OTP here
+                // For demonstration purposes, alert is used
+                alert('Resending OTP...');
+        
+                // Reset the timer
+                clearInterval(countdown);
+                timer = 60;
+                document.getElementById('timer-container').style.display = 'block';
+                document.getElementById('resend-btn').disabled = true;
+                startTimer();
+            }
+        
+            // Start the timer when the page loads
+            window.onload = function () {
+                document.getElementById('timer-container').style.display = 'block';
+                document.getElementById('resend-btn').disabled = true;
+                startTimer();
+            };
+        </script>
+        
+</body>
+</html>

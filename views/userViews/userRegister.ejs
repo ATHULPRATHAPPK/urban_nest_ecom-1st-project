@@ -28,7 +28,14 @@
                 <div class="brand-logo">
                   <img src="../../admin/assets/images/logo.svg">
                 </div>
-                <h4>New here?</h4>
+                <% if (typeof message !== "undefined") { %>
+                  <!-- Display the content of 'message' if it's defined -->
+                  <h4 style="color: red;"> <%= message %> </h4>
+              <% } else { %>
+                  <!-- Display a default message if 'message' is not defined -->
+                  <h4>New here?</h4>
+              <% } %>
+                
                 <h6 class="font-weight-light">Signing up is easy. It only takes a few steps</h6>
                 <form class="pt-3" action="/register" method="post">
                   <div class="form-group">
@@ -36,6 +43,9 @@
                   </div>
                   <div class="form-group">
                     <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email" name="email">
+                  </div>
+                  <div class="form-group">
+                    <input type="text" pattern="[0-9]{10}" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Mobile No" name="number">
                   </div>
                   <div class="form-group">
                     <select class="form-control form-control-lg" id="exampleFormControlSelect2">

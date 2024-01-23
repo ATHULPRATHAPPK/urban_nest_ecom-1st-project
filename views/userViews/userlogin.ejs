@@ -28,7 +28,16 @@
                 <div class="brand-logo">
                   <img src="../../admin/assets/images/logo.svg">
                 </div>
-                <h4>Hello! let's get started</h4>
+                <% if (typeof message !== "undefined") { %>
+                  <!-- Display the content of 'message' if it's defined -->
+                  <h4 style="color: red;"> <%= message %> </h4>
+              <% } else { %>
+                  <!-- Display a default message if 'message' is not defined -->
+                  <h4>Hello! Let's get started</h4>
+              <% } %>
+              
+
+               
                 <h6 class="font-weight-light">Sign in to continue.</h6>
                 <form class="pt-3"  action="/login" method="post">
                   <div class="form-group">
@@ -46,7 +55,7 @@
                       <label class="form-check-label text-muted">
                         <input type="checkbox" class="form-check-input"> Keep me signed in </label>
                     </div>
-                    <a href="#" class="auth-link text-black">Forgot password?</a>
+                    <a href="/forgotpassword" class="auth-link text-black">Forgot password?</a>
                   </div>
                   <div class="mb-2">
                     <button type="button" class="btn btn-block btn-facebook auth-form-btn">

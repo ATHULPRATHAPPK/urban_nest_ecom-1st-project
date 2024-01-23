@@ -15,11 +15,17 @@ adminRouter.use(bodyparser.json())
 
 adminRouter.get("/admin",controllers.adminlogin)
 adminRouter.post("/adminhome",controllers.adminload)
+adminRouter.get("/adminhome",controllers.admindash)
 adminRouter.get("/userdetails",controllers.userdeatails)
 adminRouter.get("/admin/block-user",controllers.userblock)
 adminRouter.get("/admin/unblock-user",controllers.userUnblock)
 adminRouter.get("/admin/delete-user",controllers.userdelete)
-adminRouter.get("/categoryManagment",controllers.loadCategoryManage)
-
+adminRouter.get("/productManagment",controllers.loadProductManage)
+adminRouter.get("/categoryManagement",controllers.loadCategoryManage)
+adminRouter.post("/addCategory",controllers.addCategory)
+adminRouter.get("/admin/block-category",controllers.categoryBlock)
+adminRouter.get("/admin/unblock-category",controllers.categoryUnblock)
+adminRouter.get("/admin/delete-category",controllers.categoryDelete)
+adminRouter.get("/product/laptop",controllers.addLaptop)
 
 module.exports= adminRouter
