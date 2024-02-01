@@ -42,10 +42,10 @@
                     <input type="text" class="form-control form-control-lg" id="exampleInputUsername1" placeholder="Username" name="name">
                   </div>
                   <div class="form-group">
-                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email" name="email">
+                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="Email" name="email" required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
                   </div>
                   <div class="form-group">
-                    <input type="text" pattern="[0-9]{10}" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Mobile No" name="number">
+                    <input type="text"  class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Mobile No" name="number"  pattern="[0-9]{10}">
                   </div>
                   <div class="form-group">
                     <select class="form-control form-control-lg" id="exampleFormControlSelect2">
@@ -58,12 +58,12 @@
                     </select>
                   </div>
                   <div class="form-group">
-                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password">
+                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password" required pattern="^[^\s]+$">
                   </div>
                   <div class="mb-4">
                     <div class="form-check">
                       <label class="form-check-label text-muted">
-                        <input type="checkbox" class="form-check-input"> I agree to all Terms & Conditions </label>
+                        <input type="checkbox" class="form-check-input" required> I agree to all Terms & Conditions  </label>
                     </div>
                   </div>
                   <div class="mt-3">

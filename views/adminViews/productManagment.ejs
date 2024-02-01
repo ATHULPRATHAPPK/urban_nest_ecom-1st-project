@@ -234,51 +234,7 @@
                 <i class="mdi mdi-format-list-bulleted menu-icon"></i>
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../../pages/charts/chartjs.html">
-                <span class="menu-title">Charts</span>
-                <i class="mdi mdi-chart-bar menu-icon"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../../pages/tables/basic-table.html">
-                <span class="menu-title">Tables</span>
-                <i class="mdi mdi-table-large menu-icon"></i>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
-                <span class="menu-title">Sample Pages</span>
-                <i class="menu-arrow"></i>
-                <i class="mdi mdi-medical-bag menu-icon"></i>
-              </a>
-              <div class="collapse" id="general-pages">
-                <ul class="nav flex-column sub-menu">
-                  <li class="nav-item"> <a class="nav-link" href="../../pages/samples/blank-page.html"> Blank Page </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="../../pages/samples/login.html"> Login </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="../../pages/samples/register.html"> Register </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-404.html"> 404 </a></li>
-                  <li class="nav-item"> <a class="nav-link" href="../../pages/samples/error-500.html"> 500 </a></li>
-                </ul>
-              </div>
-            </li>
-            <li class="nav-item sidebar-actions">
-              <span class="nav-link">
-                <div class="border-bottom">
-                  <h6 class="font-weight-normal mb-3">Projects</h6>
-                </div>
-                <button class="btn btn-block btn-lg btn-gradient-primary mt-4">+ Add a project</button>
-                <div class="mt-4">
-                  <div class="border-bottom">
-                    <p class="text-secondary">Categories</p>
-                  </div>
-                  <ul class="gradient-bullet-list mt-4">
-                    <li>Free</li>
-                    <li>Pro</li>
-                  </ul>
-                </div>
-              </span>
-            </li>
+          
           </ul>
         </nav>
         
@@ -400,140 +356,72 @@
                                   <tr>
                                       <th>Serial No</th>
                                       <th>Product Name</th>
-                                      <th>Product Category</th>
-                                      <th>Product Image</th>
+                                      <th>Category</th>
+                                      <th>Subcategory</th>
+                                      <th>images</th>
                                       <th>Status</th>
                                       <th>Action</th>
                                       <th>Edit</th>
                                       <th>Delete</th>
+                                      
                                   </tr>
                               </thead>
                               <tbody>
-                                  <!-- Your table rows go here -->
-                                  <tr>
-                                      <td>1</td>
-                                      <td>Herman Beck</td>
-                                      <!-- ... other cells ... -->
-                                  </tr>
-                                  <tr>
-                                      <td>2</td>
-                                      <td>Messsy Adam</td>
-                                      <!-- ... other cells ... -->
-                                  </tr>
-                                  <tr>
-                                    <td>2</td>
-                                    <td>Messsy Adam</td>
-                                    <!-- ... other cells ... -->
-                                </tr>
-                                <tr>
-                                  <td>2</td>
-                                  <td>Messsy Adam</td>
-                                  <!-- ... other cells ... -->
-                              </tr>
-                              <tr>
-                                <td>2</td>
-                                <td>Messsy Adam</td>
-                                <!-- ... other cells ... -->
-                            </tr>
-                                  <!-- ... more rows ... -->
+                                <% let i=1%>
+                                <% ProductTable.forEach((n)=> { %>
+                                      <tr>
+                         
+                                        <td><%= i++ %></td>
+                                        <td><%= n.productName %></td>
+                                        <td><%= n.subcategory.category %></td>
+                                        <td><%= n.subcategory.subcategory %></td>
+                                       
+                                        
+                                        <td>
+                                        <% for(let j=0 ; j < n.productImage.length ; j++) { %>
+                                     
+                                        <img src="/uploads/<%= n.productImage[j].resizedFile %>" alt="">
+                       
+                                      <% } %>
+                             </td>
+                             <% if(n.is_listed == true) { %>
+                              <td><p class="text-primary">Listed</p></td>
+                           <%  }
+                           else{%>
+                            <td><p class="text-danger">Unlisted</p></td>
+                          <% }                             
+                            %>
+
+                            <% if (n.is_listed == true) { %>
+                              <td>
+                                <button style="width: 80px;" class="btn btn-gradient-danger btn-sm" type="button" onclick="showAlert('Unlist Confirmation', 'Are you sure you want to unlist this product?', 'warning', 'Unlist', function() { location.href='/admin/unlist-product?id=<%= n._id %>' })">Unlist</button>
+                            </td>
+                                                        <% } else { %>
+                                                          <td>
+                                                            <button style="width: 80px;" class="btn btn-gradient-warning btn-sm" type="button" onclick="showAlert('List Confirmation', 'Are you sure you want to list this product?', 'success', 'List', function() { location.href='/admin/list-product?id=<%= n._id %>' })">List</button>  
+                                                        </td>
+                          <% } %>        
+                          <td>
+                            <button style="width: 80px;" class="btn btn-gradient-primary btn-sm" type="button" onclick="showAlert('Edit Confirmation', 'Are you sure you want to edit this product?', 'info', 'Edit', function() { location.href='/admin/edit-product?id=<%= n._id %>' })">Edit <i class="mdi mdi-grease-pencil"></i></button>
+                        </td>             
+                        <td>
+                          <button style="width: 80px;" class="btn btn-gradient-danger btn-sm" type="button" onclick="showAlert('Delete Confirmation', 'Are you sure you want to delete this product?', 'error', 'Delete', function() { location.href='/admin/delete-product?id=<%= n._id %>' })">Delete <i class="mdi mdi-delete"></i></button>
+                      </td>
+                                        
+                                      </tr>
+                                      <% }) %>
+                                
+                             
+                                  
                               </tbody>
                           </table>
                       </div>
                   </div>
               </div>
-          </div>
-          <!-- Button to trigger the modal -->
-          
-          <div  class="d-flex justify-content-end mt-2">
-            <a href="#" class="btn btn-primary" onclick="openProductModal()">
-              Add Product
-            </a>
-            
-            <!-- Modal -->
-            <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="productModalLabel">Select an Option</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <p>Select one of the following options:</p>
-                    <div class="form-check">
-                      <input class="form-check-input ms-1" type="radio" name="productOption" id="option1" value="option1">
-                      <label class="form-check-label" for="option1">
-                        LAPTOP
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input ms-1" type="radio" name="productOption" id="option2" value="option2">
-                      <label class="form-check-label" for="option2">
-                        MOBILE
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input ms-1" type="radio" name="productOption" id="option3" value="option3">
-                      <label class="form-check-label" for="option3">
-                        TABLET
-                      </label>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="handleOptionSelection()">Add Product</button>
-                  </div>
-                </div>
-              </div>
+          </div><div  class="d-flex justify-content-end mt-2">
+             <a href="/addproduct" class="btn btn-primary">
+              Add Product  </a> 
             </div>
-            
-            <!-- Bootstrap JS and Popper.js are required for Bootstrap features -->
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-            
-            <script>
-              function openProductModal() {
-                // Trigger the modal to open
-                $('#productModal').modal('show');
-              }
-            
-              function handleOptionSelection() {
-                // Handle the selected option here (e.g., retrieve the selected value)
-                var selectedOption = document.querySelector('input[name="productOption"]:checked');
-                if (selectedOption) {
-                  var selectedValue = selectedOption.value;
-            
-                  // Determine the destination URL based on the selected option
-                  var destinationURL;
-                  switch (selectedValue) {
-                    case 'option1':
-                      destinationURL = 'product/laptop';
-                      break;
-                    case 'option2':
-                      destinationURL = 'product/mobile';
-                      break;
-                    case 'option3':
-                      destinationURL = 'product/tablets';
-                      break;
-                    default:
-                      // Default destination if none of the options match
-                      destinationURL = 'default_destination.html';
-                  }
-            
-                  // Navigate to the selected destination
-                  window.location.href = destinationURL;
-            
-                  // Optionally, you can add further logic based on the selected option
-            
-                  // Close the modal (optional)
-                  $('#productModal').modal('hide');
-                }
-              }
-            </script>
-            </div>
-
 </script>
       </div>
 
@@ -546,7 +434,26 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
-    
+    <!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Add this script below SweetAlert library inclusion -->
+<script>
+  function showAlert(title, text, icon, confirmButtonText, confirmAction) {
+      Swal.fire({
+          title: title,
+          text: text,
+          icon: icon,
+          confirmButtonText: confirmButtonText,
+      }).then((result) => {
+          if (result.isConfirmed) {
+              // If the user clicks the Confirm button, perform the specified action
+              confirmAction();
+          }
+      });
+  }
+</script>
+
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

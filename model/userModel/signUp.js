@@ -30,7 +30,18 @@ const userData= new mongoose.Schema({
     type :Number,
     default:0,
     require:true
-    }
+    },
+     is_verified:{
+    type :Number,
+    default:0,
+    require:true
+    },
+    is_deleted:{
+     type :Number,
+     default:0,
+    require:true
+        }
+        
 })
 
 //user model----------------------------- 

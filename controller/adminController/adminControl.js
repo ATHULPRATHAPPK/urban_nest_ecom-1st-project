@@ -1,6 +1,9 @@
 const path = require("path")
 const express = require("express")
+const sharp=require('sharp')
+const fs = require("fs")
 const app = express()
+const session = require("express-session");
 
 const adminRouter = require("../../routers/adminRouters")
 const ejs = require("ejs")
@@ -8,207 +11,599 @@ const admin = require("../../model/adminModels/adminSchema")
 const userModel = require("../../model/userModel/signUp")
 const categoryModel = require("../../model/adminModels/categoryModel")
 const { log } = require("console")
-const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
+const productModel = require("../../model/adminModels/productModel")
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
+
+app.use(
+    session({
+      secret: "your-secret-key-here", // my secret key
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+
 
 app.set("view engine", "ejs")
 app.set(path.join(__dirname, "views", "adminViews"))
 
 
-const adminlogin = (req, res) => {
 
+//-----------------------------------------------adminlogin--------------
+
+const adminlogin = (req, res) => {
+   
     res.render("login")
 }
 
+// ---------------------------------------------------admin home-----------
 const admindash = (req, res) => {
-
-    // need to cheak the session-------
+    
     res.render("adminHome")
-
 }
 
 //-----------------------------------------------------------------admin home validation------------------------------------------------  
 
 const adminload = async (req, res) => {
 
-    const email1 = req.body.email;
-    const password1 = req.body.password
-    console.log(email1);
-    console.log(password1);
-    const admindata = await admin.findOne({ email: email1, password: password1 })
-    if (admindata) {
-        res.render("adminHome")
+    try {
+        const email1 = req.body.email;
+        const password1 = req.body.password
+        console.log(email1);
+        console.log(password1);
+        const admindata = await admin.findOne({ email: email1, password: password1 })
+        if (admindata) {
+
+            // req.session.adminId = email1;  // admin session created
+            res.render("adminHome")
+        }
+        else {
+            res.render("login", { message: "email and password are incorrect" })
+        }
+    }
+    catch (error) {
+        console.error(error);
     }
 
-    else {
-        res.render("login", { message: "email and password are incorrect" })
-    }
 }
 
 
 //------------------------------------------admin dash usertable-----------------------------------------------  
 const userdeatails = async (req, res) => {
 
-    const userdata = await userModel.find({})
-    console.log(userdata);
-
-    res.render("userTable", { users: userdata })
-
+    try {
+        const userdata = await userModel.find({is_deleted:0})
+      
+        res.render("userTable", { users: userdata })
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
-
 
 //------------------------------------------admin dash usertable to block----------------------------------------------  
 const userblock = async (req, res) => {
 
-    const userBlock = req.query.id
-
-
-    // console.log(userdata);
-
-    const blockedUser = await userModel.findOne({ _id: userBlock })
-    console.log(blockedUser);
-    if (blockedUser) {
-        await userModel.updateOne({ _id: userBlock }, { $set: { status: 1 } })
-
-
-    } const userdata = await userModel.find({})
-    res.render("userTable", { users: userdata })
-
+    try {
+        const userBlock = req.query.id
+        const blockedUser = await userModel.findOne({ _id: userBlock })
+        console.log(blockedUser);
+        if (blockedUser) {
+            await userModel.updateOne({ _id: userBlock }, { $set: { status: 1 } })
+        }
+        const userdata = await userModel.find({})
+        res.render("userTable", { users: userdata })
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
 //------------------------------------------admin dash usertable to unblock----------------------------------------------  
 const userUnblock = async (req, res) => {
 
-    const userBlock = req.query.id
-
-    const unblockedUser = await userModel.findOne({ _id: userBlock })
-    if (unblockedUser) {
-        await userModel.updateOne({ _id: userBlock }, { $set: { status: 0 } })
-
-
-    } const userdata = await userModel.find({})
-    res.render("userTable", { users: userdata })
-
+    try {
+        const userBlock = req.query.id
+        const unblockedUser = await userModel.findOne({ _id: userBlock })
+        if (unblockedUser) {
+            await userModel.updateOne({ _id: userBlock }, { $set: { status: 0 } })
+        } const userdata = await userModel.find({})
+        res.render("userTable", { users: userdata })
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
-
 
 //----------------------------------------admin to delete user----------------------------------------------------
 
 const userdelete = async (req, res) => {
-
-    const userDelete = req.query.id
-
-    const deleteUser = await userModel.deleteOne({ _id: userDelete })
-
-    if (deleteUser) {
-        await userModel.deleteOne({ _id: userDelete })
+    try {
+        const userDelete = req.query.id
+        const deleteUser = await userModel.updateOne({ _id: userDelete }, { $set: { is_deleted: 1 } });
+       
+        const userdata = await userModel.find({ is_deleted: 0})
+        res.render("userTable", { users: userdata })
     }
-
-    const userdata = await userModel.find({})
-    res.render("userTable", { users: userdata })
-
+    catch (error) {
+        console.log(error);
+    }
 }
-
 
 //-----------------------------------------------------------------------product managment--------------------------------------------- 
 
-const loadProductManage = (req, res) => {
-
-
-
-    res.render("productManagment")
-
+const loadProductManage = async (req, res) => {
+    try {
+        const ProductTable = await productModel.find({is_deleted :true }).populate("subcategory")
+        res.render("productManagment", { ProductTable })
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
+
+
+
 
 //-------------------------------------------------------category managment-------------------------
 
+
+
 const loadCategoryManage = async (req, res) => {
-
-    const categoryTable=   await categoryModel.find({})
-    res.render("categoryManagment",{ category: categoryTable })
-
+    try {
+        const categoryTable = await categoryModel.find({})
+        const message = req.query.message;
+        res.render("categoryManagment", { category: categoryTable, message })
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
+
 
 // -------------------------------------------------------------addCategory-------------------------------------------------------------
 
-const addCategory = async (req,res)=>{
-
-    let mainCategory = req.body.mainCategory
-    let subcategory = req.body.subcategory
-    let discription = req.body.discription
-
-    console.log(mainCategory);
-    console.log(subcategory);
-    console.log(discription);
-
-   
-     
-     const insertdb =  await categoryModel({
-        category: mainCategory,
-        subcategory:subcategory,
-        discription:discription
-      })
-
-      await insertdb.save()
-
-    
-
-    const categoryTable=   await categoryModel.find({})
-    console.log(categoryTable);
-
-   
 
 
-   res.redirect("/categoryManagement")
+const addCategory = async (req, res) => {
+    try {
+        let mainCategory = req.body.mainCategory
+        let subcategory = req.body.subcategory
+        let discription = req.body.discription
+
+        // console.log(mainCategory);
+        // console.log(subcategory);
+        // console.log(discription);
+        const dupilcateCategory = await categoryModel.findOne({ subcategory: req.body.subcategory })
+        if (dupilcateCategory) {
+            res.redirect("/categoryManagement?message=This Subcategory is already present");
+        }
+        else {
+            const insertdb = await categoryModel({
+                category: mainCategory,
+                subcategory: subcategory,
+                discription: discription
+            })
+            await insertdb.save()
+            const categoryTable = await categoryModel.find({})
+            console.log(categoryTable);
+            res.redirect("/categoryManagement")
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
+
+
 
 //-----------------------------------------------------categoryBlock------------------------
-const categoryBlock = async (req,res)=>{
-
-    const categoryBlock = req.query.id
-
-    const blockCategory = await categoryModel.findOne({_id:categoryBlock})
-    if (blockCategory) {
-        await categoryModel.updateOne({ _id: categoryBlock }, { $set: { status: false } })
 
 
+
+
+const categoryBlock = async (req, res) => {
+    try {
+        const categoryBlock = req.query.id
+        const blockCategory = await categoryModel.findOne({ _id: categoryBlock })
+        if (blockCategory) {
+            await categoryModel.updateOne({ _id: categoryBlock }, { $set: { status: false } })
+        }
+        res.redirect("/categoryManagement")
     }
-    
-    res.redirect("/categoryManagement")
-   
+    catch (error) {
+        console.log(error);
+    }
 }
+
+
+
 //-------------------------------------------------categoryUnblock------------------------------
 
-const categoryUnblock = async (req,res)=>{
-
-    const categoryunblock = req.query.id
-
-    const unblockCategory = await categoryModel.findOne({_id:categoryunblock})
-    if (unblockCategory) {
-        await categoryModel.updateOne({ _id:  categoryunblock }, { $set: { status: true } })
 
 
+
+const categoryUnblock = async (req, res) => {
+    try {
+        const categoryunblock = req.query.id
+        const unblockCategory = await categoryModel.findOne({ _id: categoryunblock })
+        if (unblockCategory) {
+            await categoryModel.updateOne({ _id: categoryunblock }, { $set: { status: true } })
+        }
+        res.redirect("/categoryManagement")
     }
-    
-    res.redirect("/categoryManagement")
-   
+    catch (error) {
+        console.log(error);
+    }
 }
+
 
 //-------------------------------------------------categoryDelete------------------------------
 
-const categoryDelete = async (req,res)=>{
-    const categorydelete = req.query.id
-    await categoryModel.deleteOne({_id:categorydelete})
 
-    res.redirect("/categoryManagement")
+
+
+const categoryDelete = async (req, res) => {
+    try {
+        const categorydelete = req.query.id
+        await categoryModel.deleteOne({ _id: categorydelete })
+        res.redirect("/categoryManagement")
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
 
-const addLaptop = (req,res)=>{
 
-   res.render("addLpatop")
+//-----------------------------------------------------------edit category------------
+
+
+
+
+const categoryEdit = async (req, res) => {
+
+
+
+    try {
+        const categoryedit = req.query.id
+        const editDetail = await categoryModel.findOne({ _id: categoryedit })
+        console.log(editDetail);
+
+        if (editDetail) {
+            res.render("editCategory", { message: editDetail })
+        }
+
+        else {
+            res.redirect("/categoryManagement")
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+//---------------------------------------------------------edit category------------
+
+
+
+
+const editInsert = async (req, res) => {
+    try {
+        const categoryId = req.body.id
+        const category = req.body.category
+        const subcategory = req.body.subcategory
+        const discription = req.body.discription
+        const editDetail = await categoryModel.findOne({ _id: categoryId })
+
+        const duplicate = await categoryModel.find({ subcategory: subcategory })
+        const duplicates = "This sub category is already present"
+
+        if (duplicate.length > 0) {
+            res.render("editCategory", { message: editDetail, duplicates })
+            // res.redirect("/editCategory?")
+
+            // res.redirect("/editCategory?id=" + categoryId + "&message=This Subcategory already present");
+
+        }
+
+        else {
+            const result = await categoryModel.updateOne(
+                { _id: categoryId },
+                { $set: { category, subcategory, discription } }
+            )
+            res.redirect("/categoryManagement")
+        }
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+//-------------------------------------------------add product------------------------------
+
+
+
+
+const addproduct = async (req, res) => {
+
+    try {
+
+        const category = await categoryModel.find({ status: true })
+        res.render("addproduct", { category })
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+//----------------------------------insertproduct--------------------------------------
+
+
+
+
+const insertProduct = async (req, res) => {
+
+    // Fetch the subcategory document from the Category collection
+    try {
+
+      
+
+        // Process the uploaded images, filter out duplicates
+
+        const productImages = await Promise.all(req.files.map(async (file) => {
+            try {
+                console.log("promise is working");
+                const resizedFilename = `resized-${ file.filename }`;
+                const resizedPath = path.join(__dirname, '../../public/uploads',resizedFilename)
+                              console.log("files",file);
+                     
+                await sharp(file.path)
+                    .resize({ height: 500, width: 550, fit: 'fill' })
+                    .toFile(resizedPath);
+
+                return {
+                    filename: file.filename,
+                    path: file.path,
+                    resizedFile: resizedFilename,
+
+                };
+            } catch (error) {
+                console.error('Error processing and saving image:', error);
+                return null; // Exclude failed images
+            }
+        }))
+
+
+
+
+
+       
+        const productData = {
+
+            productName: req.body.productName,
+            brandName: req.body.brandName,
+            discription: req.body.discription,
+            subcategory: req.body.subcategory,
+            color: req.body.color,
+            processor: req.body.processor,
+            ram: req.body.ram,
+            internalStorage: req.body.internalStorage,
+            quantity: req.body.quantity,
+            price: req.body.price,
+            productImage: productImages
+
+        }
+
+
+        const insertproduct = await new productModel(productData)
+
+        await insertproduct.save()
+
+        res.redirect("/productManagment")
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+// ------------------------------------------unlist product---------------------------------------------------
+
+const unlistProduct = async (req,res)=>{
+   try{
+
+    const unlist = req.query.id
+    
+          
+   const unlistDocument = await productModel.findOne({_id:unlist})
+    if(unlistDocument){
+        await productModel.updateOne(
+            { _id: unlist },
+            { $set: { is_listed : false } }
+        )
+        res.redirect("/productManagment")
+    }
+
+   }
+   catch(error){
+    console.log(error);
+   }
 
 }
+
+//-------------------------------------------list product-------------------------------------------------------------------
+
+const listProduct = async (req,res)=>{
+    try{
+ 
+     const list = req.query.id
+     
+           
+    const unlistDocument = await productModel.findOne({_id:list})
+
+     if(unlistDocument){
+         await productModel.updateOne(
+             { _id: list },
+             { $set: { is_listed : true } }
+         )
+         res.redirect("/productManagment")
+     }
+ 
+    }
+    catch(error){
+     console.log(error);
+    }
+ 
+ }
+
+
+ //-------------------------------------------edit product-------------------------------------------------------------------
+
+
+
+ const editProduct = async (req,res)=>{
+
+    const editDocumentid = req.query.id
+
+    const editDetail = await productModel.findOne({_id : editDocumentid}).populate('subcategory')
+
+    
+    if (editDetail) {
+       
+    res.render("editProduct",{editDetail})
+ }
+ 
+ else {
+    res.redirect("/productManagment")
+}
+ }
+
+
+
+//--------------------------------------edit insert product---------------------------------
+
+
+
+const editInsertProduct = async (req, res) => {
+
+    // Fetch the subcategory document from the Category collection
+    try {
+
+      
+
+        // Process the uploaded images, filter out duplicates
+
+        const productImages = await Promise.all(req.files.map(async (file) => {
+            try {
+               
+                const resizedFilename = `resized-${ file.filename }`;
+                const resizedPath = path.join(__dirname, '../../public/uploads',resizedFilename)
+                            //   console.log("files",file);
+                     
+                await sharp(file.path)
+                    .resize({ height: 500, width: 550, fit: 'fill' })
+                    .toFile(resizedPath);
+
+                return {
+                    filename: file.filename,
+                    path: file.path,
+                    resizedFile: resizedFilename,
+
+                };
+            } catch (error) {
+                console.error('Error processing and saving image:', error);
+                return null; // Exclude failed images
+            }
+        }))
+
+
+        const productid = req.body.poductId
+
+      
+         
+        await productModel.findByIdAndUpdate(
+            productid,
+            { $push: { productImage:productImages } })
+        
+       
+        const productData = {
+
+            productName: req.body.productName,
+            brandName: req.body.brandName,
+            discription: req.body.discription,
+            subcategory: req.body.subcategory,
+            color: req.body.color,
+            processor: req.body.processor,
+            ram: req.body.ram,
+            internalStorage: req.body.internalStorage,
+            quantity: req.body.quantity,
+            price: req.body.price,
+           
+
+        }
+       
+        const updateResult = await productModel.updateOne({ _id: productid }, { $set: productData });
+
+        res.redirect("/productManagment")
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+
+
+
+//----------------------------------=delete image------------------
+
+
+ const deleteImage = async (req, res) => {
+    const productId = req.query.id;
+    const imageIndex = req.query.imageIndex;
+
+    const imageDocument = await productModel.findOne({ _id: productId });
+
+    // Check if the imageIndex is within the valid range
+    if (imageIndex >= 0 && imageIndex < imageDocument.productImage.length) {
+        const filenameToDelete = imageDocument.productImage[imageIndex].filename;
+        console.log(filenameToDelete);
+        const filePath = path.join(__dirname, '../../public/uploads', filenameToDelete);
+
+        // Use fs.unlinkSync to delete the file
+        fs.unlinkSync(filePath);
+
+        // Use $pull with the filename to remove the specific element from the array
+        await productModel.findByIdAndUpdate(imageDocument._id, { $pull: { productImage: { filename: filenameToDelete } } });
+
+        res.redirect(`/admin/edit-product?id=${productId}`);
+    }
+};
+
+
+
+//-----------------------------------product delete-----------------
+
+
+const productDelete = async (req,res)=>{
+ 
+    const deleteProduct = req.query.id
+
+    await productModel.updateOne(
+        { _id: deleteProduct },
+        { $set: { is_deleted :false } }
+    )
+    res.redirect("/productManagment")
+
+}
+
+
 
 
 module.exports = {
@@ -219,12 +614,21 @@ module.exports = {
     userblock,
     userUnblock,
     userdelete,
+    categoryEdit,
+    editInsert,
     loadProductManage,
     loadCategoryManage,
     addCategory,
     categoryBlock,
     categoryUnblock,
     categoryDelete,
-    addLaptop
-    
+    addproduct,
+    insertProduct,
+    unlistProduct,
+    listProduct,
+    editProduct,
+    deleteImage,
+    editInsertProduct,
+    productDelete 
+
 }
