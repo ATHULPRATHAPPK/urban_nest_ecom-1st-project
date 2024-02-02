@@ -226,7 +226,7 @@ const loginload = async (req, res) => {
 
     const email1 = req.body.email
     const password1 = req.body.password.toString()
-    
+                      
 
     const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
     if (userdata) {
