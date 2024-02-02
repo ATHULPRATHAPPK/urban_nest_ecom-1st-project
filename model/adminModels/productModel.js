@@ -30,7 +30,7 @@ const  mongoose = require("mongoose")
         require:true
     },
     ram:{
-        type:Number,
+        type:String,
         require:true
     },
     internalStorage:{
@@ -42,7 +42,7 @@ const  mongoose = require("mongoose")
         require:true
     },
     price:{
-        type:Number,
+        type:String,
         require:true
     },
     productImage: [

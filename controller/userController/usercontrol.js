@@ -30,7 +30,18 @@ app.set(path.join(__dirname, "views", "userViews"))
 const loadhome = async (req, res) => {
 
     const allProducts = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
-    res.render("home", { allProducts })
+    if(req.session.userId)
+    {
+         const userData = await userModel.findOne({email:req.session.userId})
+         const message = userData.name
+         res.render("home", { allProducts,message})
+    }
+    else{
+        res.render("home", { allProducts})
+    }
+    
+    
+    
 }
 
 
@@ -212,15 +223,34 @@ const loginload = async (req, res) => {
 
     const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
     if (userdata) {
-        const name1 = await userdata.name
-        req.session.user_id = userdata._id
-        res.render("home", { message: name1 })
+      
+        req.session.userId = email1 
+        console.log(req.session.userId);
+        
+    res.redirect("/")
     }
     else {
         res.render("userlogin", { message: "email and password are incorrect" })
     }
 }
 
+
+//----------------------------logout user--------------
+
+const usereLogout= (req,res)=>{
+
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            console.log('Session destroyed successfully');
+            res.redirect('/');
+        
+
+}
+    })
+}
 
  //  ------------------------------------------------------forgot password-------------------------------------------
 const forgotpassword = (req, res) => {
@@ -383,7 +413,16 @@ const loadProduct = async (req, res) => {
 
     const productId = req.query.id
     const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
+    
+    if(req.session.userId)
+    {
+         const userData = await userModel.findOne({email:req.session.userId})
+         const message = userData.name
+         res.render("productDetails", { productDetails,message })
+    }
+    else{
     res.render("productDetails", { productDetails })
+    }
 }
 
 
@@ -399,7 +438,18 @@ const loadLaptops = async (req, res) => {
             return product.subcategory.category === 'laptops';
         });
 
-        res.render("laptops", { productDetails: laptopProducts }); // Pass the filteredProducts to the view
+        if(req.session.userId)
+    {
+         const userData = await userModel.findOne({email:req.session.userId})
+         const message = userData.name
+         res.render("laptops", { productDetails: laptopProducts,message});
+    }
+    else{
+        res.render("laptops", { productDetails: laptopProducts});
+    }
+    
+
+        // res.render("laptops", { productDetails: laptopProducts}); // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -415,7 +465,19 @@ const loadMobiles = async (req, res) => {
             return product.subcategory.category === 'mobile';
         });
 
-        res.render("mobiles", { productDetails: mobileProducts }); // Pass the filteredProducts to the view
+        if(req.session.userId)
+        {
+             const userData = await userModel.findOne({email:req.session.userId})
+             const message = userData.name
+             res.render("mobiles", { productDetails: mobileProducts ,message});
+        }
+        else{
+            res.render("mobiles", { productDetails: mobileProducts });
+        }
+       
+
+
+         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -431,8 +493,18 @@ const loadTablets = async (req, res) => {
         const tabletsProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'tablets';
         });
-
-        res.render("tablets", { productDetails: tabletsProducts }); // Pass the filteredProducts to the view
+      
+        if(req.session.userId)
+        {
+             const userData = await userModel.findOne({email:req.session.userId})
+             const message = userData.name
+             res.render("tablets", { productDetails: tabletsProducts,message }); 
+        }
+        else{
+            res.render("tablets", { productDetails: tabletsProducts }); 
+        }
+        
+        // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -444,8 +516,20 @@ const loadTablets = async (req, res) => {
 
 const loadAllProducts = async (req, res) => {
     try {
+      
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory");
-        res.render("allProducts", { productDetails: productDetails }); // Pass the filteredProducts to the view
+
+        if(req.session.userId)
+        {
+             const userData = await userModel.findOne({email:req.session.userId})
+             const message = userData.name
+             res.render("allProducts", { productDetails: productDetails,message});
+        }
+        else{
+            res.render("allProducts", { productDetails: productDetails});
+        }
+        // Pass the filteredProducts to the view
+       
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -457,6 +541,7 @@ const loadAllProducts = async (req, res) => {
 module.exports = {
     loadhome,
     loadlogin,
+    usereLogout,
     loadRegister,
     insertdata,
     loginload,

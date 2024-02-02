@@ -5,8 +5,16 @@ const mongoose = require("mongoose")
 const userRouter= require("./routers/userRouters")
 const adminRouter= require("./routers/adminRouters")
 const path = require("path")
- 
+ const session = require("express-session")
 
+
+app.use(
+    session({
+      secret: "your-secret-key-here", // my secret key
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
 mongoose.connect("mongodb://127.0.0.1:27017/ecommerce").then(()=>{
     console.log("db connected....")

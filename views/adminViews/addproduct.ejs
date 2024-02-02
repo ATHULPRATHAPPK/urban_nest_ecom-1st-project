@@ -52,12 +52,29 @@
                 </div>
               </a>
               <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-cached me-2 text-success"></i> Activity Log </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-logout me-2 text-primary"></i> Signout </a>
-              </div>
+                <a class="dropdown-item" href="#" onclick="showLogoutConfirmation()">
+                    <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+                </a>
+            </div>
+            
+            <script>
+                function showLogoutConfirmation() {
+                    Swal.fire({
+                        title: 'Logout Confirmation',
+                        text: 'Are you sure you want to sign out?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, sign out'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to the logout URL when the user confirms
+                            window.location.href = '/admin-logout';
+                        }
+                    });
+                }
+            </script>
             </li>
             <li class="nav-item d-none d-lg-block full-screen-link">
               <a class="nav-link">
@@ -234,11 +251,11 @@
           
               <div class="col-md-8 mb-3">
                 <label for="productName">Product Name:</label>
-                <input type="text" class="form-control" id="productid" name="productName" required>
+                <input type="text" class="form-control" id="productid" name="productName" pattern="^[a-zA-Z0-9\s]+$" required>
               </div>
               <div class="col-md-8 mb-3">
                 <label for="productName">Brand:</label>
-                <input type="text" class="form-control" id="brandid" name="brandName" required>
+                <input type="text" class="form-control" id="brandid" name="brandName" pattern="^[a-zA-Z0-9\s]+$" required>
               </div>
           
             
@@ -273,7 +290,7 @@
               </div>
               <div class="col-md-8 mb-3">
                 <label for="color">Color:</label>
-                <input type="text" class="form-control" id="colorid" name="color" required>
+                <input type="text" class="form-control" id="colorid" name="color" pattern="^[a-zA-Z\s]+$" required>
               </div>
           
               <div class="col-md-8 mb-3">
@@ -282,7 +299,7 @@
               </div>
               <div class="col-md-8 mb-3">
                 <label for="ram">Ram:</label>
-                <input type="number" class="form-control" id="offerPrice" name="ram">
+                <input type="text" class="form-control" id="offerPrice" name="ram">
               </div>
               <div class="col-md-8 mb-3">
                 <label for="internalStorage">Internal Storage:</label>
@@ -293,12 +310,12 @@
           
               <div class="col-md-8 mb-3">
                 <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantityid" name="quantity" required>
+                <input type="number" class="form-control" id="quantityid" name="quantity"  pattern="^\d+$" required>
               </div>
               
               <div class="col-md-8 mb-3">
                 <label for="price">Price:</label>
-                <input type="number" class="form-control" id="priceid" name="price" required>
+                <input type="text" class="form-control" id="priceid" name="price" pattern="^\d+(\.\d{1,2})?" required>
               </div>
              
               <div class="col-md-8 mb-3">
@@ -331,6 +348,9 @@
     </div>
     <!-- container-scroller -->
     <!-- plugins:js -->
+    <!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->

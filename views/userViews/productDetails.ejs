@@ -74,14 +74,18 @@
                                             </div><!-- End .header-menu -->
                                         </div>
                                     </li>
-                                    <% if ( typeof locals.message==="undefined" ) { %>
+                                    <% if (typeof locals.message === "undefined") { %>
                                         <li><a href="/login">Sign in</a></li>
-
-                                        <% } else { %>
-                                            <li><a href="#">
-                                                    <%= locals.message %>
-                                                </a></li>
-                                            <% } %>
+                                    <% } else { %>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <%= locals.message %>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                <a class="dropdown-item" id="signOutBtn">Sign out</a>
+                                            </div>
+                                        </li>
+                                    <% } %>
 
 
                                 </ul>
@@ -1118,6 +1122,23 @@
         </div>
     </div>
     <!-- Plugins JS File -->
+    <script>
+        document.getElementById('signOutBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Do you want to sign out?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, sign out!',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the sign-out route
+                    window.location.href = '/user-logout';
+                }
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/user/assets/js/jquery.min.js"></script>
     <script src="/user/assets/js/bootstrap.bundle.min.js"></script>
     <script src="/user/assets/js/jquery.hoverIntent.min.js"></script>

@@ -16,13 +16,7 @@ const productModel = require("../../model/adminModels/productModel")
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
 
-app.use(
-    session({
-      secret: "your-secret-key-here", // my secret key
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
+
 
 
 app.set("view engine", "ejs")
@@ -55,7 +49,8 @@ const adminload = async (req, res) => {
         const admindata = await admin.findOne({ email: email1, password: password1 })
         if (admindata) {
 
-            // req.session.adminId = email1;  // admin session created
+            req.session.admin = email1;
+            console.log("admin", req.session.admin);
             res.render("adminHome")
         }
         else {
@@ -68,6 +63,22 @@ const adminload = async (req, res) => {
 
 }
 
+//-----------------------------admin delete sesssion----------
+
+const deleteSession =(req,res)=>{
+
+
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            console.log('Session destroyed successfully');
+            res.redirect('/admin');
+        
+
+}
+    })}
 
 //------------------------------------------admin dash usertable-----------------------------------------------  
 const userdeatails = async (req, res) => {
@@ -610,6 +621,7 @@ module.exports = {
     adminlogin,
     admindash,
     adminload,
+    deleteSession,
     userdeatails,
     userblock,
     userUnblock,
@@ -629,6 +641,6 @@ module.exports = {
     editProduct,
     deleteImage,
     editInsertProduct,
-    productDelete 
+    productDelete
 
 }
