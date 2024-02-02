@@ -30,18 +30,17 @@ app.set(path.join(__dirname, "views", "userViews"))
 const loadhome = async (req, res) => {
 
     const allProducts = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
-    if(req.session.userId)
-    {
-         const userData = await userModel.findOne({email:req.session.userId})
-         const message = userData.name
-         res.render("home", { allProducts,message})
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const message = userData.name
+        res.render("home", { allProducts, message })
     }
-    else{
-        res.render("home", { allProducts})
+    else {
+        res.render("home", { allProducts })
     }
-    
-    
-    
+
+
+
 }
 
 
@@ -67,117 +66,124 @@ const insertdata = async (req, res) => {
 
     try {
 
-        const alreadyExist = await userModel.findOne({ email: req.body.email })
+        if (req.body.password1 === req.body.password) {
+            const alreadyExist = await userModel.findOne({ email: req.body.email })
 
 
-        if (alreadyExist) {
+            if (alreadyExist) {
 
-            res.render("userRegister", { message: "This email already exist" })
-        }
-        else {
-            console.log(`mail ${req.body.email}`);
-            const insertdb = await new userModel({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password,
-                mobile: req.body.number
-            })
-
-            await insertdb.save()
-
-            // ---------------------------------nodemailer-----------------------------------------
-
-
-            // const mailcontent = (req,res)=>{
-
-            function otpGenerator(length) {       //otp generating function
-                let otp = ""
-
-                for (let i = 0; i < length; i++) {
-
-                    otp = otp + (Math.floor(Math.random() * 10).toString())
-                }
-                return otp
-                console.log(otp);
-
+                res.render("userRegister", { message: "This email already exist" })
             }
-
-            let otp = otpGenerator(4)
-            console.log(`otp is ${otp}`);    //returning otp
-            //    const userMail = req.body.email
-            let config = {
-                service: "gmail",
-                auth: {
-                    user: "athulprathap216@gmail.com",     //email and password of sender
-                    pass: "hsse gmvs vpvo ghdd"
-
-                }
-            }
-            let transporter = nodemailer.createTransport(config)
-
-            let mailgenerator = new mailgen({
-                theme: "default",
-                product: {
-                    name: "Urban Nest",
-                    link: "https://http://localhost:3001/home"
-                }
-            })
-            let response = {
-                body: {
+            else {
+                console.log(`mail ${req.body.email}`);
+                const insertdb = await new userModel({
                     name: req.body.name,
-                    intro: `urban nest verification code ${otp}`,
-                    outro: "thankyou"
+                    email: req.body.email,
+                    password: req.body.password,
+                    mobile: req.body.number
+                })
+
+                await insertdb.save()
+
+                // ---------------------------------nodemailer-----------------------------------------
+
+
+                // const mailcontent = (req,res)=>{
+
+                function otpGenerator(length) {       //otp generating function
+                    let otp = ""
+
+                    for (let i = 0; i < length; i++) {
+
+                        otp = otp + (Math.floor(Math.random() * 10).toString())
+                    }
+                    return otp
+                    console.log(otp);
+
                 }
+
+                let otp = otpGenerator(4)
+                console.log(`otp is ${otp}`);    //returning otp
+                //    const userMail = req.body.email
+                let config = {
+                    service: "gmail",
+                    auth: {
+                        user: "athulprathap216@gmail.com",     //email and password of sender
+                        pass: "hsse gmvs vpvo ghdd"
+
+                    }
+                }
+                let transporter = nodemailer.createTransport(config)
+
+                let mailgenerator = new mailgen({
+                    theme: "default",
+                    product: {
+                        name: "Urban Nest",
+                        link: "https://http://localhost:3001/home"
+                    }
+                })
+                let response = {
+                    body: {
+                        name: req.body.name,
+                        intro: `urban nest verification code ${otp}`,
+                        outro: "thankyou"
+                    }
+                }
+
+                let mail = mailgenerator.generate(response)
+
+                let message = {
+                    from: "athulprathap216@gmail.com",
+                    to: req.body.email,
+                    subject: "otp verification",
+                    html: mail
+
+                }
+
+                transporter.sendMail(message).then(() => {
+                    //  return res.json({
+                    //      msg: "mail sended"
+                    //  })
+                    console.log(`mail sended to the ${req.body.email}`);
+                }).catch((error) => {
+                    console.log(error);
+                })
+
+                const insertotp = await new otpModel({
+
+                    userId: req.body.email,
+                    otp: otp,
+                    expiresAt: Date.now()
+
+                })
+
+                await insertotp.save()
+                let userid = req.body.email
+                res.render("otpVerification", { data: userid })
             }
 
-            let mail = mailgenerator.generate(response)
 
-            let message = {
-                from: "athulprathap216@gmail.com",
-                to: req.body.email,
-                subject: "otp verification",
-                html: mail
 
-            }
+            //---------------------delete otp---------------------------------after two minites--------
+            const deleteExpiredOtps = async () => {
+                try {
+                    const currentTimestamp = new Date();
+                    await otpModel.deleteMany({ expiresAt: { $lt: currentTimestamp } });
+                    console.log('Expired OTPs deleted successfully.');
+                } catch (error) {
+                    console.error('Error deleting expired OTPs:', error.message);
+                }
 
-            transporter.sendMail(message).then(() => {
-                //  return res.json({
-                //      msg: "mail sended"
-                //  })
-                console.log(`mail sended to the ${req.body.email}`);
-            }).catch((error) => {
-                console.log(error);
-            })
+            };
 
-            const insertotp = await new otpModel({
+            setTimeout(deleteExpiredOtps, 60 * 1000)
 
-                userId: req.body.email,
-                otp: otp,
-                expiresAt: Date.now()
 
-            })
 
-            await insertotp.save()
-            let userid = req.body.email
-            res.render("otpVerification", { data: userid })
+        } else {
+            res.render("userRegister", { message: "Password Missmatch" })
         }
 
-
-
-        //---------------------delete otp---------------------------------after two minites--------
-        const deleteExpiredOtps = async () => {
-            try {
-                const currentTimestamp = new Date();
-                await otpModel.deleteMany({ expiresAt: { $lt: currentTimestamp } });
-                console.log('Expired OTPs deleted successfully.');
-            } catch (error) {
-                console.error('Error deleting expired OTPs:', error.message);
-            }
-
-        };
-
-        setTimeout(deleteExpiredOtps, 60 * 1000)
-        //   ------------------------------------------------------------------------
     }
     catch (error) {
         console.log(error.message);
@@ -220,14 +226,15 @@ const loginload = async (req, res) => {
 
     const email1 = req.body.email
     const password1 = req.body.password.toString()
+    
 
     const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
     if (userdata) {
-      
-        req.session.userId = email1 
+
+        req.session.userId = email1
         console.log(req.session.userId);
-        
-    res.redirect("/")
+
+        res.redirect("/")
     }
     else {
         res.render("userlogin", { message: "email and password are incorrect" })
@@ -237,7 +244,7 @@ const loginload = async (req, res) => {
 
 //----------------------------logout user--------------
 
-const usereLogout= (req,res)=>{
+const usereLogout = (req, res) => {
 
     req.session.destroy((err) => {
         if (err) {
@@ -246,13 +253,13 @@ const usereLogout= (req,res)=>{
         } else {
             console.log('Session destroyed successfully');
             res.redirect('/');
-        
 
-}
+
+        }
     })
 }
 
- //  ------------------------------------------------------forgot password-------------------------------------------
+//  ------------------------------------------------------forgot password-------------------------------------------
 const forgotpassword = (req, res) => {
 
     res.render("forgotpassword")
@@ -358,7 +365,7 @@ const otpForgotpass = async (req, res) => {
     };
 
     setTimeout(deleteExpiredOtps, 60 * 1000)
-   
+
 }
 
 
@@ -413,15 +420,14 @@ const loadProduct = async (req, res) => {
 
     const productId = req.query.id
     const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
-    
-    if(req.session.userId)
-    {
-         const userData = await userModel.findOne({email:req.session.userId})
-         const message = userData.name
-         res.render("productDetails", { productDetails,message })
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const message = userData.name
+        res.render("productDetails", { productDetails, message })
     }
-    else{
-    res.render("productDetails", { productDetails })
+    else {
+        res.render("productDetails", { productDetails })
     }
 }
 
@@ -438,16 +444,15 @@ const loadLaptops = async (req, res) => {
             return product.subcategory.category === 'laptops';
         });
 
-        if(req.session.userId)
-    {
-         const userData = await userModel.findOne({email:req.session.userId})
-         const message = userData.name
-         res.render("laptops", { productDetails: laptopProducts,message});
-    }
-    else{
-        res.render("laptops", { productDetails: laptopProducts});
-    }
-    
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData.name
+            res.render("laptops", { productDetails: laptopProducts, message });
+        }
+        else {
+            res.render("laptops", { productDetails: laptopProducts });
+        }
+
 
         // res.render("laptops", { productDetails: laptopProducts}); // Pass the filteredProducts to the view
     } catch (error) {
@@ -465,19 +470,18 @@ const loadMobiles = async (req, res) => {
             return product.subcategory.category === 'mobile';
         });
 
-        if(req.session.userId)
-        {
-             const userData = await userModel.findOne({email:req.session.userId})
-             const message = userData.name
-             res.render("mobiles", { productDetails: mobileProducts ,message});
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData.name
+            res.render("mobiles", { productDetails: mobileProducts, message });
         }
-        else{
+        else {
             res.render("mobiles", { productDetails: mobileProducts });
         }
-       
 
 
-         // Pass the filteredProducts to the view
+
+        // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -493,17 +497,16 @@ const loadTablets = async (req, res) => {
         const tabletsProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'tablets';
         });
-      
-        if(req.session.userId)
-        {
-             const userData = await userModel.findOne({email:req.session.userId})
-             const message = userData.name
-             res.render("tablets", { productDetails: tabletsProducts,message }); 
+
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData.name
+            res.render("tablets", { productDetails: tabletsProducts, message });
         }
-        else{
-            res.render("tablets", { productDetails: tabletsProducts }); 
+        else {
+            res.render("tablets", { productDetails: tabletsProducts });
         }
-        
+
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -516,20 +519,19 @@ const loadTablets = async (req, res) => {
 
 const loadAllProducts = async (req, res) => {
     try {
-      
+
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory");
 
-        if(req.session.userId)
-        {
-             const userData = await userModel.findOne({email:req.session.userId})
-             const message = userData.name
-             res.render("allProducts", { productDetails: productDetails,message});
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData.name
+            res.render("allProducts", { productDetails: productDetails, message });
         }
-        else{
-            res.render("allProducts", { productDetails: productDetails});
+        else {
+            res.render("allProducts", { productDetails: productDetails });
         }
         // Pass the filteredProducts to the view
-       
+
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");

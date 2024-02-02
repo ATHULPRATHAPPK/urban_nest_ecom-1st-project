@@ -2,6 +2,7 @@ const express = require("express")
 const path = require("path")
 const adminRouter = express()
 const multer = require("multer")
+const nocache = require("nocache");
 const controllers = require("../controller/adminController/adminControl")
 const config = require("../config/config")
 const ejs = require("ejs")
@@ -13,7 +14,7 @@ const adminMiddleware = require("../middleware/adminMiddleware")
 
 adminRouter.use(bodyparser.urlencoded({ extended: true }))
 adminRouter.use(bodyparser.json())
-
+adminRouter.use(nocache())
 
 
 const storage = multer.diskStorage({

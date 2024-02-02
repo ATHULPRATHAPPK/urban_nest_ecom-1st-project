@@ -3,7 +3,7 @@ const path = require("path")
 const userRouter= express()
 const controllers= require("../controller/userController/usercontrol")
 const config=require("../config/config")
-
+const nocache = require("nocache");
 const ejs= require("ejs")
 userRouter.set("view engine","ejs")
 userRouter.set("views","views/userViews")
@@ -13,7 +13,7 @@ const userMiddleware = require("../middleware/userMiddleware")
 
 userRouter.use(bodyparser.urlencoded({extended:true}))
 userRouter.use(bodyparser.json())
-
+userRouter.use(nocache());
 
 userRouter.get("/",controllers.loadhome)
 
