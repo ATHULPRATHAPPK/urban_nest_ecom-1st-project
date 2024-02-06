@@ -8,6 +8,7 @@ const userRouter = require("../../routers/userRouters")
 const ejs = require("ejs")
 const userModel = require("../../model/userModel/signUp")
 const otpModel = require("../../model/userModel/otp")
+const cartModel = require("../../model/userModel/cart")
 const { log } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
@@ -226,7 +227,7 @@ const loginload = async (req, res) => {
 
     const email1 = req.body.email
     const password1 = req.body.password.toString()
-                      
+
 
     const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
     if (userdata) {
@@ -423,7 +424,7 @@ const loadProduct = async (req, res) => {
 
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
-        const message = userData.name
+        const message = userData
         res.render("productDetails", { productDetails, message })
     }
     else {
@@ -446,15 +447,16 @@ const loadLaptops = async (req, res) => {
 
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData.name
-            res.render("laptops", { productDetails: laptopProducts, message });
+            const message = userData
+            res.render("products", { productLaptop: laptopProducts, message });
         }
         else {
-            res.render("laptops", { productDetails: laptopProducts });
+
+            res.render("products", { productLaptop: laptopProducts });
         }
 
 
-        // res.render("laptops", { productDetails: laptopProducts}); // Pass the filteredProducts to the view
+        // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -472,11 +474,12 @@ const loadMobiles = async (req, res) => {
 
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData.name
-            res.render("mobiles", { productDetails: mobileProducts, message });
+            const message = userData
+
+            res.render("products", { productMobile: mobileProducts, message });
         }
         else {
-            res.render("mobiles", { productDetails: mobileProducts });
+            res.render("products", { productMobile: mobileProducts });
         }
 
 
@@ -500,11 +503,11 @@ const loadTablets = async (req, res) => {
 
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData.name
-            res.render("tablets", { productDetails: tabletsProducts, message });
+            const message = userData
+            res.render("products", { productTablets: tabletsProducts, message });
         }
         else {
-            res.render("tablets", { productDetails: tabletsProducts });
+            res.render("products", { productTablets: tabletsProducts });
         }
 
         // Pass the filteredProducts to the view
@@ -524,11 +527,11 @@ const loadAllProducts = async (req, res) => {
 
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData.name
-            res.render("allProducts", { productDetails: productDetails, message });
+            const message = userData
+            res.render("products", { allProducts: productDetails, message });
         }
         else {
-            res.render("allProducts", { productDetails: productDetails });
+            res.render("products", { allProducts: productDetails });
         }
         // Pass the filteredProducts to the view
 
@@ -537,6 +540,203 @@ const loadAllProducts = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+
+//---------------------------------------------------cart--------------------------------------------------------
+
+const loadCart = async (req, res) => {
+
+    try {
+
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const targetUserId = userData._id
+            // console.log( targetUserId);
+            const cartDetails = await cartModel.find({}).populate("userId")
+
+            const userCartDetails = cartDetails.filter((cart) => {
+                return cart.userId._id.equals(targetUserId);
+            });
+
+           console.log( userCartDetails);
+
+            res.render("cart", { userCartDetails })
+        }
+        else {
+            res.redirect("/")
+        }
+    }
+
+    catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+
+    }
+
+}
+//----------------------------------------------------------------------------------// 
+//============================Add to cart===========================================//
+//----------------------------------------------------------------------------------// 
+const addToCart = async (req, res) => {
+
+
+    const pId = req.body.productId
+    const pQuantity = req.body.quantity
+    const userData = req.body.userDetails
+    const userdetails = JSON.parse(userData)
+
+
+
+    productDetails = await productModel.find({ _id: pId })
+
+
+    const cartUser = await cartModel.find({}).populate("userId")
+
+
+    const isUserPresent = cartUser.some(cartDoc => cartDoc.userId._id.equals(userdetails._id));
+
+    console.log(isUserPresent);
+
+    if (isUserPresent) {
+
+        const priceInt = parseInt(productDetails[0].price, 10)
+        const quatityInt = parseInt(pQuantity, 10)
+
+
+        const productId = productDetails[0]._id; // Assuming productDetails is an array with at least one element
+        console.log(userdetails._id);
+        console.log(productId);
+
+
+
+        const cartItems = await cartModel.find({
+            userId: userdetails._id,
+            product: {
+                $elemMatch: {
+                    productId: productId
+                }
+            }
+        });
+
+        if (cartItems.length > 0) {
+       // -----------------------adding same product in the cart----------
+            console.log("adding same product");
+            const userId = userdetails._id;
+            const productId = productDetails[0].id
+          
+       //--------------same product total and subtotal---------------
+            for (const cartItem of cartItems) {
+                // Find the product within the cartItem's product array
+                const matchingProduct = cartItem.product.find(product => product.productId === productId);
+                const totalForProduct = matchingProduct.total;
+                const totalSum = totalForProduct + priceInt * quatityInt
+       //---------------finding the existing subtotal in  the cart------
+                const userCart = await cartModel.find({ userId: userdetails._id })
+                const subTotalValue = userCart[0].subTotal;
+                const newSubTotal = subTotalValue + priceInt * quatityInt
+       //-----------------updating cartdbs total and subtotal-----------        
+                await cartModel.updateOne(
+                    { userId: userdetails._id, "product.productId": productId },
+                    {
+                        $set: {
+                            "product.$.total": totalSum,
+                            subTotal: newSubTotal,
+                        },
+                    }
+                );
+            }
+        //-----------------icrementing quantity---------------------------  
+            await cartModel.updateOne(
+                { userId: userId, "product.productId": productId },
+                { $inc: { "product.$.quantity": quatityInt } }
+            );
+        }
+        else {
+            //---------------if the user adding new product 
+            console.log("adding ne wproduct to the existing user cart");
+            const priceInt = parseInt(productDetails[0].price, 10)
+            const quatityInt = parseInt(pQuantity, 10)
+
+            //---------------finding subtotal-----------------
+            const userCart = await cartModel.find({ userId: userdetails._id })
+            const subTotalValue = userCart[0].subTotal;
+            const newSubTotal = subTotalValue + priceInt * quatityInt
+
+            //--------------product details push in the product array-------
+            const newProduct = {
+                productId: productDetails[0]._id,
+                name: productDetails[0].productName,
+                quantity: pQuantity,
+                price: productDetails[0].price,
+                productImage: productDetails[0].productImage,
+                total: priceInt * quatityInt,
+            }
+            //--------updating the new product and adding to subtotal------
+            await cartModel.updateOne(
+                { userId: userdetails._id },
+                {
+                    $push: { product: newProduct },
+                    $set: { subTotal: newSubTotal }
+                }
+            );
+        }
+    }
+
+    else {
+        //--------------creating cart for individual users----------
+        const priceInt = parseInt(productDetails[0].price, 10)
+        const quatityInt = parseInt(pQuantity, 10)
+        //-----------------cart data inserting
+        console.log("creating new user cart");
+        //-----------------SUBTOTAL-----------------------    
+        const subTotal = priceInt * quatityInt
+        // inserting new user cart details---------    
+        const userCart = await cartModel({
+            userId: userdetails._id,
+            product: [{
+                productId: productDetails[0]._id,
+                name: productDetails[0].productName,
+                quantity: pQuantity,
+                price: productDetails[0].price,
+                productImage: productDetails[0].productImage,
+                total: priceInt * quatityInt
+            }],
+            subTotal: subTotal
+        })
+        await userCart.save()
+    }
+}
+
+
+//----------------------------------------------------------------------------------// 
+//============================remove from cart======================================//
+//----------------------------------------------------------------------------------// 
+
+const cartDelete = async (req,res) =>{
+
+    const productId = req.body.productId
+    // console.log( typeof productId);
+    // console.log(productId);
+    // console.log("session id",req.session.userId);
+
+   const userDetails =  await userModel.findOne({email:req.session.userId})
+   const userId = userDetails._id
+
+   const updatedCart = await cartModel.updateOne(
+    { userId: userId },
+    { $pull: { product: { productId: productId } } }
+);
+ 
+res.json({
+    products: updatedCart});
+}
+
+
+
+
+
+
+
 
 
 
@@ -556,5 +756,8 @@ module.exports = {
     loadLaptops,
     loadMobiles,
     loadTablets,
-    loadAllProducts
+    loadAllProducts,
+    addToCart,
+    loadCart,
+    cartDelete
 }

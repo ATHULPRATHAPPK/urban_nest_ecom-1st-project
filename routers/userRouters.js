@@ -36,6 +36,9 @@ userRouter.get("/user-tablets",controllers.loadTablets)
 userRouter.get("/user-allProducts",controllers.loadAllProducts)
 userRouter.get("/user-logout",controllers.usereLogout)
 
+userRouter.post("/addCart",controllers.addToCart)
+userRouter.get("/cart",controllers.loadCart)
+userRouter.post("/cartDelete",controllers.cartDelete)
 
 
 
