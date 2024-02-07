@@ -717,6 +717,11 @@ const addToCart = async (req, res) => {
         })
         await userCart.save()
     }
+
+    const data = "ok"
+    res.status(200).json(data)
+
+
 }
 
 
