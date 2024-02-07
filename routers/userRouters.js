@@ -39,8 +39,7 @@ userRouter.get("/user-logout",controllers.usereLogout)
 userRouter.post("/addCart",controllers.addToCart)
 userRouter.get("/cart",controllers.loadCart)
 userRouter.post("/cartDelete",controllers.cartDelete)
-
-
+userRouter.post("/updateQuantity",controllers.updateQuantity)
 
 
 module.exports= userRouter

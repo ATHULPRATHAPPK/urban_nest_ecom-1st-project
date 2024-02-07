@@ -563,7 +563,7 @@ const loadCart = async (req, res) => {
             });
 
             if (userCartDetails.length > 0) {
-                
+
                 res.render("cart", { userCartDetails })
 
             }
@@ -736,10 +736,10 @@ const cartDelete = async (req, res) => {
 
     const subTotal = await cartModel.findOne({ userId: userId, "product.productId": productId });
     const deletedProduct = subTotal.product.find(item => item.productId === productId)
-    const total= deletedProduct.total
+    const total = deletedProduct.total
     const cartSubTotal = subTotal.subTotal
-    console.log("cart subtotal",cartSubTotal);
-    console.log("deleted product total",total);
+    console.log("cart subtotal", cartSubTotal);
+    console.log("deleted product total", total);
     const updatedCart = await cartModel.updateOne(
         { userId: userId },
         { $pull: { product: { productId: productId } } }
@@ -755,9 +755,9 @@ const cartDelete = async (req, res) => {
             await cartModel.deleteOne({ userId: userId })
         }
         else {
-             const updatedSubTotal = cartSubTotal-total
-             console.log(updatedSubTotal);
-            await cartModel.updateOne({userId: userId },{$set:{subTotal:updatedSubTotal}})
+            const updatedSubTotal = cartSubTotal - total
+            console.log(updatedSubTotal);
+            await cartModel.updateOne({ userId: userId }, { $set: { subTotal: updatedSubTotal } })
             console.log("subtotal updated");
 
         }
@@ -770,6 +770,81 @@ const cartDelete = async (req, res) => {
 
 
 
+//----------------------------------------------------------------------------------// 
+//==========================quantity updation in the cart===========================//
+//----------------------------------------------------------------------------------// 
+
+const updateQuantity = async (req, res) => {
+    try {
+        const userDetails = await userModel.findOne({ email: req.session.userId });
+        const userId = userDetails._id;
+        const productId = req.body.productId;
+        const newQuantity = req.body.quantity;
+
+        console.log("Received productId:", productId);
+        console.log("Received newQuantity:", newQuantity);
+
+        const cart = await cartModel.findOne({ userId: userId, "product.productId": productId });
+
+
+
+        if (cart) {
+            const product = cart.product.find(product => product.productId === productId);
+
+            if (product) {
+                const price = product.price;
+                console.log("Price of the product:", price);
+
+
+                const total = newQuantity * price
+                console.log("new total", total);
+                await cartModel.updateOne(
+                    { userId: userId, "product.productId": productId },
+                    { $set: { "product.$.total": total } }
+                );
+
+
+                const userCart = await cartModel.find({ userId: userId })
+
+                console.log(userCart);
+                if (userCart.length > 0) {
+                    const totalSum = userCart[0].product.reduce((accumulator, product) => accumulator + product.total, 0);
+                    console.log("Total sum of 'total' field in the product array:", totalSum);
+                    await cartModel.updateOne(
+                        { userId: userId, "product.productId": productId },
+                        { $set: { subTotal: totalSum } }
+                    );
+
+
+                } else {
+                    console.error("Cart not found for the user.");
+                }
+
+
+
+            } else {
+                console.error("Product not found in cart.");
+            }
+        } else {
+            console.error("Cart not found for the user.");
+        }
+
+
+        await cartModel.updateOne(
+            { userId: userId, "product.productId": productId },
+            { $set: { "product.$.quantity": newQuantity } }
+        );
+
+
+
+
+
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("Error updating quantity:", error);
+        res.status(500).json({ success: false, error: "Internal server error" });
+    }
+};
 
 
 
@@ -795,5 +870,7 @@ module.exports = {
     loadAllProducts,
     addToCart,
     loadCart,
-    cartDelete
+    cartDelete,
+    // updateTotal,
+    updateQuantity
 }
