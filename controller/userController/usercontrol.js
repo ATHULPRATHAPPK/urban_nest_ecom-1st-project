@@ -425,16 +425,20 @@ const loadProduct = async (req, res) => {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
-        res.render("productDetails", { productDetails, message })
+        const userId = userData._id
+
+        const productPresent = await cartModel.find({ userId: userId, "product.productId": productId })
+        if (productPresent.length > 0) {
+            res.render("productDetails", { productDetails, message, productPresent })
+        } else {
+            res.render("productDetails", { productDetails, message })
+        }
+
     }
     else {
         res.render("productDetails", { productDetails })
     }
 }
-
-
-
-
 
 //-------------------------------------------------------------laptop page -------------------
 
@@ -558,9 +562,17 @@ const loadCart = async (req, res) => {
                 return cart.userId._id.equals(targetUserId);
             });
 
-           console.log( userCartDetails);
+            if (userCartDetails.length > 0) {
+                
+                res.render("cart", { userCartDetails })
 
-            res.render("cart", { userCartDetails })
+            }
+            else {
+                console.log("user cart not presnt");
+                const noCartDetails = "no user presnt"
+                res.render("cart", { noCartDetails })
+            }
+
         }
         else {
             res.redirect("/")
@@ -619,22 +631,22 @@ const addToCart = async (req, res) => {
         });
 
         if (cartItems.length > 0) {
-       // -----------------------adding same product in the cart----------
+            // -----------------------adding same product in the cart----------
             console.log("adding same product");
             const userId = userdetails._id;
             const productId = productDetails[0].id
-          
-       //--------------same product total and subtotal---------------
+
+            //--------------same product total and subtotal---------------
             for (const cartItem of cartItems) {
                 // Find the product within the cartItem's product array
                 const matchingProduct = cartItem.product.find(product => product.productId === productId);
                 const totalForProduct = matchingProduct.total;
                 const totalSum = totalForProduct + priceInt * quatityInt
-       //---------------finding the existing subtotal in  the cart------
+                //---------------finding the existing subtotal in  the cart------
                 const userCart = await cartModel.find({ userId: userdetails._id })
                 const subTotalValue = userCart[0].subTotal;
                 const newSubTotal = subTotalValue + priceInt * quatityInt
-       //-----------------updating cartdbs total and subtotal-----------        
+                //-----------------updating cartdbs total and subtotal-----------        
                 await cartModel.updateOne(
                     { userId: userdetails._id, "product.productId": productId },
                     {
@@ -645,7 +657,7 @@ const addToCart = async (req, res) => {
                     }
                 );
             }
-        //-----------------icrementing quantity---------------------------  
+            //-----------------icrementing quantity---------------------------  
             await cartModel.updateOne(
                 { userId: userId, "product.productId": productId },
                 { $inc: { "product.$.quantity": quatityInt } }
@@ -712,23 +724,47 @@ const addToCart = async (req, res) => {
 //============================remove from cart======================================//
 //----------------------------------------------------------------------------------// 
 
-const cartDelete = async (req,res) =>{
+const cartDelete = async (req, res) => {
 
     const productId = req.body.productId
     // console.log( typeof productId);
     // console.log(productId);
     // console.log("session id",req.session.userId);
 
-   const userDetails =  await userModel.findOne({email:req.session.userId})
-   const userId = userDetails._id
+    const userDetails = await userModel.findOne({ email: req.session.userId })
+    const userId = userDetails._id
 
-   const updatedCart = await cartModel.updateOne(
-    { userId: userId },
-    { $pull: { product: { productId: productId } } }
-);
- 
-res.json({
-    products: updatedCart});
+    const subTotal = await cartModel.findOne({ userId: userId, "product.productId": productId });
+    const deletedProduct = subTotal.product.find(item => item.productId === productId)
+    const total= deletedProduct.total
+    const cartSubTotal = subTotal.subTotal
+    console.log("cart subtotal",cartSubTotal);
+    console.log("deleted product total",total);
+    const updatedCart = await cartModel.updateOne(
+        { userId: userId },
+        { $pull: { product: { productId: productId } } }
+    );
+
+    const deleteSubTotal = await cartModel.find({ userId: userId })
+
+    //  console.log("updated subtotal is",deleteSubTotal);
+    if (deleteSubTotal) {
+        if (deleteSubTotal.length > 0 && deleteSubTotal[0].product.length === 0) {
+
+            console.log("no more product");
+            await cartModel.deleteOne({ userId: userId })
+        }
+        else {
+             const updatedSubTotal = cartSubTotal-total
+             console.log(updatedSubTotal);
+            await cartModel.updateOne({userId: userId },{$set:{subTotal:updatedSubTotal}})
+            console.log("subtotal updated");
+
+        }
+    }
+    res.json({
+        products: updatedCart
+    });
 }
 
 
