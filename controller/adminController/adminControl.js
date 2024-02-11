@@ -8,8 +8,10 @@ const session = require("express-session");
 const adminRouter = require("../../routers/adminRouters")
 const ejs = require("ejs")
 const admin = require("../../model/adminModels/adminSchema")
+const cartModel = require("../../model/userModel/cart")
 const userModel = require("../../model/userModel/signUp")
 const categoryModel = require("../../model/adminModels/categoryModel")
+const orderModel = require("../../model/userModel/orderModel")
 const { log } = require("console")
 const bodyparser = require("body-parser")
 const productModel = require("../../model/adminModels/productModel")
@@ -391,7 +393,8 @@ const insertProduct = async (req, res) => {
         }))
 
 
-
+ console.log("quantity is", req.body.quantity);
+ console.log("price is", req.body.price);
 
 
        
@@ -559,7 +562,40 @@ const editInsertProduct = async (req, res) => {
         }
        
         const updateResult = await productModel.updateOne({ _id: productid }, { $set: productData });
+       
 
+
+        const cartPrice = await cartModel.updateOne({"product.productId":  productid},{$set: {
+            "product.$.price": req.body.price
+        }})
+
+
+        const cart = await cartModel.findOne({
+            
+            "product.productId": productid
+        });
+        
+        if (cart) {
+            let subTotal = 0; // Initialize subTotal variable to calculate the sum of totals
+            // Iterate over the product array to update the total for the matching product
+            cart.product.forEach(product => {
+                if (product.productId === productid) {
+                    product.total = product.price * product.quantity;
+                }
+                subTotal += product.total; // Calculate subTotal
+            });
+        
+            // Update the subTotal field in the cart document
+            cart.subTotal = subTotal;
+        
+            // Save the updated cart
+            await cart.save();
+        
+           
+        } else {
+            console.log("No cart found for the user or no product found with productId");
+        }
+       
         res.redirect("/productManagment")
     }
     catch (error) {
@@ -614,7 +650,70 @@ const productDelete = async (req,res)=>{
 
 }
 
+//----------------------------------User Orders-----------------
+const loadOrders = async (req,res)=>{
 
+
+const userOrders= await orderModel.find().populate("userId")
+
+
+
+    res.render("userOrders",{userOrders})
+}
+
+
+//----------------------------------approve product-----------------
+const approveProduct = async  (req,res) =>{
+
+   const orderDetails= await orderModel.findOne({_id:req.body.orderId})
+   
+  
+   const productDetails = await orderModel.findOne({
+    _id: req.body.orderId,
+    "product._id": req.body.productId
+});
+
+if(productDetails){
+    const isApproved = await orderModel.updateOne(
+        { _id:  req.body.orderId, 'product._id': req.body.productId },
+        { $set: { 'product.$.isApproved': true } },     
+    );
+
+
+}
+
+
+res.status(200).json({ message: "Order approved successfully" });
+}
+
+
+
+  //----------------------------------order cancellation----------------- 
+
+
+const cancelProduct = async  (req,res) =>{
+
+    const orderDetails= await orderModel.findOne({_id:req.body.orderId})
+    
+   
+    const productDetails = await orderModel.findOne({
+     _id: req.body.orderId,
+     "product._id": req.body.productId
+ });
+ 
+ if(productDetails){
+     const isApproved = await orderModel.updateOne(
+         { _id:  req.body.orderId, 'product._id': req.body.productId },
+         { $set: { 'product.$.isCancelled': true } },     
+     );
+ 
+ 
+ }
+ 
+    
+ 
+ res.status(200).json({ message: "Order cancelled successfully" });
+ }
 
 
 module.exports = {
@@ -641,6 +740,10 @@ module.exports = {
     editProduct,
     deleteImage,
     editInsertProduct,
-    productDelete
+    productDelete,
+    loadOrders,
+    approveProduct,
+    cancelProduct
+    
 
 }

@@ -9,12 +9,15 @@ const ejs = require("ejs")
 const userModel = require("../../model/userModel/signUp")
 const otpModel = require("../../model/userModel/otp")
 const cartModel = require("../../model/userModel/cart")
+const addressModel = require("../../model/userModel/addressModel")
+const orderModel = require("../../model/userModel/orderModel")
+const productModel = require("../../model/adminModels/productModel")
 const { log } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
 const nodemailer = require("nodemailer")
 const mailgen = require("mailgen")
-const productModel = require("../../model/adminModels/productModel")
+
 
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
@@ -39,8 +42,6 @@ const loadhome = async (req, res) => {
     else {
         res.render("home", { allProducts })
     }
-
-
 
 }
 
@@ -544,8 +545,6 @@ const loadAllProducts = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
-
 //---------------------------------------------------cart--------------------------------------------------------
 
 const loadCart = async (req, res) => {
@@ -563,22 +562,18 @@ const loadCart = async (req, res) => {
             });
 
             if (userCartDetails.length > 0) {
-
                 res.render("cart", { userCartDetails })
-
             }
             else {
                 console.log("user cart not presnt");
                 const noCartDetails = "no user presnt"
                 res.render("cart", { noCartDetails })
             }
-
         }
         else {
             res.redirect("/")
         }
     }
-
     catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -616,11 +611,6 @@ const addToCart = async (req, res) => {
 
 
         const productId = productDetails[0]._id; // Assuming productDetails is an array with at least one element
-        console.log(userdetails._id);
-        console.log(productId);
-
-
-
         const cartItems = await cartModel.find({
             userId: userdetails._id,
             product: {
@@ -646,7 +636,7 @@ const addToCart = async (req, res) => {
                 const userCart = await cartModel.find({ userId: userdetails._id })
                 const subTotalValue = userCart[0].subTotal;
                 const newSubTotal = subTotalValue + priceInt * quatityInt
-                //-----------------updating cartdbs total and subtotal-----------        
+
                 await cartModel.updateOne(
                     { userId: userdetails._id, "product.productId": productId },
                     {
@@ -720,11 +710,7 @@ const addToCart = async (req, res) => {
 
     const data = "ok"
     res.status(200).json(data)
-
-
 }
-
-
 //----------------------------------------------------------------------------------// 
 //============================remove from cart======================================//
 //----------------------------------------------------------------------------------// 
@@ -790,28 +776,17 @@ const updateQuantity = async (req, res) => {
         console.log("Received newQuantity:", newQuantity);
 
         const cart = await cartModel.findOne({ userId: userId, "product.productId": productId });
-
-
-
         if (cart) {
             const product = cart.product.find(product => product.productId === productId);
-
             if (product) {
                 const price = product.price;
-                console.log("Price of the product:", price);
-
-
                 const total = newQuantity * price
                 console.log("new total", total);
                 await cartModel.updateOne(
                     { userId: userId, "product.productId": productId },
                     { $set: { "product.$.total": total } }
                 );
-
-
                 const userCart = await cartModel.find({ userId: userId })
-
-                console.log(userCart);
                 if (userCart.length > 0) {
                     const totalSum = userCart[0].product.reduce((accumulator, product) => accumulator + product.total, 0);
                     console.log("Total sum of 'total' field in the product array:", totalSum);
@@ -819,37 +794,290 @@ const updateQuantity = async (req, res) => {
                         { userId: userId, "product.productId": productId },
                         { $set: { subTotal: totalSum } }
                     );
-
-
                 } else {
                     console.error("Cart not found for the user.");
                 }
-
-
-
             } else {
                 console.error("Product not found in cart.");
             }
         } else {
             console.error("Cart not found for the user.");
         }
-
-
         await cartModel.updateOne(
             { userId: userId, "product.productId": productId },
             { $set: { "product.$.quantity": newQuantity } }
         );
-
-
-
-
-
         res.status(200).json({ success: true });
     } catch (error) {
         console.error("Error updating quantity:", error);
         res.status(500).json({ success: false, error: "Internal server error" });
     }
 };
+
+//----------------------------------------------------------------------------------// 
+//==========================user profile============================================//
+//----------------------------------------------------------------------------------// 
+
+
+const userAccount = async (req, res) => {
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const message = userData
+        const userId = userData._id
+
+        const addressdetails = await addressModel.find({ userId: userId })
+
+
+
+        const orderDetails = await orderModel.find({ userId: userId });
+
+
+        res.render("userAccount", { message, addressdetails, orderDetails });
+
+
+
+
+
+
+    }
+
+    else {
+
+
+        res.redirect("/login")
+
+    }
+}
+
+//----------------------------------------------------------------------------------// 
+//==========================add address ============================================//
+//----------------------------------------------------------------------------------// 
+
+const addAddress = async (req, res) => {
+
+
+    const {
+        firstname,
+        lastname,
+        email,
+        mobilenumber,
+        pincode,
+        place,
+        state
+    } = req.body;
+
+    userDetail = await userModel.findOne({ email: req.session.userId })
+    userId = userDetail._id
+
+    const userAddress = await addressModel.findOne({ userId: userId })
+
+    if (!userAddress) {
+        console.log("new address created");
+        const address = await addressModel.create({
+            userId: userId,
+            address: {
+                firstName: firstname,
+                secondName: lastname,
+                mobileNumber: mobilenumber,
+                email: email,
+                pincode: pincode,
+                place: place,
+                state: state
+            }
+        });
+
+
+        await address.save()
+
+    }
+    else {
+        console.log(" address added");
+        const addaddress = {
+            firstName: firstname,
+            secondName: lastname,
+            mobileNumber: mobilenumber,
+            email: email,
+            pincode: pincode,
+            place: place,
+            state: state
+        }
+        const address = await addressModel.updateOne(
+            { userId: userId },
+            { $push: { address: addaddress } }
+        )
+
+    }
+
+
+    const newAddress = await addressModel.find({ userId: userId })
+    console.log("new address", newAddress);
+
+
+    // res.status(200).json({newAddress });
+    res.redirect('/account?tab=address')
+
+}
+
+
+//----------------------------------------------------------------------------------// 
+//==========================add address ============================================//
+//----------------------------------------------------------------------------------// 
+
+const deleteAddress = async (req, res) => {
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const message = userData
+        const userId = userData._id
+        const result = await addressModel.updateOne(
+            { userId: userId },
+            { $pull: { address: { _id: req.body.addressId } } }
+        );
+
+
+        res.status(200).json();
+
+    }
+
+    else {
+        res.redirect("/login")
+    }
+}
+
+//----------------------------------------------------------------------------------// 
+//==========================loadCheckout============================================//
+//----------------------------------------------------------------------------------// 
+
+const loadCheckout = async (req, res) => {
+
+
+    if (req.session.userId) {
+
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+        const error = req.query.error;
+        const userAddress = await addressModel.find({ userId: userId })
+
+        const userCart = await cartModel.findOne({ userId: userId })
+
+        if (error === 'address_not_selected') {
+
+            res.render('checkout', { userAddress, userCart, error: 'can not continue without selecting an address' });
+        } else if (!userCart) {
+            res.render('checkout', { userAddress, userCart, error: 'your cart is empty' });
+        }
+
+        else {
+
+            res.render("checkout", { userAddress, userCart })
+        }
+    }
+    else {
+        res.redirect("/login")
+    }
+}
+
+//----------------------------------------------------------------------------------// 
+//==========================loadCheckout============================================//
+//----------------------------------------------------------------------------------// 
+
+
+const loadOrder = async (req, res) => {
+
+
+    if (req.session.userId) {
+        const selectedAddressId = req.body.selectedAddressId;
+
+
+        if (selectedAddressId) {
+            console.log("address is present");
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const userId = userData._id
+
+            const userCart = await cartModel.findOne({ userId: userId })
+
+
+
+
+            for (const cartProduct of userCart.product) {
+
+
+                const product = await productModel.findOne({ _id: cartProduct.productId });
+                console.log("product in the product model is", product);
+
+                if (product) {
+                    product.quantity -= cartProduct.quantity;
+
+                    if (product.quantity >= 0) {
+                     await product.save();
+                        const userAddress = await addressModel.findOne({ userId: userId });
+                        if (userAddress) {
+                            const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+
+
+
+                            const orderDetails = new orderModel({
+                                userId: userId,
+                                address: selectedAddress,
+                                product: userCart.product.map(product => ({
+                                    productId: product.productId,
+                                    name: product.name,
+                                    quantity: product.quantity,
+                                    price: product.price,
+                                    total: product.total,
+                                    productImage: product.productImage
+                                })),
+                                subTotal: userCart.subTotal
+                            });
+
+                            orderDetails.save()
+
+
+                            await cartModel.deleteOne({ userId: userId }) //delete cart when payment completed
+                            res.render("orderConfirm")
+
+                        } else {
+                            res.redirect("/checkout?error=address_not_selected");
+                        }
+
+
+                    } else {
+
+//the product is less than one
+res.redirect("/login")
+
+                    }
+
+                    
+                }
+
+
+            }
+
+        }
+    } else {
+        res.redirect("/login")
+    }
+
+}
+
+//----------------------------------------------------------------------------------// 
+//==========================cancel order============================================//
+//----------------------------------------------------------------------------------// 
+
+const cancelOrder = async (req, res) => {
+    try {
+        await orderModel.deleteOne({ _id: req.body.orderId });
+        console.log("Order cancelled...");
+        res.status(200).json({ message: "Order cancelled successfully" });
+    } catch (error) {
+        console.error("Error cancelling order:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
 
 
 
@@ -876,6 +1104,11 @@ module.exports = {
     addToCart,
     loadCart,
     cartDelete,
-    // updateTotal,
-    updateQuantity
+    updateQuantity,
+    userAccount,
+    addAddress,
+    deleteAddress,
+    loadCheckout,
+    loadOrder,
+    cancelOrder
 }

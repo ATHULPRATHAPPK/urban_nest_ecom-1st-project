@@ -66,4 +66,9 @@ adminRouter.post("/admin/edit-product", upload.array("productImage", 4), control
 adminRouter.get("/product/delete-image", adminMiddleware.isLogin, controllers.deleteImage)
 adminRouter.get("/admin/delete-product", adminMiddleware.isLogin, controllers.productDelete)
 
+
+adminRouter.get("/userOrders",adminMiddleware.isLogin,controllers.loadOrders)
+adminRouter.post("/adminApprove",adminMiddleware.isLogin,controllers.approveProduct)
+adminRouter.post("/adminCancel",adminMiddleware.isLogin,controllers.cancelProduct)
+
 module.exports = adminRouter

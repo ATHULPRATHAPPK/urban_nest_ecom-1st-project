@@ -34,6 +34,10 @@
     <link rel="stylesheet" href="/user/assets/css/style.css">
     <link rel="stylesheet" href="/user/assets/css/skins/skin-demo-4.css">
     <link rel="stylesheet" href="/user/assets/css/demos/demo-4.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+        integrity="sha512-0y8LxkFrb7VsVUosM5CPbjemfDdGKW5lAcn6nYen7FwRejLzZXTzhxUc+gjcRJrA+ZO8MIU5kMc+u7a4CPkLSg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body>
@@ -103,6 +107,33 @@
                 </div><!-- End .container -->
             </div><!-- End .header-top -->
 
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Find the "Sign out" button
+                    const signOutBtn = document.getElementById('signOutBtn');
+
+                    // Add click event listener to the "Sign out" button
+                    signOutBtn.addEventListener('click', function () {
+                        // Show SweetAlert confirmation dialog
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You will be logged out.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, sign me out!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // User confirmed, proceed with sign out action
+                                // Replace the URL with the sign-out endpoint or action
+                                window.location.href = "/user-logout"; // Example URL for sign-out action
+                            }
+                        });
+                    });
+                });
+            </script>
             <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
             <div class="header-middle">
                 <div class="container">
@@ -115,21 +146,20 @@
                         <a href="" class="logo">
                             <img src="/user/assets\images\logo nest.png" alt="Urban Nest" width="105" height="25">
                         </a>
-                    </div><!-- End .header-left -->
+                    </div>
 
-                    <div class="header-center">
+                    <!-- <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
                             <form action="#" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
                                     <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                    <input type="search" class="form-control" name="q" id="q"
-                                        placeholder="Search product ..." required>
-                                </div><!-- End .header-search-wrapper -->
+                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
+                                </div>
                             </form>
-                        </div><!-- End .header-search -->
-                    </div>
+                        </div>
+                    </div> -->
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
@@ -166,11 +196,6 @@
                             </div><!-- End .dropdown-menu -->
                         </div><!-- End .compare-dropdown -->
 
-
-                        <!-- -------------------------------------------wishliht------------------------------------------------- -->
-
-
-
                         <div class="wishlist">
                             <a href="wishlist.html" title="Wishlist">
                                 <div class="icon">
@@ -181,603 +206,554 @@
                             </a>
                         </div><!-- End .compare-dropdown -->
 
-
-
-
-
-
-                        <!-- --------------------------------- cart---------------------------------------------------- -->
-
-
-                        <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
                                     <i class="icon-shopping-cart"></i>
-                                    <span class="wishlist-count badge">3</span>
+                                    <span class="cart-count">2</span>
                                 </div>
                                 <p>Cart</p>
                             </a>
-                        </div><!-- End .compare-dropdown -->
-                        <!-- ------------------------------------------------------------------------------------------------- -->
 
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-cart-products">
+                                    <div class="product">
+                                        <div class="product-cart-details">
+                                            <h4 class="product-title">
+                                                <a href="product.html">Beige knitted elastic runner shoes</a>
+                                            </h4>
 
+                                            <span class="cart-product-info">
+                                                <span class="cart-product-qty">1</span>
+                                                x $84.00
+                                            </span>
+                                        </div><!-- End .product-cart-details -->
 
+                                        <figure class="product-image-container">
+                                            <a href="product.html" class="product-image">
+                                                <img src="/user/assets/images/products/cart/product-1.jpg"
+                                                    alt="product">
+                                            </a>
+                                        </figure>
+                                        <a href="#" class="btn-remove" title="Remove Product"><i
+                                                class="icon-close"></i></a>
+                                    </div><!-- End .product -->
 
+                                    <div class="product">
+                                        <div class="product-cart-details">
+                                            <h4 class="product-title">
+                                                <a href="product.html">Blue utility pinafore denim dress</a>
+                                            </h4>
 
+                                            <span class="cart-product-info">
+                                                <span class="cart-product-qty">1</span>
+                                                x $76.00
+                                            </span>
+                                        </div><!-- End .product-cart-details -->
+
+                                        <figure class="product-image-container">
+                                            <a class="product-image">
+                                                <img src="/public/images/logo nest.png" alt="product">
+                                            </a>
+                                        </figure>
+                                        <a href="#" class="btn-remove" title="Remove Product"><i
+                                                class="icon-close"></i></a>
+                                    </div><!-- End .product -->
+                                </div><!-- End .cart-product -->
+
+                                <div class="dropdown-cart-total">
+                                    <span>Total</span>
+
+                                    <span class="cart-total-price">$160.00</span>
+                                </div><!-- End .dropdown-cart-total -->
+
+                                <div class="dropdown-cart-action">
+                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
+                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i
+                                            class="icon-long-arrow-right"></i></a>
+                                </div><!-- End .dropdown-cart-total -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .cart-dropdown -->
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 
-            <div class="header-bottom sticky-header">
-                <div class="container">
-                    <div class="header-left">
-                        <div class="dropdown category-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" data-display="static"
-                                title="Browse Categories">
-                                Browse Categories <i class="icon-angle-down"></i>
-                            </a>
-
-                            <div class="dropdown-menu">
-                                <nav class="side-nav">
-                                    <ul class="menu-vertical sf-arrows">
-                                        <li class="item-lead"><a href="#">Mobiles</a></li>
-                                        <li class="item-lead"><a href="#">Laptops</a></li>
-                                        <li class="item-lead"><a href="#">Tablets</a></li>
-
-
-                                    </ul><!-- End .menu-vertical -->
-                                </nav><!-- End .side-nav -->
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .category-dropdown -->
-                    </div><!-- End .header-left -->
-
-                    <div class="header-center">
-                        <nav class="main-nav">
-                            <ul class="menu sf-arrows">
-                                <li class="megamenu-container active">
-                                    <a href="/" class="sf-with">Home</a>
-                                    <!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
-
-                                </li>
-                                <li>
-                                    <a href="/user-allProducts" class="sf-with">All Products</a>
-
-
-                                </li>
-                                <li>
-                                    <a href="/user-mobiles" class="sf-with-ul">Mobiles</a>
-
-
-                                </li>
-                                <li>
-                                    <a href="/user-laptops" class="sf-with-ul">Laptops</a>
-
-
-                                </li>
-                                <li>
-                                    <a href="/user-tablets" class="sf-with-ul">Tablets</a>
-
-
-                                </li>
-
-                            </ul><!-- End .menu -->
-                        </nav><!-- End .main-nav -->
-                    </div><!-- End .header-center -->
-
-                    <div class="header-right">
-                        <i class="la la-lightbulb-o"></i>
-                        <p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
-                    </div>
-                </div><!-- End .container -->
-            </div><!-- End .header-bottom -->
         </header><!-- End .header -->
 
-
-
-        <!-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <main class="main">
-            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
-                <div class="container d-flex align-items-center">
+            <div class="page-header text-center" style="background-image: url('user/assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">My Account<span>Shop</span></h1>
+                </div><!-- End .container -->
+            </div><!-- End .page-header -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Products</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Default</li>
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
                     </ol>
-
-                    <nav class="product-pager ml-auto" aria-label="Product">
-                        <a class="product-pager-link product-pager-prev" href="#" aria-label="Previous" tabindex="-1">
-                            <i class="icon-angle-left"></i>
-                            <span>Prev</span>
-                        </a>
-
-                        <a class="product-pager-link product-pager-next" href="#" aria-label="Next" tabindex="-1">
-                            <span>Next</span>
-                            <i class="icon-angle-right"></i>
-                        </a>
-                    </nav><!-- End .pager-nav -->
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
             <div class="page-content">
-                <div class="container">
-                    <div class="product-details-top">
+                <div class="dashboard">
+                    <div class="container">
                         <div class="row">
+                            <aside class="col-md-4 col-lg-3">
+                                <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab"
+                                            href="#tab-dashboard" role="tab" aria-controls="tab-dashboard"
+                                            aria-selected="true">Dashboard</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders"
+                                            role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="tab-downloads-link" data-toggle="tab"
+                                            href="#tab-downloads" role="tab" aria-controls="tab-downloads"
+                                            aria-selected="false">Downloads</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address"
+                                            role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account"
+                                            role="tab" aria-controls="tab-account" aria-selected="false">Account
+                                            Details</a>
+                                    </li>
+
+                                </ul>
+
+                                <div class="nav-item">
+                                    <a class="dropdown-item btn" id="newSignOutBtn">Sign out</a>
+                                </div>
+
+
+                                <!-- Include SweetAlert2 library -->
+                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Find the "Sign out" button
+                                        const signOutBtn = document.getElementById('newSignOutBtn');
+
+                                        // Add click event listener to the "Sign out" button
+                                        signOutBtn.addEventListener('click', function () {
+                                            // Show SweetAlert confirmation dialog
+                                            Swal.fire({
+                                                title: 'Are you sure?',
+                                                text: "You will be logged out.",
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#3085d6',
+                                                cancelButtonColor: '#d33',
+                                                confirmButtonText: 'Yes, sign me out!'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    // User confirmed, proceed with sign out action
+                                                    // Replace the URL with the sign-out endpoint or action
+                                                    window.location.href = "/user-logout"
+                                                }
+                                            });
+                                        });
+                                    });
+                                </script>
+
+                            </aside><!-- End .col-lg-3 -->
 
 
 
 
-                            <% if (locals.productDetails) { %>
-                                <div class="col-md-6">
-                                    <div class="product-gallery product-gallery-vertical">
-                                        <div class="row">
-                                            <figure class="product-main-image">
-                                                <img id="product-zoom"
-                                                    src="/uploads/<%= locals.productDetails.productImage[0].resizedFile %>"
-                                                    data-zoom-image="/uploads/<%= locals.productDetails.productImage[0].resizedFile %>"
-                                                    alt="product image">
-                                                <a href="#" id="btn-product-gallery" class="btn-product-gallery">
-                                                    <i class="icon-arrows"></i>
-                                                </a>
-                                            </figure><!-- End .product-main-image -->
-                                            <div id="product-zoom-gallery" class="product-image-gallery">
-                                                <% locals.productDetails.productImage.forEach((image)=> { %>
-                                                    <a class="product-gallery-item <%= image === locals.productDetails.productImage[0] ? 'active' : '' %>"
-                                                        href="#" data-image="/uploads/<%= image.resizedFile %>"
-                                                        data-zoom-image="/uploads/<%= image.resizedFile %>">
-                                                        <img src="/uploads/<%= image.resizedFile %>" alt="product side">
-                                                    </a>
-                                                    <% }) %>
-                                            </div><!-- End .product-image-gallery -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .product-gallery -->
-                                </div><!-- End .col-md-6 -->
 
 
 
 
 
-
-                                <div class="col-md-6">
-                                    <div class="product-details">
-                                        <h1 class="product-title">
-                                            <%= productDetails.productName %>
-                                        </h1><!-- End .product-title -->
-
-                                        <div class="ratings-container">
-                                            <div class="ratings">
-                                                <div class="ratings-val" style="width: 80%;"></div>
-                                                <!-- End .ratings-val -->
-                                            </div><!-- End .ratings -->
-                                            <a class="ratings-text" href="#product-review-link" id="review-link">( 2
-                                                Reviews )</a>
-                                        </div><!-- End .rating-container -->
-
-                                        <div class="product-price">
-                                            <%= productDetails.price %>
-                                        </div><!-- End .product-price -->
-                                        <div class="product-brand">
-                                            <%= productDetails.brandName %>
-                                        </div>
-                                        <div class="product-content">
-                                            <p>
-                                                <%= productDetails.discription %>
-                                            </p>
-                                        </div><!-- End .product-content -->
-
-                                        <div class="details-filter-row details-row-size">
-                                            <span>Brand : <%= productDetails.brandName %></span>
-                                            <span>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp Color : <%= productDetails.color
-                                                    %></span>
-
-                                        </div><!-- End .details-filter-row -->
-
-                                        <div class="details-filter-row details-row-size">
-                                            <span>Processor : <%= productDetails.processor %></span>
-
-                                        </div><!-- End .details-filter-row -->
-                                        <div class="details-filter-row details-row-size">
-                                            <span> Internal Storage : <%= productDetails.internalStorage %></span>
-                                            <span>&nbsp &nbsp&nbsp &nbsp &nbsp RAM : <%= productDetails.ram %></span>
-
-
-
-                                        </div>
-
-                                     
-
-
+                            <div class="col-md-8 col-lg-9">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel"
+                                        aria-labelledby="tab-dashboard-link">
 
 
                                         <% if(locals.message) { %>
-     <% if(locals.productPresent ) { %>
 
-                
-        <div class="product-details-action">
-            <a href="/cart" class="btn-product btn-cart">
-                <span>GO TO CART</span>
-            </a>
-
-
-
-            <div class="details-action-wrapper">
-                <a href="/login" class="btn-product btn-wishlist"
-                    title="Wishlist"><span>Add
-                        to Wishlist</span></a>
-                <a href="/login" class="btn-product btn-compare"
-                    title="Compare"><span>Add to
-                        Compare</span></a>
-            </div><!-- End .details-action-wrapper -->
-        </div><!-- End .product-details-action -->
+                                            <div class="dropdown-item"
+                                                style="background-color: #f8f9fa; padding: 10px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); padding-left: 20px;">
+                                                <div>Name &nbsp &nbsp &nbsp : &nbsp &nbsp <%= message.name %>
+                                                </div>
+                                                <div>Email &nbsp &nbsp&nbsp &nbsp : &nbsp &nbsp<%= message.email %>
+                                                </div>
+                                                <div>Mobile &nbsp &nbsp&nbsp :&nbsp &nbsp 12345678</div>
+                                            </div>
 
 
-    
+                                            <% } %>
+                                    </div><!-- .End .tab-pane -->
 
+                                    <div class="tab-pane fade" id="tab-orders" role="tabpanel"
+                                        aria-labelledby="tab-orders-link">
+<!-- ----------------------------order details------------------------------------------------------- -->
 
-     
-    
-    <%} else { %>
-       
-           
-        <div class="details-filter-row details-row-size">
-            <label for="qty">Qty:</label>
-            <div class="product-details-quantity">
-                <input type="number" id="qty" class="form-control" value="1" min="1"
-                    max="10" step="1" data-decimals="0" required>
-            </div><!-- End .product-details-quantity -->
-        </div><!-- End .details-filter-row -->
-
-
-            
-                                            <div class="product-details-action">
-                                                <a class="btn-product btn-cart"
-                                                    onclick="addToCart('<%= productDetails._id %>', $('#qty').val(),'<%= JSON.stringify(locals.message) %>')">
-                                                    <span>Add to Cart</span>
-
-                                                </a>
-
-
-                                                <!--------------------------------------- ajax req for inserting data to the cart dbs-------- -->
-
-                                                <script>
-
-                                                    function addToCart(productId, quantity, message) {
-                                                        // AJAX request
-
-                                                        $.ajax({
-                                                            type: 'POST',
-                                                            url: '/addCart',
-                                                            data: {
-                                                                productId: productId,
-                                                                quantity: quantity,
-                                                                userDetails: message
-                                                            },
-                                                            success: function (response) {
-                                                                window.location.reload();
-                                                                // Handle success response if needed
-                                                                // console.log(response);
-                                                                // Update button text after successful add to cart
-                                                                // $('#addToCartBtn span').text('Product Added to Cart');
-                                                                // // Disable the button or perform other actions as needed
-                                                                // $('#addToCartBtn').prop('disabled', true);
-                                                                
-                                                            },
-                                                            error: function (error) {
-                                                                // Handle error if needed
-                                                                console.error(error);
-                                                            }
-                                                        });
-                                                    }
-                                                </script>
-
-
-                                                <!-- ----------------------------------------------------------------------------------------------------------- -->
-
-
-                                                <div class="details-action-wrapper">
-                                                    <a href="#" class="btn-product btn-wishlist"
-                                                        title="Wishlist"><span>Add
-                                                            to Wishlist</span></a>
-                                                    <a href="#" class="btn-product btn-compare"
-                                                        title="Compare"><span>Add to
-                                                            Compare</span></a>
-                                                </div><!-- End .details-action-wrapper -->
-                                            </div><!-- End .product-details-action -->
-
-                                    <% } %>
-
-
-
-                                            <% }else { %>
-
-
-
-
-                                                <div class="product-details-action">
-                                                    <a href="/login" class="btn-product btn-cart">
-                                                        <span>Add to Cart</span>
-                                                    </a>
-
-
-
-                                                    <div class="details-action-wrapper">
-                                                        <a href="/login" class="btn-product btn-wishlist"
-                                                            title="Wishlist"><span>Add
-                                                                to Wishlist</span></a>
-                                                        <a href="/login" class="btn-product btn-compare"
-                                                            title="Compare"><span>Add to
-                                                                Compare</span></a>
-                                                    </div><!-- End .details-action-wrapper -->
-                                                </div><!-- End .product-details-action -->
-
-
-
-
+<div class="col-lg-10">
+    <% if(orderDetails && orderDetails.length > 0)  { %>
+        <% orderDetails.forEach((order, index) => { %>
+            <div class="card card-dashboard">
+                <div class="card-body">
+                    <div>
+                        <h4 style="font-size: 16px;">Order <%= index + 1 %></h4>
+                        <p style="font-size: 14px;"><strong>Order Id:</strong> <%= order._id %></p>
+                        
+                        <div>
+                            <h5 style="font-size: 14px;">Products</h5>
+                            <% order.product.forEach((product, productIndex) => { %>
+                                <div class="product-details">
+                                  
+                                    <div class="product-info">
+                                        <!-- Product name -->
+                                        <p style="font-size: 14px;"><%= product.name %></p>
+                                        
+                                        <!-- Product image -->
+                                        <% if (product.productImage.length > 0) { %>
+                                            <figure class="product-media" style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
+                                                <% if (product.productImage[0].resizedFile) { %>
+                                                    <img src="/uploads/<%= product.productImage[0].resizedFile %>" alt="Product image" style="width: 50px; height: 50px;">
+                                                <% } else { %>
+                                                    <div style="width: 50px; height: 50px; background-color: white;"></div>
                                                 <% } %>
+                                            </figure>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <!-- Render other product details if needed -->
+                                    <p style="font-size: 14px;">Quantity: <%= product.quantity %>, Total: <%= product.total %></p>
+                                </div>
+                                <hr style="border-top: 1px solid #d1d1d1;">
+                            <% }) %>
+                        </div>
+        
+                        <p style="font-size: 14px;"><strong>Subtotal:</strong> <%= order.subTotal %></p>
+                       
+                        <!-- Render address details -->
+                        <div>
+                            <h5 style="font-size: 14px; margin-bottom: 5px;">Delivery Address</h5>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.firstName %> <%= order.address.secondName %></p>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.mobileNumber %></p>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.email %></p>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.pincode %></p>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.place %></p>
+                            <p style="font-size: 14px; margin-bottom: 2px;"><%= order.address.state %></p>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <div class="mr-3">
+
+                                <% if (order.isAdminVerify) { %>
+                                
+                                <% if (!order.orderStatus) { %>
+                                            
+                                    
+                                    <p><strong>Order Status:</strong> <span style="color: red;">Pending</span></p>
+                                    <!-- Add a button to cancel the order -->
+                                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">Cancel Order</button>
+                                    <script>
+                                        function cancelOrder() {
+                                            // Display SweetAlert confirmation dialog
+                                            Swal.fire({
+                                                title: 'Cancel Order?',
+                                                text: 'Are you sure you want to cancel this order?',
+                                                icon: 'warning',
+                                                showCancelButton: true,
+                                                confirmButtonColor: '#d33',
+                                                cancelButtonColor: '#3085d6',
+                                                confirmButtonText: 'Yes, cancel it!'
+                                            }).then((result) => {
+                                                if (result.isConfirmed) {
+                                                    // Make an HTTP POST request to the backend to cancel the order
+                                                    fetch('/cancelOrder', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify({ orderId: '<%= order._id %>' }) // Send orderId to identify the order
+                                                    })
+                                                    .then(response => {
+                                                        if (response.ok) {
+                                                            // Reload the page after successful cancellation
+                                                            window.location.reload();
+                                                        } else {
+                                                            console.error('Failed to send order cancellation request');
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                    
+                                <% } else { %>
+                                    <p><strong>Order Status:</strong> <span style="color: green;">Delivered</span></p>
+                                <% } %>
+ <%} else { %>
+
+    <p><strong>Order Status:</strong> <span style="color: red;">Cancelled</span></p>
+
+ <%} %>
+                                
+                            </div>
+                        </div>
+                        
+                        
 
 
 
-                                                    <div class="product-details-footer">
-                                                        <div class="product-cat">
-                                                            <span>Category:</span>
-                                                            <a href="#">Women</a>,
-                                                            <a href="#">Dresses</a>,
-                                                            <a href="#">Yellow</a>
-                                                        </div><!-- End .product-cat -->
+                    </div>
+                    
+                </div>
+            </div>
+            <hr>
+        <% }) %>
+    <% } %>
+</div>
 
-                                                        <div class="social-icons social-icons-sm">
-                                                            <span class="social-label">Share:</span>
-                                                            <a href="#" class="social-icon" title="Facebook"
-                                                                target="_blank"><i class="icon-facebook-f"></i></a>
-                                                            <a href="#" class="social-icon" title="Twitter"
-                                                                target="_blank"><i class="icon-twitter"></i></a>
-                                                            <a href="#" class="social-icon" title="Instagram"
-                                                                target="_blank"><i class="icon-instagram"></i></a>
-                                                            <a href="#" class="social-icon" title="Pinterest"
-                                                                target="_blank"><i class="icon-pinterest"></i></a>
-                                                        </div>
-                                                    </div><!-- End .product-details-footer -->
-                                    </div><!-- End .product-details -->
-                                </div><!-- End .col-md-6 -->
+    
 
 
 
 
+<!-- ------------------------------------------------------------------------------------ -->
+                                        <!-- <p>No order has been made yet.</p> -->
+                                        <!-- <a href="/user-allProducts" class="btn btn-outline-primary-2">
+                                            <span>GO SHOP</span>
+                                            <i class="icon-long-arrow-right"></i>
+                                        </a> -->
+
+                                    </div><!-- .End .tab-pane -->
+
+
+                                    <div class="tab-pane fade" id="tab-downloads" role="tabpanel"
+                                        aria-labelledby="tab-downloads-link">
+                                        <p>No downloads available yet.</p>
+                                        <a href="#" class="btn btn-outline-primary-2"><span>GO SHOP</span><i
+                                                class="icon-long-arrow-right"></i></a>
+                                    </div><!-- .End .tab-pane -->
+
+
+                                    <!-- -------------------------address----------------------------------------------- -->
+
+
+                                    <div class="tab-pane fade" id="tab-address" role="tabpanel"
+                                        aria-labelledby="tab-address-link">
+                                        <div class="row">
+                                            <% if (locals.addressdetails) { %>
+                                                <% addressdetails.forEach(detail=> { %>
+                                                    <% detail.address.forEach((address,index)=> { %>
+
+
+                                                        <div class="col-lg-6">
+                                                            <div class="card card-dashboard">
+                                                                <div class="card-body">
+                                                                    <h3 class="card-title">Address <%= index + 1 %>
+                                                                    </h3><!-- End .card-title -->
+
+                                                                    <p><br>
+                                                                        <%= address.firstName + ' ' + address.secondName
+                                                                            %> <br>
+                                                                            <%= address.place %><br>
+                                                                                <%= address.mobileNumber %><br>
+                                                                                    <%= address.place %><br>
+                                                                                        <%= address.email %><br>
+                                                                    </p>
+                                                                    <div
+                                                                        style="display: flex; justify-content: flex-end;">
+                                                                        <button
+                                                                            class="nav-link btn btn-danger btn-lg rounded rounded-pill delete-address"
+                                                                            data-address-id="<%= address._id %>">
+                                                                            Delete
+                                                                        </button>
+                                                                        &nbsp &nbsp &nbsp
+
+                                                                        <a class="nav-link btn btn-primary btn-lg rounded rounded-pill"
+                                                                            id="tab-account-link" data-toggle="tab"
+                                                                            href="#tab-account" role="tab"
+                                                                            aria-controls="tab-account"
+                                                                            aria-selected="false">
+                                                                            Edit <i class="icon-edit"></i>
+                                                                        </a>
+
+                                                                    </div>
+
+                                                                    </p>
+                                                                </div><!-- End .card-body -->
+                                                            </div><!-- End .card-dashboard -->
+                                                        </div><!-- End .col-lg-6 -->
+                                                        <% }) %>
+                                                            <% }) %>
+                                                                <% } %>
+                                        </div><!-- End .row -->
+
+                                        <div style="width: 150px;"> <!-- Adjust width as needed -->
+                                            <a class="nav-link btn-primary  rounded" id="tab-account-link"
+                                                data-toggle="tab" href="#tab-account" role="tab"
+                                                aria-controls="tab-account" aria-selected="false">Add Address
+                                                &nbsp;&nbsp;&nbsp; <i class="icon-plus"></i>
+                                            </a>
+                                        </div>
+                                    </div><!-- .End .tab-pane -->
+
+
+
+
+                                    <!-- ------------------------------------------------------------------------ -->
+
+
+
+                                    <div class="tab-pane fade" id="tab-account" role="tabpanel"
+                                        aria-labelledby="tab-account-link">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <label>First Name *</label>
+                                                    <input type="text" class="form-control" name="firstname" required>
+                                                </div><!-- End .col-sm-6 -->
+
+                                                <div class="col-sm-6">
+                                                    <label>Last Name *</label>
+                                                    <input type="text" class="form-control" name="lastname" required>
+                                                </div><!-- End .col-sm-6 -->
+                                            </div><!-- End .row -->
+                                            <label>Email address *</label>
+                                            <input type="email" class="form-control" name="email" required>
+
+
+                                            <label>Mobile number *</label>
+                                            <input type="tel" class="form-control" name="mobilenumber" required>
+                                            <label>pincode *</label>
+                                            <input type="text" class="form-control" name="pincode" required>
+                                            <label>Place *</label>
+                                            <input type="text" class="form-control" name="place" required>
+                                            <label>State *</label>
+                                            <input type="text" class="form-control" name="state" required>
 
 
 
 
 
+                                            <button type="submit" class="btn btn-outline-primary-2">
+                                                <span>ADD</span>
+                                                <i class="icon-long-arrow-right"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+
+                                    <script>
+
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const form = document.querySelector('#tab-account form');
+
+                                            form.addEventListener('submit', function (event) {
+                                                event.preventDefault(); // Prevent the default form submission
+
+                                                const formData = new FormData(form);
+                                                const requestData = {};
+                                                formData.forEach((value, key) => {
+                                                    requestData[key] = value;
+                                                });
+
+                                                fetch('/addaddress', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify(requestData)
+                                                })
+
+
+                                            });
+                                        });
 
 
 
 
+                                        // Function to get URL parameters
+                                        function getParameterByName(name, url) {
+                                            if (!url) url = window.location.href;
+                                            name = name.replace(/[\[\]]/g, "\\$&");
+                                            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                                                results = regex.exec(url);
+                                            if (!results) return null;
+                                            if (!results[2]) return '';
+                                            return decodeURIComponent(results[2].replace(/\+/g, " "));
+                                        }
+
+                                        // Use JavaScript to switch to the specified tab
+                                        $(document).ready(function () {
+                                            const selectedTab = getParameterByName('tab');
+                                            if (selectedTab) {
+                                                $("#tab" - `${ selectedTab }` - link).tab('show');
+                                            }
+                                        });
+
+
+                                        // delete address=>
+
+
+                                   
+                                    </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-address');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const addressId = this.getAttribute('data-address-id');
+
+                fetch('/deleteAddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ addressId: addressId })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    else{
+                        window.location.reload()
+                    }
+                })
+                .catch(error => {
+                    // Handle errors here
+                    console.error('Error deleting address:', error);
+                    // Optionally, display an error message to the user
+                });
+            });
+        });
+    });
+</script>
 
 
 
-
-                                <% }%>
+                                </div>
+                            </div><!-- End .col-lg-9 -->
                         </div><!-- End .row -->
-                    </div><!-- End .product-details-top -->
-                    <!-- ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-
-
-
-
-
-                    <div class="product-details-tab">
-                        <ul class="nav nav-pills justify-content-center" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="product-desc-link" data-toggle="tab"
-                                    href="#product-desc-tab" role="tab" aria-controls="product-desc-tab"
-                                    aria-selected="true">Description</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-info-link" data-toggle="tab" href="#product-info-tab"
-                                    role="tab" aria-controls="product-info-tab" aria-selected="false">Additional
-                                    information</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-shipping-link" data-toggle="tab"
-                                    href="#product-shipping-tab" role="tab" aria-controls="product-shipping-tab"
-                                    aria-selected="false">Shipping & Returns</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="product-review-link" data-toggle="tab"
-                                    href="#product-review-tab" role="tab" aria-controls="product-review-tab"
-                                    aria-selected="false">Reviews (2)</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane fade show active" id="product-desc-tab" role="tabpanel"
-                                aria-labelledby="product-desc-link">
-                                <div class="product-desc-content">
-                                    <h3>Product Information</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque
-                                        volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna viverra
-                                        non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis
-                                        fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque
-                                        felis. Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer
-                                        ligula vulputate sem tristique cursus. </p>
-                                    <ul>
-                                        <li>Nunc nec porttitor turpis. In eu risus enim. In vitae mollis elit. </li>
-                                        <li>Vivamus finibus vel mauris ut vehicula.</li>
-                                        <li>Nullam a magna porttitor, dictum risus nec, faucibus sapien.</li>
-                                    </ul>
-
-                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque
-                                        volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna viverra
-                                        non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis
-                                        fermentum. Aliquam porttitor mauris sit amet orci. Aenean dignissim pellentesque
-                                        felis. Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer
-                                        ligula vulputate sem tristique cursus. </p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-info-tab" role="tabpanel"
-                                aria-labelledby="product-info-link">
-                                <div class="product-desc-content">
-                                    <h3>Information</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. Quisque
-                                        volutpat mattis eros. Nullam malesuada erat ut turpis. Suspendisse urna viverra
-                                        non, semper suscipit, posuere a, pede. Donec nec justo eget felis facilisis
-                                        fermentum. Aliquam porttitor mauris sit amet orci. </p>
-
-                                    <h3>Fabric & care</h3>
-                                    <ul>
-                                        <li>Faux suede fabric</li>
-                                        <li>Gold tone metal hoop handles.</li>
-                                        <li>RI branding</li>
-                                        <li>Snake print trim interior </li>
-                                        <li>Adjustable cross body strap</li>
-                                        <li> Height: 31cm; Width: 32cm; Depth: 12cm; Handle Drop: 61cm</li>
-                                    </ul>
-
-                                    <h3>Size</h3>
-                                    <p>one size</p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-shipping-tab" role="tabpanel"
-                                aria-labelledby="product-shipping-link">
-                                <div class="product-desc-content">
-                                    <h3>Delivery & returns</h3>
-                                    <p>We deliver to over 100 countries around the world. For full details of the
-                                        delivery options we offer, please view our <a href="#">Delivery
-                                            information</a><br>
-                                        We hope you’ll love every purchase, but if you ever need to return an item you
-                                        can do so within a month of receipt. For full details of how to make a return,
-                                        please view our <a href="#">Returns information</a></p>
-                                </div><!-- End .product-desc-content -->
-                            </div><!-- .End .tab-pane -->
-                            <div class="tab-pane fade" id="product-review-tab" role="tabpanel"
-                                aria-labelledby="product-review-link">
-                                <div class="reviews">
-                                    <h3>Reviews (2)</h3>
-                                    <div class="review">
-                                        <div class="row no-gutters">
-                                            <div class="col-auto">
-                                                <h4><a href="#">Samanta J.</a></h4>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 80%;"></div>
-                                                        <!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">6 days ago</span>
-                                            </div><!-- End .col -->
-                                            <div class="col">
-                                                <h4>Good, perfect size</h4>
-
-                                                <div class="review-content">
-                                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus
-                                                        cum dolores assumenda asperiores facilis porro reprehenderit
-                                                        animi culpa atque blanditiis commodi perspiciatis doloremque,
-                                                        possimus, explicabo, autem fugit beatae quae voluptas!</p>
-                                                </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (2)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .review -->
-
-                                    <div class="review">
-                                        <div class="row no-gutters">
-                                            <div class="col-auto">
-                                                <h4><a href="#">John Doe</a></h4>
-                                                <div class="ratings-container">
-                                                    <div class="ratings">
-                                                        <div class="ratings-val" style="width: 100%;"></div>
-                                                        <!-- End .ratings-val -->
-                                                    </div><!-- End .ratings -->
-                                                </div><!-- End .rating-container -->
-                                                <span class="review-date">5 days ago</span>
-                                            </div><!-- End .col -->
-                                            <div class="col">
-                                                <h4>Very good</h4>
-
-                                                <div class="review-content">
-                                                    <p>Sed, molestias, tempore? Ex dolor esse iure hic veniam laborum
-                                                        blanditiis laudantium iste amet. Cum non voluptate eos enim, ab
-                                                        cumque nam, modi, quas iure illum repellendus, blanditiis
-                                                        perspiciatis beatae!</p>
-                                                </div><!-- End .review-content -->
-
-                                                <div class="review-action">
-                                                    <a href="#"><i class="icon-thumbs-up"></i>Helpful (0)</a>
-                                                    <a href="#"><i class="icon-thumbs-down"></i>Unhelpful (0)</a>
-                                                </div><!-- End .review-action -->
-                                            </div><!-- End .col-auto -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .review -->
-                                </div><!-- End .reviews -->
-                            </div><!-- .End .tab-pane -->
-                        </div><!-- End .tab-content -->
-                    </div><!-- End .product-details-tab -->
-
-
-
-
-                </div><!-- End .container -->
+                    </div><!-- End .container -->
+                </div><!-- End .dashboard -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
-        <!-- -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
-
-
-
-
-
-
-
-
-
 
         <footer class="footer">
-            <div class="cta bg-image bg-dark pt-4 pb-5 mb-0"
-                style="background-image: url(/user/assets/images/demos/demo-4/bg-5.jpg);">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-sm-10 col-md-8 col-lg-6">
-                            <div class="cta-heading text-center">
-                                <h3 class="cta-title text-white">Get The Latest Deals</h3><!-- End .cta-title -->
-                                <p class="cta-desc text-white">and receive <span class="font-weight-normal">$20
-                                        coupon</span> for first shopping</p><!-- End .cta-desc -->
-                            </div><!-- End .text-center -->
 
-                            <form action="#">
-                                <div class="input-group input-group-round">
-                                    <input type="email" class="form-control form-control-white"
-                                        placeholder="Enter your Email Address" aria-label="Email Adress" required>
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary" type="submit"><span>Subscribe</span><i
-                                                class="icon-long-arrow-right"></i></button>
-                                    </div><!-- .End .input-group-append -->
-                                </div><!-- .End .input-group -->
-                            </form>
-                        </div><!-- End .col-sm-10 col-md-8 col-lg-6 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .cta -->
             <div class="footer-middle">
                 <div class="container">
                     <div class="row">
@@ -1219,22 +1195,7 @@
         </div>
     </div>
     <!-- Plugins JS File -->
-    <script>
-        document.getElementById('signOutBtn').addEventListener('click', function () {
-            Swal.fire({
-                title: 'Do you want to sign out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, sign out!',
-                cancelButtonText: 'Cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect to the sign-out route
-                    window.location.href = '/user-logout';
-                }
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/user/assets/js/jquery.min.js"></script>
     <script src="/user/assets/js/bootstrap.bundle.min.js"></script>

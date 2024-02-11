@@ -41,5 +41,11 @@ userRouter.get("/cart",controllers.loadCart)
 userRouter.post("/cartDelete",controllers.cartDelete)
 userRouter.post("/updateQuantity",controllers.updateQuantity)
 
+userRouter.get("/account",controllers.userAccount)
+userRouter.post('/addaddress',controllers.addAddress)
+userRouter.post("/deleteAddress",controllers.deleteAddress)
+userRouter.get("/checkout",controllers.loadCheckout)
+userRouter.post("/order",controllers.loadOrder)
+userRouter.post("/cancelOrder",controllers.cancelOrder)
 
 module.exports= userRouter

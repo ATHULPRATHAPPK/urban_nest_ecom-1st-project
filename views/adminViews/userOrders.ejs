@@ -1,4 +1,4 @@
-<!DOCTYPE html>ts
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <!-- Required meta tags -->
@@ -8,6 +8,7 @@
     <!-- plugins:css -->
     <link rel="stylesheet" href="../../admin/assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="../../admin/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <!-- endinject -->
     <!-- Plugin css for this page -->
     <!-- End plugin css for this page -->
@@ -213,14 +214,29 @@
             </li>
             <li class="nav-item">
               <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <span class="menu-title">Products</span>
+                <span class="menu-title">Product</span>
                 <i class="menu-arrow"></i>
-                
+                <!-- <i class="mdi mdi-crosshairs-gps menu-icon"></i> -->
               </a>
               <div class="collapse" id="ui-basic">
                 <ul class="nav flex-column sub-menu">
                   <li class="nav-item"> <a class="nav-link" href="/productManagment">Product Managment</a></li>
-                 
+                  
+                  <!-- <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">Add Product</a></li> -->
+<!-- --------------------------------------------------------------------------------------------------------------------------------- -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- ----------------------------------------------------------------------------------------------------------- -->
+
                 </ul>
               </div>
             </li>
@@ -237,86 +253,258 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/userOrders">
-                <span class="menu-title">User Orders</span>
-                <i class="mdi mdi-chart-bar menu-icon"></i>
-              </a>
-            </li>
+                <a class="nav-link" href="/userOrders">
+                  <span class="menu-title">User Orders</span>
+                  <i class="mdi mdi-chart-bar menu-icon"></i>
+                </a>
+              </li>
+          
           </ul>
         </nav>
+        
         <!-- partial -->
-        
-
-   
-        
-        <div class="main-panel">
-            <div class="d-flex justify-content-center align-items-center" ><h3>Edit Category</h3></div>
-          <div class="content-wrapper">
-           <div>
-            <form  action="/editCategory" method="post" >
-
+    
+        <!-- ---------------------------------------- -->
+        <!-- <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <h4 class="card-title">Product Managment</h4>
              
-            
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="btn btn-gradient-primary">Main Category</span>
-                </div>
-                <select name="mainCategory" class="form-select"  value="<%= message.category %>" id="inputGroupSelect02" required>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th> serial No </th>
+                    <th> Product Name </th>
+                    <th> Product Category </th>
+                    <th> Product image </th>
+                    <th> Status </th>
+                    <th> Action </th>
+                    <th> Edit </th>
+                    <th> Delete </th>
                   
-                    <option value="laptops">Laptops</option>
-                    <option value="mobile">Mobiles</option>
-                    <option value="tablets">Tablets</option>
-                </select>
-                
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td> 1 </td>
+                    <td> Herman Beck </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $ 77.99 </td>
+                    <td> May 15, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 2 </td>
+                    <td> Messsy Adam </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $245.30 </td>
+                    <td> July 1, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 3 </td>
+                    <td> John Richards </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $138.00 </td>
+                    <td> Apr 12, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 4 </td>
+                    <td> Peter Meggik </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $ 77.99 </td>
+                    <td> May 15, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 5 </td>
+                    <td> Edward </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $ 160.25 </td>
+                    <td> May 03, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 6 </td>
+                    <td> John Doe </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $ 123.21 </td>
+                    <td> April 05, 2015 </td>
+                  </tr>
+                  <tr>
+                    <td> 7 </td>
+                    <td> Henry Tom </td>
+                    <td>
+                      <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </td>
+                    <td> $ 150.00 </td>
+                    <td> June 16, 2015 </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div  class="input-group mb-3">
-                <div  class="input-group-prepend">
-                    <span  class="btn btn-gradient-primary">Subcategory</span>
-                </div>
-              
-                <input id="subcategoryInput"  name="subcategory"  type="text" class="form-control"  value="<%= message.subcategory %>" required>
-            </div>
-            <script>
-              document.getElementById('subcategoryInput').addEventListener('input', function() {
-                  this.value = this.value.toLowerCase();
-              });
-          </script>
-            <% if(typeof locals.duplicates != "undefined") { %>
-                <div class="d-flex justify-content-center">   <a class="text-danger" style="text-decoration: none;"><%= duplicates %></a>
-                </div>
-                 <% } %>
-            
-            
-            <div class="form-floating">
-                <textarea name="discription" class="form-control" id="floatingTextarea2" style="height: 100px"><%= message.discription %></textarea>
-                <label for="floatingTextarea2">Category Description</label>
-            </div>
-            <input  type="hidden" name="id" value="<%= message._id %>" >
-             
-            <div class="d-flex justify-content-end mt-2"> 
-              <button type="button" class="btn btn-outline-primary btn-fw" onclick="showConfirmation()">Save Changes</button>
           </div>
-            
-
-       
-             
-        </form>
-   
-       
-        
-   </div>
-          
-          </div>
-
-       
-         
-        </div>
-         
-          <!-- partial -->
-        
-        <!-- main-panel ends -->
-      </div>
+        </div> -->
+        <!--  ------------------------------------------------->
+        <div class="container">
+          <div class="col-lg-12 mt-3">
+              <div class="card">
+                  <div class="card-body">
+                      <h4 class="card-title">User Orders</h4>
       
+
+
+                      <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>User Name</th>
+                                    <th>Product Name</th>
+                                    <th>Qty</th>
+                                    
+                                    <th>Order Approve</th>
+                                    <th>Order Cancel</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (userOrders && userOrders.length > 0) { %>
+                                    <% let serialNo = 1; %>
+                                    <% userOrders.forEach((order, index) => { %>
+                                        <% order.product.forEach((product, productIndex) => { %>
+                                            <tr>
+                                                <td><%= serialNo++ %></td>
+                                                <td><%= order.address.firstName %> <%= order.address.secondName %></td>
+                                                <td><%= product.name %></td>
+                                                <td><%= product.quantity %></td>
+                                              
+                                                <% if (!product.isApproved && !product.isCancelled) { %>
+                                                    <td>
+                                                        <button type="button" class="btn btn-success" onclick="approveOrder('<%= order._id %>', '<%= product._id %>')">Approve</button>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>')">Cancel</button>
+                                                    </td>
+                                                <% } else { %>
+                                                    <td>
+                                                        <% if (product.isApproved) { %>
+                                                            <strong>Order Status:</strong> <p style="color: green;">Shipped</p>
+                                                        <% } else if (product.isCancelled) { %>
+                                                            <strong>Order Status:</strong> <p style="color: rgb(235, 18, 18);">Cancelled</p>
+                                                        <% } %>
+                                                    </td>
+                                                <% } %>
+                                                
+                                                
+                                                <!-- <td>
+                                                    <% if (!product.isCancelled && !product.isApproved ) { %>
+                                                        <button type="button" class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>')">Cancel</button>
+                                                    <% } else { %>
+                                                        <strong>Order Status:</strong> <p style="color: rgb(230, 11, 11);">Cancelled</p>
+                                                    <% } %>
+                                                </td> -->
+                                            </tr>
+                                        <% }) %>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="7">No orders found</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <script>
+                        function cancelOrder(orderId, productId) {
+                            fetch('/adminCancel', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    orderId: orderId,
+                                    productId: productId
+                                })
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Handle successful approval
+                                   window.location.reload()
+                                } else {
+                                    // Handle failed approval
+                                    console.error('Failed to approve order');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                    </script>
+
+<script>
+    function approveOrder(orderId, productId) {
+        fetch('/adminApprove', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                orderId: orderId,
+                productId: productId
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                // Handle successful approval
+               window.location.reload()
+            } else {
+                // Handle failed approval
+                console.error('Failed to approve order');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+                      
+                    
+                    
+                    
+                  </div>
+              </div>
+          </div>
+
+      </div>
+
+        </div>   
+      
+        <!-- main-panel ends -->
+
+      </div>
       <!-- page-body-wrapper ends -->
     </div>
     <!-- container-scroller -->
@@ -325,23 +513,25 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Add this script below SweetAlert library inclusion -->
 <script>
-  function showConfirmation() {
+  function showAlert(title, text, icon, confirmButtonText, confirmAction) {
       Swal.fire({
-          title: 'Confirmation',
-          text: 'Are you sure you want to save changes?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, save it!',
-          cancelButtonText: 'No, cancel!',
+          title: title,
+          text: text,
+          icon: icon,
+          confirmButtonText: confirmButtonText,
       }).then((result) => {
           if (result.isConfirmed) {
-              // If the user clicks the Confirm button, submit the form
-              document.getElementById('yourFormId').submit(); // Replace 'yourFormId' with the actual ID of your form
+              // If the user clicks the Confirm button, perform the specified action
+              confirmAction();
           }
       });
   }
 </script>
 
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->

@@ -237,7 +237,12 @@
               </a>
             </li>
           
-            
+            <li class="nav-item">
+              <a class="nav-link" href="/userOrders">
+                <span class="menu-title">User Orders</span>
+                <i class="mdi mdi-chart-bar menu-icon"></i>
+              </a>
+            </li>
           </ul>
         </nav>
         <!-- partial -->
@@ -289,12 +294,12 @@
               <input type="hidden" name="poductId" value="<%=editDetail._id %>">
               <div class="col-md-8 mb-3">
                 <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantityid" name="quantity" value="<%= editDetail.price %>"  required>
+                <input type="number" class="form-control" id="quantityid" name="quantity" value="<%=  editDetail.quantity %>"  required>
               </div>
               
               <div class="col-md-8 mb-3">
                 <label for="price">Price:</label>
-                <input type="number" class="form-control" id="priceid" name="price" value="<%= editDetail.quantity %>" required>
+                <input type="number" class="form-control" id="priceid" name="price" value="<%= editDetail.price %>" required>
               </div>
 
   
