@@ -76,21 +76,21 @@
                                         </div>
                                     </li>
                             </li>
-                            <% if (locals.message) { %>
-
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <%= message.name %>
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" id="signOutBtn">Sign out</a>
-                                    </div>
-                                </li>
-
-                                <% } else { %>
-                                    <li><a href="/login">Sign in</a></li>
-                                    <% } %>
+                        </li>
+                        <% if (locals.message) { %>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <%= locals.message.name %>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item btn" href="/account" id="">Account</a>    
+                                    <a class="dropdown-item btn" id="signOutBtn">Sign out</a>    
+                                </div>
+                            </li>
+                        <% } else { %>
+                            
+                            <li><a href="/login">Sign in</a></li>
+                        <% } %>
 
 
 

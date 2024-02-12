@@ -695,22 +695,40 @@ const cancelProduct = async  (req,res) =>{
 
     const orderDetails= await orderModel.findOne({_id:req.body.orderId})
     
-   
+    
     const productDetails = await orderModel.findOne({
      _id: req.body.orderId,
      "product._id": req.body.productId
  });
- 
+
  if(productDetails){
      const isApproved = await orderModel.updateOne(
          { _id:  req.body.orderId, 'product._id': req.body.productId },
          { $set: { 'product.$.isCancelled': true } },     
      );
  
- 
  }
  
-    
+ 
+ const quantity = orderDetails.product[0].quantity    
+console.log(req.body.mainId);
+ const product = await productModel.findOne({ _id: req.body.mainId});
+ console.log("product to add quantiry", product );
+ if (product) {
+     product.quantity += quantity ;
+     await product.save();
+ }
+// const product = orderDetails.product.find(item => item._id === orderIdToFind);
+
+// if (product) {
+//     // If the product is found, retrieve its quantity
+//     const quantity = product.quantity;
+//     console.log(`The quantity of product with productId ${orderIdToFind} is ${quantity}`);
+// } else {
+//     console.log(`Product with productId ${orderIdToFind} not found in the order.`);
+// }
+ 
+
  
  res.status(200).json({ message: "Order cancelled successfully" });
  }

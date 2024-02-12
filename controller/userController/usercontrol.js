@@ -554,20 +554,22 @@ const loadCart = async (req, res) => {
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
             const targetUserId = userData._id
-            // console.log( targetUserId);
+            const message = userData
             const cartDetails = await cartModel.find({}).populate("userId")
 
             const userCartDetails = cartDetails.filter((cart) => {
                 return cart.userId._id.equals(targetUserId);
             });
 
+            
+
             if (userCartDetails.length > 0) {
-                res.render("cart", { userCartDetails })
+                res.render("cart", { userCartDetails,message })
             }
             else {
                 console.log("user cart not presnt");
                 const noCartDetails = "no user presnt"
-                res.render("cart", { noCartDetails })
+                res.render("cart", { noCartDetails, })
             }
         }
         else {
@@ -909,13 +911,13 @@ const addAddress = async (req, res) => {
 
     }
 
-
+    
     const newAddress = await addressModel.find({ userId: userId })
     console.log("new address", newAddress);
 
 
     // res.status(200).json({newAddress });
-    res.redirect('/account?tab=address')
+    res.status(500).json({ success: false, error: "Internal server error" });
 
 }
 
@@ -958,19 +960,19 @@ const loadCheckout = async (req, res) => {
         const userId = userData._id
         const error = req.query.error;
         const userAddress = await addressModel.find({ userId: userId })
-
+        const message= userData
         const userCart = await cartModel.findOne({ userId: userId })
 
         if (error === 'address_not_selected') {
 
-            res.render('checkout', { userAddress, userCart, error: 'can not continue without selecting an address' });
+            res.render('checkout', { userAddress,message ,userCart, error: 'can not continue without selecting an address' });
         } else if (!userCart) {
-            res.render('checkout', { userAddress, userCart, error: 'your cart is empty' });
+            res.render('checkout', { userAddress,message ,userCart, error: 'your cart is empty' });
         }
 
         else {
 
-            res.render("checkout", { userAddress, userCart })
+            res.render("checkout", { userAddress, userCart, message })
         }
     }
     else {
@@ -1066,16 +1068,16 @@ res.redirect("/login")
 //==========================cancel order============================================//
 //----------------------------------------------------------------------------------// 
 
-const cancelOrder = async (req, res) => {
-    try {
-        await orderModel.deleteOne({ _id: req.body.orderId });
-        console.log("Order cancelled...");
-        res.status(200).json({ message: "Order cancelled successfully" });
-    } catch (error) {
-        console.error("Error cancelling order:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
+// const cancelOrder = async (req, res) => {
+//     try {
+//         await orderModel.deleteOne({ _id: req.body.orderId });
+//         console.log("Order cancelled...");
+//         res.status(200).json({ message: "Order cancelled successfully" });
+//     } catch (error) {
+//         console.error("Error cancelling order:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
 
 
 
@@ -1110,5 +1112,5 @@ module.exports = {
     deleteAddress,
     loadCheckout,
     loadOrder,
-    cancelOrder
+    // cancelOrder
 }

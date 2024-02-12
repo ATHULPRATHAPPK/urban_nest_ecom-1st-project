@@ -405,7 +405,7 @@
                                                         <button type="button" class="btn btn-success" onclick="approveOrder('<%= order._id %>', '<%= product._id %>')">Approve</button>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>')">Cancel</button>
+                                                        <button type="button" class="btn btn-danger" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>','<%= product.productId %>')">Cancel</button>
                                                     </td>
                                                 <% } else { %>
                                                     <td>
@@ -430,7 +430,8 @@
                                     <% }) %>
                                 <% } else { %>
                                     <tr>
-                                        <td colspan="7">No orders found</td>
+                                        <td colspan="7">No orders found</td> 
+                                        
                                     </tr>
                                 <% } %>
                             </tbody>
@@ -438,7 +439,7 @@
                     </div>
                     
                     <script>
-                        function cancelOrder(orderId, productId) {
+                        function cancelOrder(orderId, productId,mainId) {
                             fetch('/adminCancel', {
                                 method: 'POST',
                                 headers: {
@@ -446,7 +447,8 @@
                                 },
                                 body: JSON.stringify({
                                     orderId: orderId,
-                                    productId: productId
+                                    productId: productId,
+                                    mainId:mainId
                                 })
                             })
                             .then(response => {

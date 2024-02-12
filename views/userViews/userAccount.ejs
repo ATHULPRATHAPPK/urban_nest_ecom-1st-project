@@ -432,6 +432,24 @@
                                     <!-- Render other product details if needed -->
                                     <p style="font-size: 14px;">Quantity: <%= product.quantity %>, Total: <%= product.total %></p>
                                 </div>
+
+                                <div class="d-flex justify-content-end">
+                                    <div class="mr-3">
+                                        <p style="margin: 0; font-weight: bold;">Order Status</p>
+                                        <% if(product.isApproved)  { %>
+                                            <p style="color: #076e0b; margin: 0;">Delivered</p>
+                                        <% } else if(product.isCancelled) { %>   
+                                            <p style="color: #ad0000; margin: 0;">Cancelled</p>
+                                        <% } else { %> 
+                                            <p style="color: #dfc500; margin: 0;">Pending</p>
+                                        <% } %> 
+                                    </div>
+                                </div>
+                                
+
+
+
+
                                 <hr style="border-top: 1px solid #d1d1d1;">
                             <% }) %>
                         </div>
@@ -452,59 +470,6 @@
                         <div class="d-flex justify-content-end">
                             <div class="mr-3">
 
-                                <% if (order.isAdminVerify) { %>
-                                
-                                <% if (!order.orderStatus) { %>
-                                            
-                                    
-                                    <p><strong>Order Status:</strong> <span style="color: red;">Pending</span></p>
-                                    <!-- Add a button to cancel the order -->
-                                    <button type="button" class="btn btn-danger" onclick="cancelOrder()">Cancel Order</button>
-                                    <script>
-                                        function cancelOrder() {
-                                            // Display SweetAlert confirmation dialog
-                                            Swal.fire({
-                                                title: 'Cancel Order?',
-                                                text: 'Are you sure you want to cancel this order?',
-                                                icon: 'warning',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#d33',
-                                                cancelButtonColor: '#3085d6',
-                                                confirmButtonText: 'Yes, cancel it!'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    // Make an HTTP POST request to the backend to cancel the order
-                                                    fetch('/cancelOrder', {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json'
-                                                        },
-                                                        body: JSON.stringify({ orderId: '<%= order._id %>' }) // Send orderId to identify the order
-                                                    })
-                                                    .then(response => {
-                                                        if (response.ok) {
-                                                            // Reload the page after successful cancellation
-                                                            window.location.reload();
-                                                        } else {
-                                                            console.error('Failed to send order cancellation request');
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error('Error:', error);
-                                                    });
-                                                }
-                                            });
-                                        }
-                                    </script>
-                                    
-                                <% } else { %>
-                                    <p><strong>Order Status:</strong> <span style="color: green;">Delivered</span></p>
-                                <% } %>
- <%} else { %>
-
-    <p><strong>Order Status:</strong> <span style="color: red;">Cancelled</span></p>
-
- <%} %>
                                 
                             </div>
                         </div>
@@ -655,54 +620,71 @@
 
                                     <script>
 
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                            const form = document.querySelector('#tab-account form');
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#tab-account form');
 
-                                            form.addEventListener('submit', function (event) {
-                                                event.preventDefault(); // Prevent the default form submission
+    form.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
 
-                                                const formData = new FormData(form);
-                                                const requestData = {};
-                                                formData.forEach((value, key) => {
-                                                    requestData[key] = value;
-                                                });
+        const formData = new FormData(form);
+        const requestData = {};
+        formData.forEach((value, key) => {
+            requestData[key] = value;
+        });
 
-                                                fetch('/addaddress', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify(requestData)
-                                                })
+        // Display SweetAlert confirmation dialog
+        Swal.fire({
+            title: 'Do you want to add this address?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, add it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the form and reload the page
+                fetch('/addaddress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    } else {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    // Handle errors here
+                    console.error('Error adding address:', error);
+                    // Optionally, display an error message to the user
+                });
+            }
+        });
+    });
+});
 
+// Function to get URL parameters
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
 
-                                            });
-                                        });
-
-
-
-
-                                        // Function to get URL parameters
-                                        function getParameterByName(name, url) {
-                                            if (!url) url = window.location.href;
-                                            name = name.replace(/[\[\]]/g, "\\$&");
-                                            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                                                results = regex.exec(url);
-                                            if (!results) return null;
-                                            if (!results[2]) return '';
-                                            return decodeURIComponent(results[2].replace(/\+/g, " "));
-                                        }
-
-                                        // Use JavaScript to switch to the specified tab
-                                        $(document).ready(function () {
-                                            const selectedTab = getParameterByName('tab');
-                                            if (selectedTab) {
-                                                $("#tab" - `${ selectedTab }` - link).tab('show');
-                                            }
-                                        });
-
-
-                                        // delete address=>
+// Use JavaScript to switch to the specified tab
+$(document).ready(function () {
+    const selectedTab = getParameterByName('tab');
+    if (selectedTab) {
+        $("#tab" - `${ selectedTab }` - link).tab('show');
+    }
+});
 
 
                                    

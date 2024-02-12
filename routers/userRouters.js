@@ -46,6 +46,6 @@ userRouter.post('/addaddress',controllers.addAddress)
 userRouter.post("/deleteAddress",controllers.deleteAddress)
 userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
-userRouter.post("/cancelOrder",controllers.cancelOrder)
+// userRouter.post("/cancelOrder",controllers.cancelOrder)
 
 module.exports= userRouter
