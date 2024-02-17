@@ -71,4 +71,8 @@ adminRouter.get("/userOrders",adminMiddleware.isLogin,controllers.loadOrders)
 adminRouter.post("/adminApprove",adminMiddleware.isLogin,controllers.approveProduct)
 adminRouter.post("/adminCancel",adminMiddleware.isLogin,controllers.cancelProduct)
 
+
+adminRouter.post("/adminOrderUpdate",adminMiddleware.isLogin,controllers.updateOrderStatus)
+adminRouter.post("/adminReturnStatus",adminMiddleware.isLogin,controllers.updateReturnStatus)
+
 module.exports = adminRouter

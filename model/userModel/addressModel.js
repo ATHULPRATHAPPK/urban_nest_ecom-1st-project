@@ -11,30 +11,30 @@ const mongoose = require("mongoose")
     },
      address:[
       { 
-        firstName:{
+        name:{
             type:String,
             required: true
         },
-        secondName:{
-            type:String,
-            required: true
-        },
-        mobileNumber:{
-            type:Number,
-            required: true
-        }, email:{
-            type:String,
-            required: true
-        },
-        pincode:{
+        phone:{
             type:Number,
             required: true
         },
-        place:{
+        building:{
+            type:String,
+            required: true
+        }, city:{
+            type:String,
+            required: true
+        },
+        district:{
             type:String,
             required: true
         },
         state:{
+            type:String,
+            required: true
+        },
+        pincode:{
             type:String,
             required: true
         }

@@ -373,21 +373,6 @@
                                             
                                             </script>
                                             
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- 
                                                     <td class="quantity-col">
                                                         <div class="cart-product-quantity">
@@ -403,15 +388,15 @@
 
                                                     <td class="total-col"><%= product.total %></td>
                                                     <td class="remove-col">
-                                                        <a href="#" class="btn-remove" data-product-id="<%= product.productId %>"><i class="icon-close"></i></a>
+                                                        <a  class="btn-remove" data-product-id="<%= product.productId %>"><i class="icon-close"></i></a>
                                                     </td>
                                                     
                                                     <!-- Add code to display price, quantity, total, and remove button for each product -->
                                                 </tr>
                                                 <% }) %>
                                     <%})%>  
-                                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> <!-- Include SweetAlert library -->
-
+                                  
+                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                                     <script>
                                         document.addEventListener('DOMContentLoaded', function() {
                                             const removeLinks = document.querySelectorAll('.btn-remove');
@@ -423,16 +408,17 @@
                                                     const productId = this.getAttribute('data-product-id');
                                                     
                                                     // Show SweetAlert confirmation dialog
-                                                    swal({
+                                                    Swal.fire({
                                                         title: "Are you sure?",
                                                         text: "Do you want to delete the product from the cart!",
                                                         icon: "warning",
-                                                        buttons: true,
-                                                        dangerMode: true,
-                                                    })
-                                                    .then((willDelete) => {
-                                                        if (willDelete) {
-                                                            // User confirmed, proceed with deletion
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#d33',
+                                                        cancelButtonColor: '#3085d6',
+                                                        confirmButtonText: 'Yes, delete it!',
+                                                        cancelButtonText: 'No, cancel!'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
                                                             fetch('/cartDelete', {
                                                                 method: 'POST',
                                                                 headers: {
@@ -448,7 +434,7 @@
                                                             })
                                                             .then(data => {
                                                                 // Handle response data, if needed
-                                                                // console.log(data);
+                                                                console.log(data);
                                                                 // Reload the page or update the cart view
                                                                 location.reload();
                                                             })
@@ -458,15 +444,15 @@
                                                             });
                                                         } else {
                                                             // User canceled
-                                                            swal("Product deletion canceled!", {
-                                                                icon: "info",
-                                                            });
+                                                            Swal.fire("Product deletion canceled!", "", "info");
                                                         }
                                                     });
                                                 });
                                             });
                                         });
                                     </script>
+                                    
+                                    
                                     
                                     
 										

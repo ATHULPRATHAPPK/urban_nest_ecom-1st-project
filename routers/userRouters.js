@@ -42,10 +42,21 @@ userRouter.post("/cartDelete",controllers.cartDelete)
 userRouter.post("/updateQuantity",controllers.updateQuantity)
 
 userRouter.get("/account",controllers.userAccount)
-userRouter.post('/addaddress',controllers.addAddress)
+userRouter.get("/userOrder",controllers.userOrders)
+userRouter.get("/userAddress",controllers.userAddress)
+
+
+
+
+userRouter.post('/addAddress',controllers.addAddress)
 userRouter.post("/deleteAddress",controllers.deleteAddress)
 userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
-// userRouter.post("/cancelOrder",controllers.cancelOrder)
+userRouter.get("/orderConfirm",controllers.OrderComplete)
+
+userRouter.get("/orderStatus",controllers.loadOrderStatus)
+userRouter.post("/viewOrderDetails",controllers.orderStatus)
+userRouter.post("/cancelOrder",controllers.orderCancel)
+userRouter.post("/returnRequest",controllers.returnRequest)
 
 module.exports= userRouter

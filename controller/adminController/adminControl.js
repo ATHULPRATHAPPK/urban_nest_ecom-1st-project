@@ -734,6 +734,84 @@ console.log(req.body.mainId);
  }
 
 
+//----------------------------------------------------------------------------------// 
+//==========================admin orderupdate ======================================//
+//----------------------------------------------------------------------------------// 
+
+const updateOrderStatus = async (req,res)=>{
+
+const {orderId,productId,status} = req.body
+
+
+//find the orderdetail
+     const orderDetails= await orderModel.findOne({_id:orderId,"product._id":productId})
+     console.log(" orderDetails", orderDetails);
+
+     const result = await orderModel.updateOne(
+        { _id: orderId, "product._id": productId },
+        { $set: { "product.$.adminStatus": status } }
+    );
+
+    console.log(result);
+    
+
+
+ res.status(200).json({ message: "Order cancelled successfully" });
+}
+
+
+const updateReturnStatus = async (req,res)=>{
+
+    
+const {orderId,productId,status} = req.body
+console.log("orderId",orderId);
+console.log(productId,status);
+
+const result = await orderModel.updateOne(
+    { _id: orderId, "product._id": productId },
+    { $set: { "product.$.returnStatus": status } }
+);
+
+//update the quantity whwn admin approve return request
+if (status == 3) {
+    try {
+        const productOrderDetails = await orderModel.findOne({
+            _id: orderId,
+            "product._id": productId
+        }, {
+            "product.$": 1
+        });
+
+        if (productOrderDetails && productOrderDetails.product && productOrderDetails.product.length > 0) {
+            const product = productOrderDetails.product[0];
+            const newQty = product.quantity;
+            const pId = product.productId;
+
+            const productModelDetails = await productModel.findOne({ _id: pId });
+
+            if (productModelDetails) {
+                productModelDetails.quantity += newQty;
+                await productModelDetails.save();
+            } else {
+                console.log("Product not found in product model.");
+            }
+        } else {
+            console.log("Product not found in order.");
+        }
+    } catch (error) {
+        console.error("Error occurred while finding product details:", error);
+    }
+}
+
+
+
+
+
+res.status(200).json({ message: "Order cancelled successfully" });
+}
+
+
+
 module.exports = {
     adminlogin,
     admindash,
@@ -761,7 +839,9 @@ module.exports = {
     productDelete,
     loadOrders,
     approveProduct,
-    cancelProduct
+    cancelProduct,
+    updateOrderStatus,
+    updateReturnStatus
     
 
 }

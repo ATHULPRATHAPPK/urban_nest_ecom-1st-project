@@ -36,17 +36,20 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            isApproved:{
-                default:false,
-                type: Boolean,
+            adminStatus:{
+                default:1,
+                type: Number,
                 required: true
             },
-            isCancelled:{
-                default:false,
-                type: Boolean,
+            returnStatus:{
+                default:0,
+                type: Number,
                 required: true
+            },returnText:{
+                default:"",
+                type: String,
+               
             },
-
             productImage: [
                 {
                     filename: {
