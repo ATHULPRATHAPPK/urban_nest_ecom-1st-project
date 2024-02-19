@@ -433,29 +433,22 @@ const loadProduct = async (req, res) => {
 
     const productId = req.query.id
     const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
-    let sectionIndex = 0;
+
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
+
         const productPresent = await cartModel.find({ userId: userId, "product.productId": productId })
         if (productPresent.length > 0) {
-            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
-            if (wishlist) {
-                const wishlistProducts = wishlist.product;
-                const products = wishlistProducts.map(item => item.productId);
-                //to filter the productid
-                const productIds = products.map(product => product._id);
-                res.render("products", { productDetails, message, productPresent, sectionIndex, productIds });
-            } else {
-                res.render("products", { productDetails, message, productPresent, sectionIndex });
-            }
+            res.render("productDetails", { productDetails, message, productPresent })
         } else {
-            res.render("productDetails", { productDetails, message, sectionIndex })
+            res.render("productDetails", { productDetails, message })
         }
+
     }
     else {
-        res.render("productDetails", { productDetails, sectionIndex })
+        res.render("productDetails", { productDetails })
     }
 }
 
