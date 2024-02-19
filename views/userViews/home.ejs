@@ -555,14 +555,77 @@
                                         <img src="/uploads/<%= n.productImage[0].resizedFile %>" alt="/user-product?id=<%= n._id %>"> 
                                     </a>
 
-                                    <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist"></a>
-                                    </div><!-- End .product-action -->
 
-                                    <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
-                                        <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
-                                    </div><!-- End .product-action -->
+
+
+
+
+
+                                               
+                                    <% if (locals.productIds) { %>
+                                        <% let matchFound = false; %>
+                                        <% for (let i = 0; i < locals.productIds.length; i++) { %>
+                                            <% if (productIds[i].toString() === n._id.toString()) { %>
+                                                <% matchFound = true; %>
+                                                <!-- Break the loop once a match is found -->
+                                                <% break; %>
+                                            <% } %>
+                                        <% } %>
+                                    
+                                        <% if (matchFound) { %>
+                                            <!-- Product ID exists in the productIds array -->
+                                            <div class="product-action-vertical">
+                                                <!-- <a href="#" class="btn-product-icon btn-wishlist btn-expandable" onclick="addToWishlist('<%= n._id %>', <%= sectionIndex %>)"><span>Add to wishlist</span></a> -->
+                                                <!-- <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a> -->
+                                                <a class="btn-product-icon btn-wishlist btn-expandable" onclick="addToWishlist('<%= n._id %>', <%= sectionIndex %>)" style=" color: rgb(236, 6, 6);"><span>Added to wishlist</span></a>
+                                    
+                                            </div>
+                                        <% } else { %>
+                                            <!-- Product ID does not exist in the productIds array -->
+                                            <div class="product-action-vertical">
+                                                <a href="#" class="btn-product-icon btn-wishlist btn-expandable" onclick="addToWishlist('<%= n._id %>', <%= sectionIndex %>)"><span>Add to wishlist</span></a>
+                                                <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                                <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                            </div>
+                                        <% } %>
+                                    <% }else { %>
+                                        <!-- ProductIds array is not defined -->
+                                        <div class="product-action-vertical">
+                                            <a href="#" class="btn-product-icon btn-wishlist btn-expandable" onclick="addToWishlist('<%= n._id %>', <%= sectionIndex %>)"><span>Add to wishlist</span></a>
+                                            <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                            <a href="#" class="btn-product-icon btn-compare" title="Compare"><span>Compare</span></a>
+                                        </div>
+                                    <% } %>
+                                            
+                                      
+                                    <script>
+                                        function addToWishlist(productId, sectionIndex) {
+                                            fetch('/addWishlist', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: JSON.stringify({ productId: productId })
+                                            })
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    console.log('Added to wishlist successfully');
+                                                    // Reload the product section after successfully adding to wishlist
+                                                    location.reload()
+                                                    // reloadProductSection(sectionIndex);
+                                                    console.log("reloading the page");
+                                                } else {
+                                                    console.error('Failed to add to wishlist');
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error occurred while adding to wishlist:', error);
+                                            });
+                                        }
+                                    
+                                    
+                                    </script>
                                 </figure><!-- End .product-media -->
 
                                 <div class="product-body">

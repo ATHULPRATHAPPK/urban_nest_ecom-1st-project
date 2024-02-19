@@ -12,6 +12,7 @@ const cartModel = require("../../model/userModel/cart")
 const addressModel = require("../../model/userModel/addressModel")
 const orderModel = require("../../model/userModel/orderModel")
 const productModel = require("../../model/adminModels/productModel")
+const wishlistModel = require("../../model/userModel/wishlist")
 const { log } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
@@ -32,15 +33,28 @@ app.set(path.join(__dirname, "views", "userViews"))
 //----------------------------home page load-------------------------------------------------------------
 
 const loadhome = async (req, res) => {
-
+    let sectionIndex = 0;
     const allProducts = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData.name
-        res.render("home", { allProducts, message })
+        const userId = userData._id
+        const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+        if (wishlist) {
+            const wishlistProducts = wishlist.product;
+            const products = wishlistProducts.map(item => item.productId);
+            //to filter the productid for wish list
+            const productIds = products.map(product => product._id);
+            console.log("product ids", productIds);
+            console.log("mobile ids working..");
+            res.render("home", { allProducts, message, sectionIndex, productIds });
+        } else {
+
+            res.render("home", { allProducts, message, sectionIndex });
+        }
     }
     else {
-        res.render("home", { allProducts })
+        res.render("home", { allProducts, sectionIndex })
     }
 
 }
@@ -372,9 +386,6 @@ const otpForgotpass = async (req, res) => {
 
 
 
-
-
-
 //------------------------ forgot password otp verification------------------
 const otpVerifyForgot = async (req, res) => {
 
@@ -422,22 +433,29 @@ const loadProduct = async (req, res) => {
 
     const productId = req.query.id
     const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
-
+    let sectionIndex = 0;
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
-
         const productPresent = await cartModel.find({ userId: userId, "product.productId": productId })
         if (productPresent.length > 0) {
-            res.render("productDetails", { productDetails, message, productPresent })
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid
+                const productIds = products.map(product => product._id);
+                res.render("products", { productDetails, message, productPresent, sectionIndex, productIds });
+            } else {
+                res.render("products", { productDetails, message, productPresent, sectionIndex });
+            }
         } else {
-            res.render("productDetails", { productDetails, message })
+            res.render("productDetails", { productDetails, message, sectionIndex })
         }
-
     }
     else {
-        res.render("productDetails", { productDetails })
+        res.render("productDetails", { productDetails, sectionIndex })
     }
 }
 
@@ -449,18 +467,29 @@ const loadLaptops = async (req, res) => {
         const laptopProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'laptops';
         });
-
+        let sectionIndex = 0;
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
-            res.render("products", { productLaptop: laptopProducts, message });
+            const userId = userData._id
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid
+                const productIds = products.map(product => product._id);
+                console.log("product ids", productIds);
+                console.log("mobile ids working..");
+                res.render("products", { productLaptop: laptopProducts, message, sectionIndex, productIds });
+            } else {
+
+                res.render("products", { productLaptop: laptopProducts, message, sectionIndex });
+            }
         }
         else {
 
-            res.render("products", { productLaptop: laptopProducts });
+            res.render("products", { productLaptop: laptopProducts, sectionIndex });
         }
-
-
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -476,19 +505,26 @@ const loadMobiles = async (req, res) => {
         const mobileProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'mobile';
         });
-
+        let sectionIndex = 0;
         if (req.session.userId) {
+            let sectionIndex = 0;
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
-
-            res.render("products", { productMobile: mobileProducts, message });
+            const userId = userData._id
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid
+                const productIds = products.map(product => product._id);
+                res.render("products", { productMobile: mobileProducts, message, sectionIndex, productIds });
+            } else {
+                res.render("products", { allProducts: productDetails, message, sectionIndex });
+            }
         }
         else {
-            res.render("products", { productMobile: mobileProducts });
+            res.render("products", { productMobile: mobileProducts, sectionIndex });
         }
-
-
-
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -505,16 +541,25 @@ const loadTablets = async (req, res) => {
         const tabletsProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'tablets';
         });
-
+        let sectionIndex = 0;
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
-            res.render("products", { productTablets: tabletsProducts, message });
+            const userId = userData._id
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid
+                const productIds = products.map(product => product._id);
+                res.render("products", { productTablets: tabletsProducts, message, sectionIndex, productIds });
+            } else {
+                res.render("products", { productTablets: tabletsProducts, message, sectionIndex });
+            }
         }
         else {
-            res.render("products", { productTablets: tabletsProducts });
+            res.render("products", { productTablets: tabletsProducts, sectionIndex });
         }
-
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -527,24 +572,34 @@ const loadTablets = async (req, res) => {
 
 const loadAllProducts = async (req, res) => {
     try {
-
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory");
-
+        let sectionIndex = 0; // Define the section index here
         if (req.session.userId) {
-            const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData
-            res.render("products", { allProducts: productDetails, message });
-        }
-        else {
-            res.render("products", { allProducts: productDetails });
-        }
-        // Pass the filteredProducts to the view
+            const userData = await userModel.findOne({ email: req.session.userId });
+            const message = userData;
+            const userId = userData._id
+            //populate data collecting from product model
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid
+                const productIds = products.map(product => product._id);
+                res.render("products", { allProducts: productDetails, message, sectionIndex, productIds });
 
+            } else {
+
+                res.render("products", { allProducts: productDetails, message, sectionIndex, });
+            }
+        } else {
+            res.render("products", { allProducts: productDetails, sectionIndex });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
     }
 };
+
 //---------------------------------------------------cart--------------------------------------------------------
 
 const loadCart = async (req, res) => {
@@ -560,9 +615,6 @@ const loadCart = async (req, res) => {
             const userCartDetails = cartDetails.filter((cart) => {
                 return cart.userId._id.equals(targetUserId);
             });
-
-
-
             if (userCartDetails.length > 0) {
                 res.render("cart", { userCartDetails, message })
             }
@@ -593,25 +645,12 @@ const addToCart = async (req, res) => {
     const pQuantity = req.body.quantity
     const userData = req.body.userDetails
     const userdetails = JSON.parse(userData)
-
-
-
     productDetails = await productModel.find({ _id: pId })
-
-
     const cartUser = await cartModel.find({}).populate("userId")
-
-
     const isUserPresent = cartUser.some(cartDoc => cartDoc.userId._id.equals(userdetails._id));
-
-    console.log(isUserPresent);
-
     if (isUserPresent) {
-
         const priceInt = parseInt(productDetails[0].price, 10)
         const quatityInt = parseInt(pQuantity, 10)
-
-
         const productId = productDetails[0]._id; // Assuming productDetails is an array with at least one element
         const cartItems = await cartModel.find({
             userId: userdetails._id,
@@ -822,33 +861,16 @@ const updateQuantity = async (req, res) => {
 
 
 const userAccount = async (req, res) => {
-
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
-
         const addressdetails = await addressModel.find({ userId: userId })
-
-
-
         const orderDetails = await orderModel.find({ userId: userId });
-
-
         res.render("userAccount", { message, addressdetails, orderDetails });
-
-
-
-
-
-
     }
-
     else {
-
-
         res.redirect("/login")
-
     }
 }
 
@@ -858,26 +880,17 @@ const userAccount = async (req, res) => {
 //========================== user orders============================================//
 //----------------------------------------------------------------------------------// 
 
-const userOrders = async (req,res) =>{
+const userOrders = async (req, res) => {
 
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
-
         const addressdetails = await addressModel.find({ userId: userId })
-
         const orderDetails = await orderModel.find({ userId: userId });
-
-
         res.render("userOrders", { message, addressdetails, orderDetails });
-
-
     }
-
     else {
-
-
         res.redirect("/login")
 
     }
@@ -888,36 +901,20 @@ const userOrders = async (req,res) =>{
 //========================== user address page======================================//
 //----------------------------------------------------------------------------------// 
 
-const  userAddress = async (req,res)=>{
+const userAddress = async (req, res) => {
 
-
-    
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
-
         const addressdetails = await addressModel.find({ userId: userId })
-
-
-
         const orderDetails = await orderModel.find({ userId: userId });
-
-
         res.render("userAddress", { message, addressdetails, orderDetails });
-
-
     }
-
     else {
-
-
         res.redirect("/login")
 
     }
-
- 
-    
 }
 
 
@@ -926,9 +923,6 @@ const  userAddress = async (req,res)=>{
 //----------------------------------------------------------------------------------// 
 
 const addAddress = async (req, res) => {
-    console.log("dfxdfgkugfuyftydydtyftyfdtydfty-----------");
-console.log("req.body",req.body);
-
     const {
         name,
         phone,
@@ -941,9 +935,7 @@ console.log("req.body",req.body);
 
     userDetail = await userModel.findOne({ email: req.session.userId })
     userId = userDetail._id
-
     const userAddress = await addressModel.findOne({ userId: userId })
-
     if (!userAddress) {
         console.log("new address created");
         const address = await addressModel.create({
@@ -952,42 +944,34 @@ console.log("req.body",req.body);
                 name: name,
                 phone: phone,
                 building: building,
-                city:  city,
+                city: city,
                 district: district,
-                state:state,
+                state: state,
                 pincode: pincode
             }
         });
-
-
         await address.save()
-
     }
     else {
         console.log(" address added");
-        const addaddress =  {
+        const addaddress = {
             name: name,
             phone: phone,
-            building:  building,
-            city:  city,
+            building: building,
+            city: city,
             district: district,
-            state:state,
+            state: state,
             pincode: pincode
         }
         const address = await addressModel.updateOne(
             { userId: userId },
             { $push: { address: addaddress } }
         )
-
     }
-
-
     const newAddress = await addressModel.find({ userId: userId })
     console.log("new address", newAddress);
+    res.status(200).json({ newAddress });
 
-
-    res.status(200).json({newAddress });
-   
 }
 
 
@@ -1005,12 +989,8 @@ const deleteAddress = async (req, res) => {
             { userId: userId },
             { $pull: { address: { _id: req.body.addressId } } }
         );
-
-
         res.status(200).json();
-
     }
-
     else {
         res.redirect("/login")
     }
@@ -1081,7 +1061,7 @@ const loadOrder = async (req, res) => {
             const userAddress = await addressModel.findOne({ userId: userId });
             if (userAddress) {
                 const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
-                const orderDetails =  orderModel({
+                const orderDetails = orderModel({
                     userId: userId,
                     address: selectedAddress,
                     product: userCart.product.map(product => ({
@@ -1108,7 +1088,7 @@ const loadOrder = async (req, res) => {
 
 
 
-const  OrderComplete =(req,res)=>{
+const OrderComplete = (req, res) => {
 
 
     res.render("orderConfirm")
@@ -1121,39 +1101,39 @@ const  OrderComplete =(req,res)=>{
 //==========================cancel order============================================//
 //----------------------------------------------------------------------------------// 
 
-const orderCancel = async (req,res)=>{
+const orderCancel = async (req, res) => {
 
     const { productId, orderId } = req.body
 
 
 
-          //updating the value of adminstatus to cancel
-  let cancelledProduct =  await orderModel.findOneAndUpdate(
+    //updating the value of adminstatus to cancel
+    let cancelledProduct = await orderModel.findOneAndUpdate(
         { _id: orderId },
         { $set: { 'product.$[elem].adminStatus': 5 } },
         { arrayFilters: [{ 'elem._id': productId }], new: true }
     );
 
- console.log("cancelledProduct",cancelledProduct);
- console.log("productId",productId);
-        //update the product quqntity in product model with respet to the cancelled qunity
-        const product = cancelledProduct.product.find(p => p._id.toString() === productId.toString());
+    console.log("cancelledProduct", cancelledProduct);
+    console.log("productId", productId);
+    //update the product quqntity in product model with respet to the cancelled qunity
+    const product = cancelledProduct.product.find(p => p._id.toString() === productId.toString());
 
     // Product object found, do something with it
-   
 
-const  pId = product.productId
-const  qty = product.quantity     
 
-const productDocument = await productModel.findById( pId);
-console.log("productDocument",productDocument);
-const productQty = productDocument.quantity
-const totalQty = productQty+ qty
-console.log("totalQty",totalQty);
-const quantityUpdate = await productModel.updateOne(
-    { _id: pId }, // Filter criteria to find the product by its ID
-    { $set: { quantity: totalQty } } // Update operation to set the quantity to totalQty
-);
+    const pId = product.productId
+    const qty = product.quantity
+
+    const productDocument = await productModel.findById(pId);
+    console.log("productDocument", productDocument);
+    const productQty = productDocument.quantity
+    const totalQty = productQty + qty
+    console.log("totalQty", totalQty);
+    const quantityUpdate = await productModel.updateOne(
+        { _id: pId }, // Filter criteria to find the product by its ID
+        { $set: { quantity: totalQty } } // Update operation to set the quantity to totalQty
+    );
 
 
     res.status(200).json();
@@ -1173,7 +1153,7 @@ const quantityUpdate = await productModel.updateOne(
 const loadOrderStatus = async (req, res) => {
     try {
         const { productId, orderId } = req.query;
-       
+
 
 
         const trimmedOrderId = orderId.trim();
@@ -1184,12 +1164,12 @@ const loadOrderStatus = async (req, res) => {
 
 
         const userDetails = await orderModel.findById(trimmedOrderId);
-        const userAddress= userDetails.address
+        const userAddress = userDetails.address
         const filteredProducts = userDetails.product.filter(product => product.productId === productId);
-        const productDetails = await productModel.findOne({_id:productId})
-        
-       
-        res.render("orderStatus", { userAddress , filteredProducts,productDetails,trimmedOrderId});
+        const productDetails = await productModel.findOne({ _id: productId })
+
+
+        res.render("orderStatus", { userAddress, filteredProducts, productDetails, trimmedOrderId });
     } catch (error) {
         // Log any errors that occur during the database operation
         console.error("Error fetching user details:", error);
@@ -1216,8 +1196,8 @@ const orderStatus = async (req, res) => {
     console.log(orderId);
 
 
-  
-    
+
+
 
 
 
@@ -1232,13 +1212,13 @@ const orderStatus = async (req, res) => {
 
 const returnRequest = async (req, res) => {
     const { productId, returnReason, orderId } = req.body;
-    console.log("productId",productId);
+    console.log("productId", productId);
     console.log("orderid", orderId);
-    console.log("productId",typeof productId);
+    console.log("productId", typeof productId);
     try {
         await orderModel.findOneAndUpdate(
             { _id: orderId },
-            { $set: { 'product.$[elem].returnStatus': 1 ,'product.$[elem].returnText':returnReason} },
+            { $set: { 'product.$[elem].returnStatus': 1, 'product.$[elem].returnText': returnReason } },
             { arrayFilters: [{ 'elem._id': productId }], new: true }
         );
 
@@ -1246,6 +1226,84 @@ const returnRequest = async (req, res) => {
     } catch (error) {
         console.error("Error occurred while processing return request:", error);
         res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+
+//----------------------------------------------------------------------------------// 
+//========================== user wishlist==========================================//
+//----------------------------------------------------------------------------------// 
+const userWishlist = async (req, res) => {
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId });
+        const userId = userData._id;
+
+        const userWishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId");
+        console.log("user wishlist", userWishlist);
+
+        let productDetails = [];
+        userWishlist.product.forEach(product => {
+            productDetails.push(product.productId); // Pushing the productId object directly
+        });
+
+        console.log("product details", productDetails);
+        res.render("userWishlist", { productDetails });
+    } else {
+        res.redirect("/login");
+    }
+}
+
+
+
+//----------------------------------------------------------------------------------// 
+//========================== add wishlist==========================================//
+//----------------------------------------------------------------------------------// 
+const addWishlist = async (req, res) => {
+    console.log(req.body.productId);
+    const { productId } = req.body
+    if (req.session.userId) {
+        const userDetails = await userModel.findOne({ email: req.session.userId })
+        const userId = userDetails._id
+        console.log(productId);
+        const userwishlist = await wishlistModel.find({ userId: userId })
+        if (userwishlist.length > 0) {
+            console.log("adding to the existing wishlist");
+            await wishlistModel.updateOne(
+                { userId: userId },
+                { $push: { product: { productId: productId } } }
+            );
+        } else {
+            console.log("creating new wishlist");
+            console.log("userid", userId);
+            console.log("productId", productId);
+            const newWishlist = wishlistModel({
+                userId: userId,
+                product: [
+                    {
+                        productId: productId
+                    }
+                ]
+            });
+            await newWishlist.save();
+            console.log("New wishlist created successfully.");
+        }
+
+        //populate data collecting from product model
+        const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+        if (wishlist) {
+            const wishlistProducts = wishlist.product;
+            const products = wishlistProducts.map(item => item.productId);
+
+            //to filter the productid
+            const productIds = products.map(product => product._id);
+            console.log("product ids", productIds);
+
+            res.status(200).json({ productIds });
+        }
+    }
+    else {
+        res.redirect("/login")
     }
 }
 
@@ -1276,7 +1334,7 @@ module.exports = {
     userAccount,
     userOrders,
     userAddress,
-
+    userWishlist,
 
 
 
@@ -1289,5 +1347,6 @@ module.exports = {
     loadOrderStatus,
     orderStatus,
     orderCancel,
-    returnRequest
+    returnRequest,
+    addWishlist
 }

@@ -44,6 +44,7 @@ userRouter.post("/updateQuantity",controllers.updateQuantity)
 userRouter.get("/account",controllers.userAccount)
 userRouter.get("/userOrder",controllers.userOrders)
 userRouter.get("/userAddress",controllers.userAddress)
+userRouter.get("/userWishlist",controllers.userWishlist)
 
 
 
@@ -58,5 +59,8 @@ userRouter.get("/orderStatus",controllers.loadOrderStatus)
 userRouter.post("/viewOrderDetails",controllers.orderStatus)
 userRouter.post("/cancelOrder",controllers.orderCancel)
 userRouter.post("/returnRequest",controllers.returnRequest)
+
+
+userRouter.post("/addWishlist",controllers.addWishlist)
 
 module.exports= userRouter
