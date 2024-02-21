@@ -12,6 +12,7 @@ const cartModel = require("../../model/userModel/cart")
 const userModel = require("../../model/userModel/signUp")
 const categoryModel = require("../../model/adminModels/categoryModel")
 const orderModel = require("../../model/userModel/orderModel")
+const couponModel = require("../../model/adminModels/couponSchema")
 const { log } = require("console")
 const bodyparser = require("body-parser")
 const productModel = require("../../model/adminModels/productModel")
@@ -760,6 +761,9 @@ const {orderId,productId,status} = req.body
 }
 
 
+//----------------------------------------------------------------------------------// 
+//========================== update return status ======================================//
+//----------------------------------------------------------------------------------// 
 const updateReturnStatus = async (req,res)=>{
 
     
@@ -810,7 +814,67 @@ if (status == 3) {
 res.status(200).json({ message: "Order cancelled successfully" });
 }
 
+//----------------------------------------------------------------------------------// 
+//==========================load coupon============================================//
+//----------------------------------------------------------------------------------// 
+const loadCoupon = async (req,res)=>{
+ 
+   const couponDetails =  await couponModel.find({})
+   console.log("couponDetails",couponDetails);
 
+    res.render("coupon",{couponDetails})
+}
+
+
+
+
+//----------------------------------------------------------------------------------// 
+//==========================add coupon=============================================//
+//----------------------------------------------------------------------------------// 
+
+const addCoupon = async (req,res)=>{
+
+const { code, discountType,  discountAmount,startDate,  expirationDate,  minOrderAmount} =req.body
+   
+
+console.log("code",code);
+//creating new coupon
+ const newCoupon =  await couponModel({
+
+    code:code,
+    discountType:discountType,
+    discountAmount: discountAmount,
+    startDate:startDate,
+    expirationDate:expirationDate,
+    minOrderAmount:minOrderAmount
+
+   })
+
+   newCoupon.save()
+
+
+    res.status(200).json({ message: "coupon update su..." });
+}
+
+
+
+
+//----------------------------------------------------------------------------------// 
+//========================== delete coupon===========================================//
+//----------------------------------------------------------------------------------// 
+
+
+const deleteCoupon = async (req,res)=>{
+
+
+    const {couponId} = req.body
+
+
+     await couponModel.deleteOne({_id:couponId})
+
+
+    res.status(200).json({ message: "coupon update su..." });
+}
 
 module.exports = {
     adminlogin,
@@ -841,7 +905,10 @@ module.exports = {
     approveProduct,
     cancelProduct,
     updateOrderStatus,
-    updateReturnStatus
+    updateReturnStatus,
+    loadCoupon,
+    addCoupon,
+    deleteCoupon
     
 
 }

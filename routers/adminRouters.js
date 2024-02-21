@@ -75,4 +75,10 @@ adminRouter.post("/adminCancel",adminMiddleware.isLogin,controllers.cancelProduc
 adminRouter.post("/adminOrderUpdate",adminMiddleware.isLogin,controllers.updateOrderStatus)
 adminRouter.post("/adminReturnStatus",adminMiddleware.isLogin,controllers.updateReturnStatus)
 
+
+adminRouter.get("/coupon",adminMiddleware.isLogin,controllers.loadCoupon)
+adminRouter.post("/addCoupon",adminMiddleware.isLogin,controllers.addCoupon)
+adminRouter.post("/deleteCoupon",adminMiddleware.isLogin,controllers.deleteCoupon)
+
+
 module.exports = adminRouter

@@ -13,6 +13,7 @@ const addressModel = require("../../model/userModel/addressModel")
 const orderModel = require("../../model/userModel/orderModel")
 const productModel = require("../../model/adminModels/productModel")
 const wishlistModel = require("../../model/userModel/wishlist")
+const couponModel = require("../../model/adminModels/couponSchema")
 const { log } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
@@ -428,7 +429,7 @@ const resetPassword = async (req, res) => {
 }
 
 
-//-----------------------------load product in the home page---------------------------------------------------
+//-----------------------------load product idivid details---------------------------------------------------
 const loadProduct = async (req, res) => {
 
     const productId = req.query.id
@@ -1028,61 +1029,130 @@ const loadCheckout = async (req, res) => {
 
 
 const loadOrder = async (req, res) => {
+
+    const userData = await userModel.findOne({ email: req.session.userId })
+    const userId = userData._id
+    console.log(" userId ", userId );
+
     if (req.session.userId) {
         const selectedAddressId = req.body.selectedAddressId;
         if (selectedAddressId) {
             console.log("address is present");
-            const userData = await userModel.findOne({ email: req.session.userId })
-            const userId = userData._id
-            const userCart = await cartModel.findOne({ userId: userId })
-            for (const cartProduct of userCart.product) {
-                const product = await productModel.findOne({ _id: cartProduct.productId });
-                console.log("product in the product model is", product);
-                if (product) {
-                    product.quantity -= cartProduct.quantity;
-                    if (product.quantity >= 0) {
-                        await product.save();
-                    } else {
-                        // The product is less than one
-                        res.redirect("/login");
-                        return; // Return here to prevent further processing
+
+
+
+            
+            const couponCode = req.body.couponId;
+            if (couponCode) {
+
+                console.log("coupen present", couponCode);
+                const coupenDetails = await couponModel.findOne({ code: couponCode })
+                const userCart = await cartModel.findOne({ userId: userId })
+                for (const cartProduct of userCart.product) {
+                    const product = await productModel.findOne({ _id: cartProduct.productId });
+                   
+                    if (product) {
+                        product.quantity -= cartProduct.quantity;
+                        if (product.quantity >= 0) {
+                            await product.save();
+                        } else {
+                            // The product is less than one
+                            res.redirect("/login");
+                            return; // Return here to prevent further processing
+                        }
                     }
+                }
+                const userAddress = await addressModel.findOne({ userId: userId });
+
+            const  newSubTotal = userCart.subTotal - coupenDetails.discountAmount
+            console.log(" newSubTotal", newSubTotal);
+                if (userAddress) {
+                    const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                    const orderDetails = orderModel({
+                        userId: userId,
+                        address: selectedAddress,
+                        product: userCart.product.map(product => ({
+                            productId: product.productId,
+                            name: product.name,
+                            quantity: product.quantity,
+                            price: product.price,
+                            total: product.total,
+                            productImage: product.productImage
+                        })),
+                        subTotal: newSubTotal
+                    });
+                    await orderDetails.save();
+                    await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+                    res.redirect("/orderConfirm");
+                    console.log( userId );
+                    await couponModel.updateOne({ code:couponCode }, { $push: { userIds: userId } });
+
+                } else {
+                    res.redirect("/checkout?error=address_not_selected");
+                }
+
+            }
+            else {
+                const userCart = await cartModel.findOne({ userId: userId })
+                for (const cartProduct of userCart.product) {
+                    const product = await productModel.findOne({ _id: cartProduct.productId });
+                    console.log("product in the product model is", product);
+                    if (product) {
+                        product.quantity -= cartProduct.quantity;
+                        if (product.quantity >= 0) {
+                            await product.save();
+                        } else {
+                            // The product is less than one
+                            res.redirect("/login");
+                            return; // Return here to prevent further processing
+                        }
+                    }
+                }
+
+                // After processing all cart products, create the order
+                const userAddress = await addressModel.findOne({ userId: userId });
+                if (userAddress) {
+                    const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                    const orderDetails = orderModel({
+                        userId: userId,
+                        address: selectedAddress,
+                        product: userCart.product.map(product => ({
+                            productId: product.productId,
+                            name: product.name,
+                            quantity: product.quantity,
+                            price: product.price,
+                            total: product.total,
+                            productImage: product.productImage
+                        })),
+                        subTotal: userCart.subTotal
+                    });
+                    await orderDetails.save();
+                    await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+                    res.redirect("/orderConfirm");
+
+
+
+
+                } else {
+                    res.redirect("/checkout?error=address_not_selected");
                 }
             }
 
-            // After processing all cart products, create the order
-            const userAddress = await addressModel.findOne({ userId: userId });
-            if (userAddress) {
-                const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
-                const orderDetails = orderModel({
-                    userId: userId,
-                    address: selectedAddress,
-                    product: userCart.product.map(product => ({
-                        productId: product.productId,
-                        name: product.name,
-                        quantity: product.quantity,
-                        price: product.price,
-                        total: product.total,
-                        productImage: product.productImage
-                    })),
-                    subTotal: userCart.subTotal
-                });
-                await orderDetails.save();
-                await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
-                res.redirect("/orderConfirm");
-            } else {
-                res.redirect("/checkout?error=address_not_selected");
-            }
+        } else {
+            res.redirect("/checkout?error=address_not_selected");
         }
+
     } else {
         res.redirect("/login");
     }
+
 }
 
 
 
 const OrderComplete = (req, res) => {
 
+    console.log(req.body);
 
     res.render("orderConfirm")
 }
@@ -1300,6 +1370,111 @@ const addWishlist = async (req, res) => {
     }
 }
 
+//removing product from wishlist
+
+const removeWishlist = async (req, res) => {
+
+    const productId = req.body.productId
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+        const userWishlist = await wishlistModel.find({ userId: userId }).populate("product.productId")
+
+        if (userWishlist) {
+
+
+
+            const updatedWishlist = await wishlistModel.findOneAndUpdate(
+                { userId: userId },
+                { $pull: { product: { productId: productId } } },
+                { new: true }
+            ).populate("product.productId");
+
+
+            res.status(200).json();
+        }
+
+
+
+    } else {
+
+    }
+}
+
+
+//----------------------------------------------------------------------------------// 
+//========================== apply coupon==========================================//
+//----------------------------------------------------------------------------------// 
+
+const addUserCoupon = async (req, res) => {
+
+    console.log("req.body", req.body);
+    const { coupon } = req.body
+    console.log(coupon);
+    console.log(typeof coupon);
+    const couponPresent = await couponModel.find({ code: coupon })
+
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+      
+        if (couponPresent.length > 0) {
+
+          
+            if (couponPresent.some(coupon => coupon.userIds.includes(userId))) {
+                // Coupon is already used by the user
+                res.status(200).json({ message: `Coupon is already used.` });
+            }else{
+      //find the current date
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+      const day = String(today.getDate()).padStart(2, '0'); // Add leading zero if necessary
+      const currentDate = `${year}-${month}-${day}`;
+            //validating the coupon expired or not
+            for (const coupon of couponPresent) {
+
+
+                if (currentDate >= coupon.startDate && currentDate <= coupon.expirationDate) {
+                    console.log(`Coupon ${coupon.code} is valid today.`);
+
+                    const userCart = await cartModel.findOne({ userId: userId })
+
+                    console.log(userCart.subTotal);
+                    console.log(coupon.minOrderAmount);
+                    if (userCart.subTotal >= coupon.minOrderAmount) {
+                        //if the coupen is applicable change the subtotal
+                        const newSubTotal = userCart.subTotal - coupon.discountAmount
+                        console.log(newSubTotal);
+
+                        res.status(200).json({ applied: newSubTotal });
+
+                    } else {
+                        res.status(200).json({ message: `minimum amount to apply this coupon is ${coupon.minOrderAmount}` });
+                    }
+
+
+
+                } else {
+                    res.status(200).json({ message: `Coupon ${coupon.code} is expired.` });
+                }
+
+            }
+        }
+
+        } else {
+            res.status(200).json({ message: `Coupon is invalid.` });
+        }
+
+    } else {
+        res.redirect("/login")
+    }
+}
+
+
+
 
 
 
@@ -1341,5 +1516,7 @@ module.exports = {
     orderStatus,
     orderCancel,
     returnRequest,
-    addWishlist
+    addWishlist,
+    removeWishlist,
+    addUserCoupon
 }

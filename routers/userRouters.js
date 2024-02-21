@@ -48,7 +48,7 @@ userRouter.get("/userWishlist",controllers.userWishlist)
 
 
 
-
+//edit and delete address pending
 userRouter.post('/addAddress',controllers.addAddress)
 userRouter.post("/deleteAddress",controllers.deleteAddress)
 userRouter.get("/checkout",controllers.loadCheckout)
@@ -62,5 +62,9 @@ userRouter.post("/returnRequest",controllers.returnRequest)
 
 
 userRouter.post("/addWishlist",controllers.addWishlist)
+userRouter.post("/removeWishlist",controllers.removeWishlist )
+
+
+userRouter.post("/userCoupon",controllers.addUserCoupon)
 
 module.exports= userRouter

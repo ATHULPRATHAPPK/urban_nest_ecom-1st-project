@@ -76,21 +76,22 @@
                                         </div>
                                     </li>
                             </li>
-                        </li>
-                        <% if (locals.message) { %>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <%= locals.message.name %>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item btn" href="/account" id="">Account</a>    
-                                    <a class="dropdown-item btn" id="signOutBtn">Sign out</a>    
-                                </div>
                             </li>
-                        <% } else { %>
-                            
-                            <li><a href="/login">Sign in</a></li>
-                        <% } %>
+                            <% if (locals.message) { %>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <%= locals.message.name %>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item btn" href="/account" id="">Account</a>
+                                        <a class="dropdown-item btn" id="signOutBtn">Sign out</a>
+                                    </div>
+                                </li>
+                                <% } else { %>
+
+                                    <li><a href="/login">Sign in</a></li>
+                                    <% } %>
 
 
 
@@ -184,193 +185,234 @@
             <nav aria-label="breadcrumb" class="breadcrumb-nav">
                 <div class="container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
                         <li class="breadcrumb-item"><a href="#">Shop</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
+
+
+
             <div class="page-content">
                 <div class="checkout">
                     <div class="container">
-                        <div class="checkout-discount">
-                            <!-- <form action="#">
-        						<input type="text" class="form-control" required id="checkout-discount-input">
-            					<label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-            				</form> -->
-                        </div><!-- End .checkout-discount -->
-
-
-                        <form action="/order" method="post">
-                            <div class="row">
-                                <div class="col-lg-9">
-                                    <h2 class="checkout-title">Select Shipping Address</address>
-                                    </h2><!-- End .checkout-title -->
-                    <% if(locals.error)   { %>
-     
-                        <h2 style="color: crimson;" class="checkout-title"><%= error %></address>
-                        </h2><!-- End .checkout-title -->
-
-                   <% } %>
-                                    <div class="row">
-                                        <% if(locals.userAddress) { %>
-                                            <% userAddress.forEach(detail=> { %>
-                                                <% detail.address.forEach((address, index)=> { %>
-                                                    <div class="card mb-4 mr-4" id="address_<%= address._id %>"
-                                                        style="width: 30rem; cursor: pointer; padding: 10px; border: 1px solid #ccc; background-color: #fff;"
-                                                        onclick="selectAddress('<%= address._id %>')">
-                                                        <div class="card-body" style="position: relative;">
-                                                            <p><br>
-                                                                <%= address.name %> <br>
-                                                                 Mob:   <%= address.phone %><br>
-                                                                        <%= address.building %><br>
-                                                                            <%= address.city %><br>
-                                                                                <%= address.district %><br>
-                                                                                <%= address.pincode %><br>
-                                                                                <%= address.state %><br>
-                                                            </p>
-                                                            <div class="tick-icon" id="tick_<%= address._id %>"
-                                                                style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background-color: green; display: none;">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <% }) %>
-                                                        <% }) %>
-                                                            <% } %>
-
-                                                                <input type="hidden" id="selectedAddressId"
-                                                                    name="selectedAddressId" value="">
-
-                                    </div>
-                                    <!-- Your table section goes here if needed -->
-                                </div>
-
-                                <style>
-                                    .card {
-                                        margin-bottom: 20px;
-                                    }
-
-                                    .mr-4 {
-                                        margin-right: 20px;
-                                    }
-                                </style>
-
-                                <script>
-                                    function selectAddress(addressId) {
-                                        const selectedAddress = document.getElementById(`address_${addressId}`);
-                                        const selectedAddressIdInput = document.getElementById('selectedAddressId');
-
-                                        // Remove background color from all addresses
-                                        const addresses = document.querySelectorAll('.card');
-                                        addresses.forEach(address => {
-                                            address.style.backgroundColor = '#fff';
+                        <div class="cart-discount">
+                            <strong>Do you have any coupon?</strong>
+                            <p></p> <!-- Placeholder for response message -->
+                            <form id="couponForm">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="coupon" placeholder="Coupon code">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                                    </div><!-- .End .input-group-append -->
+                                </div><!-- End .input-group -->
+                            </form>
+                        </div>
+                    
+                    
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const couponForm = document.getElementById('couponForm');
+                        
+                                couponForm.addEventListener('submit', async (event) => {
+                                    event.preventDefault(); // Prevent the default form submission behavior
+                        
+                                    const formData = new FormData(couponForm); // Get the form data
+                                    const requestBody = Object.fromEntries(formData.entries()); // Convert form data to a plain object
+                        
+                                    try {
+                                        const response = await fetch('/userCoupon', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify(requestBody) // Convert the object to JSON and send it as the request body
                                         });
+                        
+                                        if (response.ok) {
+                                            console.log('Coupon data sent successfully');
+                                            const responseData = await response.json(); // Parse the JSON response
+                                            console.log('Response data:', responseData);
+                                            // Update the page content with the response data
+                                            const messageElement = document.querySelector('.cart-discount p');
+                                            if (messageElement) {
+                                                if (responseData.applied !== undefined) {
+                                                    // Coupon applied successfully
+                                                    messageElement.textContent = `Coupon applied successfully. New subtotal: $${responseData.applied}`;
+                                                    document.getElementById('couponIdInput').value = requestBody.coupon; // Set the value of couponIdInput to the coupon code
 
-                                        // Apply green background color to the selected address
-                                        selectedAddress.style.backgroundColor = 'lightgreen';
-
-                                        // Set the selected address ID in the hidden input field
-                                        selectedAddressIdInput.value = addressId;
+                                                    messageElement.style.color = 'green';
+                                                    // Hide the coupon form
+                                                    couponForm.style.display = 'none';
+                                                    
+                                                    // Update the subtotal value in the table
+                                                    const subtotalElement = document.getElementById('subtotalValue');
+                                                    if (subtotalElement) {
+                                                        subtotalElement.textContent = `$${responseData.applied}`;
+                                                    }
+                                                } else {
+                                                    // Coupon not applied
+                                                    messageElement.textContent = responseData.message;
+                                                    messageElement.style.color = 'red';
+                                                }
+                                            } else {
+                                                console.error('Message element not found');
+                                            }
+                                        } else {
+                                            console.error('Failed to send coupon data');
+                                            // Handle failure
+                                        }
+                                    } catch (error) {
+                                        console.error('Error sending coupon data:', error);
                                     }
-
-                                </script>
-
-                                <aside class="col-lg-3">
-                                    <div class="summary">
-                                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
-
-
-
-                                        <%if(locals.userCart) { %>
+                                });
+                            });
+                        </script>
+                        
+                        
+                   
+                    
 
 
 
+                                <form action="/order" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-9">
+                                            <h2 class="checkout-title">Select Shipping Address</address>
+                                            </h2><!-- End .checkout-title -->
+                                            <% if(locals.error) { %>
 
+                                                <h2 style="color: crimson;" class="checkout-title">
+                                                    <%= error %>
+                                                        </address>
+                                                </h2><!-- End .checkout-title -->
 
+                                                <% } %>
+                                                    <div class="row">
+                                                        <% if(locals.userAddress) { %>
+                                                            <% userAddress.forEach(detail=> { %>
+                                                                <% detail.address.forEach((address, index)=> { %>
+                                                                    <div class="card mb-4 mr-4"
+                                                                        id="address_<%= address._id %>"
+                                                                        style="width: 30rem; cursor: pointer; padding: 10px; border: 1px solid #ccc; background-color: #fff;"
+                                                                        onclick="selectAddress('<%= address._id %>')">
+                                                                        <div class="card-body"
+                                                                            style="position: relative;">
+                                                                            <p><br>
+                                                                                <%= address.name %> <br>
+                                                                                    Mob: <%= address.phone %><br>
+                                                                                        <%= address.building %><br>
+                                                                                            <%= address.city %><br>
+                                                                                                <%= address.district %>
+                                                                                                    <br>
+                                                                                                    <%= address.pincode
+                                                                                                        %><br>
+                                                                                                        <%= address.state
+                                                                                                            %><br>
+                                                                            </p>
+                                                                            <div class="tick-icon"
+                                                                                id="tick_<%= address._id %>"
+                                                                                style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background-color: green; display: none;">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <% }) %>
+                                                                        <% }) %>
+                                                                            <% } %>
 
-                                            <table class="table table-summary">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Product</th>
+                                                                                <input type="hidden"
+                                                                                    id="selectedAddressId"
+                                                                                    name="selectedAddressId" value="">
 
-                                                        <th>Qty</th>
-                                                        <th>Total</th>
-                                                    </tr>
-                                                </thead>
-
-                                                <tbody>
-                                                    <% userCart.product.forEach(product=> { %>
-                                                        <tr>
-                                                            <td><a href="#">
-                                                                    <%= product.name %>
-                                                                </a></td>
-                                                            <td>
-                                                                <%= product.quantity %>
-                                                            </td>
-                                                            <td>$<%= product.total %>
-                                                            </td>
-                                                        </tr>
-
-                                                        <% }) %>
-                                                            <tr class="summary-subtotal">
-                                                                <td>Subtotal:</td>
-                                                                <td>$<%= userCart.subTotal %>
-                                                                </td>
-                                                            </tr><!-- End .summary-subtotal -->
-                                                            <tr>
-                                                                <td>Shipping:</td>
-                                                                <td>Free shipping</td>
-                                                            </tr>
-                                                            <tr class="summary-total">
-                                                                <td>Total:</td>
-                                                                <td>$<%= userCart.subTotal %>
-                                                                </td>
-                                                            </tr><!-- End .summary-total -->
-                                                </tbody>
-                                            </table><!-- End .table table-summary -->
-
-
-
-                                                <div class="accordion-summary" id="accordion-payment">
-
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" value=""
-                                                            id="flexCheckDefault" style="margin-top: 6.5px;" checked
-                                                            required>
-                                                        <label class="form-check-label" for="flexCheckDefault">
-                                                            Cash on delivery
-                                                        </label>
                                                     </div>
+                                                    <!-- Your table section goes here if needed -->
+                                        </div>
+
+                                        <style>
+                                            .card {
+                                                margin-bottom: 20px;
+                                            }
+
+                                            .mr-4 {
+                                                margin-right: 20px;
+                                            }
+                                        </style>
+
+                                        <script>
+                                            function selectAddress(addressId) {
+                                                const selectedAddress = document.getElementById(`address_${addressId}`);
+                                                const selectedAddressIdInput = document.getElementById('selectedAddressId');
+
+                                                // Remove background color from all addresses
+                                                const addresses = document.querySelectorAll('.card');
+                                                addresses.forEach(address => {
+                                                    address.style.backgroundColor = '#fff';
+                                                });
+
+                                                // Apply green background color to the selected address
+                                                selectedAddress.style.backgroundColor = 'lightgreen';
+
+                                                // Set the selected address ID in the hidden input field
+                                                selectedAddressIdInput.value = addressId;
+                                            }
+
+                                        </script>
 
 
+<aside class="col-lg-3">
+    <div class="summary">
+        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+        <% if(locals.userCart) { %>
+            <table class="table table-summary">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% userCart.product.forEach(product => { %>
+                        <tr>
+                            <td><a href="#"><%= product.name %></a></td>
+                            <td><%= product.quantity %></td>
+                            <td>$<%= product.total %></td>
+                        </tr>
+                    <% }) %>
+                    <tr>
+                        <td>Total:</td>
+                        <td>$<%= userCart.subTotal %></td>
+                    </tr><!-- End .summary-total -->
+                    
+                    <tr>
+                        <td>Shipping:</td>
+                        <td>Free shipping</td>
+                    </tr>
+                    <tr class="summary-subtotal">
+                        <td>Subtotal:</td>
+                        <td id="subtotalValue">$<%= userCart.subTotal %></td>
+                    </tr><!-- End .summary-subtotal -->
+                </tbody>
+            </table><!-- End .table table-summary -->
+            <div class="accordion-summary" id="accordion-payment">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" style="margin-top: 6.5px;" checked required>
+                    <label class="form-check-label" for="flexCheckDefault">Cash on delivery</label>
+                </div>
+                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" onclick="submitOrder()">
+                    <span class="btn-text">Place Order</span>
+                    <span class="btn-hover-text">Proceed to Checkout</span>
+                </button>
+                <input type="hidden" id="couponIdInput" name="couponId" value="">
+            </div><!-- End .accordion-summary -->
+        <% } %>
+    </div><!-- End .summary -->
+</aside><!-- End .col-lg-3 -->
 
-
-                                                    <button type="submit"
-                                                        class="btn btn-outline-primary-2 btn-order btn-block"
-                                                        onclick="submitOrder()">
-                                                        <span class="btn-text">Place Order</span>
-                                                        <span class="btn-hover-text">Proceed to Checkout</span>
-                                                    </button>
-
-
-
-                                                    <% } %>
-                                                    <script>
-
-                                                        function submitOrder() {
-                                                            // You can perform any additional validation or processing here if needed
-
-                                                            // Submit the form
-                                                            document.getElementById('orderForm').submit();
-                                                        }
-
-                                                    </script>
-
-                                                </div><!-- End .summary -->
-                                </aside><!-- End .col-lg-3 -->
-                            </div><!-- End .row -->
-                        </form>
+                                    </div><!-- End .row -->
+                                </form>
                     </div><!-- End .container -->
                 </div><!-- End .checkout -->
             </div><!-- End .page-content -->

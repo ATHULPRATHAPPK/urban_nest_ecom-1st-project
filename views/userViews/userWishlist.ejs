@@ -37,10 +37,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-0y8LxkFrb7VsVUosM5CPbjemfDdGKW5lAcn6nYen7FwRejLzZXTzhxUc+gjcRJrA+ZO8MIU5kMc+u7a4CPkLSg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -154,7 +154,7 @@
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                          
+
                         </div><!-- End .header-search -->
                     </div>
 
@@ -279,11 +279,11 @@
         </header><!-- End .header -->>
 
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">My Wishlists<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
+            <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">My Wishlists<span>Shop</span></h1>
+                </div><!-- End .container -->
+            </div><!-- End .page-header -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                 <div class="container">
                     <ol class="breadcrumb">
@@ -295,83 +295,160 @@
             </nav><!-- End .breadcrumb-nav -->
 
             <div class="page-content">
-            	<div class="dashboard">
-	                <div class="container">
-	                	<div class="row">
-	                		<aside class="col-md-4 col-lg-3">
-	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-								    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                <div class="dashboard">
+                    <div class="container">
+                        <div class="row">
+                            <aside class="col-md-4 col-lg-3">
+                                <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link" id="tab-orders-link" href="/account" role="tab" aria-controls="tab-orders" aria-selected="false">Dashboard</a>
+                                            <a class="nav-link" id="tab-orders-link" href="/account" role="tab"
+                                                aria-controls="tab-orders" aria-selected="false">Dashboard</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="tab-orders-link" href="/userOrder" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                            <a class="nav-link" id="tab-orders-link" href="/userOrder" role="tab"
+                                                aria-controls="tab-orders" aria-selected="false">Orders</a>
                                         </li>
-                                      
+
                                         <li class="nav-item">
-                                         
-                                            <a class="nav-link" id="tab-address-link" href="/userAddress" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+
+                                            <a class="nav-link" id="tab-address-link" href="/userAddress" role="tab"
+                                                aria-controls="tab-address" aria-selected="false">Adresses</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link active" id="tab-address-link" data-toggle="tab" href="/userWishlist" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wishlist</a>
+                                            <a class="nav-link active" id="tab-address-link" data-toggle="tab"
+                                                href="/userWishlist" role="tab" aria-controls="tab-wishlist"
+                                                aria-selected="false">Wishlist</a>
                                         </li>
-                                        
+
                                         <li class="nav-item">
                                             <a class="nav-link" href="/logout">Sign Out</a>
                                         </li>
                                     </ul>
-								</ul>
-	                		</aside><!-- End .col-lg-3 -->
+                                </ul>
+                            </aside><!-- End .col-lg-3 -->
 
-	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
+                            <div class="col-md-8 col-lg-9">
+                                <div class="tab-content">
                                     <div class="col-lg-8">
-                                        <% if(productDetails && productDetails.length > 0)  { %>
-                                            <% productDetails.forEach((product, index) => { %>
+                                        <% if(productDetails && productDetails.length> 0) { %>
+                                            <% productDetails.forEach((product, index)=> { %>
                                                 <div class="card card-dashboard">
                                                     <div class="card-body">
                                                         <div>
                                                             <div>
                                                                 <div class="product-details d-flex align-items-center">
                                                                     <!-- Product image -->
-                                                                    <% if (product.productImage.length > 0) { %>
-                                                                        <figure class="product-media mr-5" style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
-                                                                            <% if (product.productImage[0].resizedFile) { %>
-                                                                                <img src="/uploads/<%= product.productImage[0].resizedFile %>" alt="Product image" style="width: 80px; height: 80px;">
-                                                                            <% } else { %>
-                                                                                <div style="width: 50px; height: 50px; background-color: white;"></div>
-                                                                            <% } %>
+                                                                    <% if (product.productImage.length> 0) { %>
+                                                                        <figure class="product-media mr-5"
+                                                                            style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
+                                                                            <% if (product.productImage[0].resizedFile)
+                                                                                { %>
+                                                                                <img src="/uploads/<%= product.productImage[0].resizedFile %>"
+                                                                                    alt="Product image"
+                                                                                    style="width: 80px; height: 80px;">
+                                                                                <% } else { %>
+                                                                                    <div
+                                                                                        style="width: 50px; height: 50px; background-color: white;">
+                                                                                    </div>
+                                                                                    <% } %>
                                                                         </figure>
-                                                                    <% } %>
-                                                                
-                                                                    <!-- Product info -->
-                                                                    <div class="product-info">
-                                                                        <!-- Product name -->
-                                                                        <strong style="font-size: 17px; margin-bottom: 3px;"><%= product.productName %></strong>
-                                                                        
-                                                                        <!-- Other product details -->
-                                                                        <p style="font-size: 14px; margin-bottom: 5px;">Brand: <%= product.brandName %></p>
-                                                                        <p style="font-size: 14px; margin-bottom: 5px;">Color: <%= product.color %></p>
-                                                                        <p style="font-size: 14px; margin-bottom: 5px;">Price: <%= product.price %></p>
-                                                                        
-                                                                        <!-- Buttons with spacing -->
-                                                                        <div class="d-flex justify-content-between">
-                                                                            <button type="button" class="btn btn-success mr-2" onclick="viewPrroduct()">View Product</button>
-                                                                            <button type="button" class="btn btn-danger" onclick="removeFromWishlist()">Remove from Wishlist</button>
-                                                                        </div>
-                                                                    </div>
-                                                                    <hr style="border-top: 1px solid #d1d1d1;">
+                                                                        <% } %>
+
+                                                                            <!-- Product info -->
+                                                                            <div class="product-info">
+                                                                                <!-- Product name -->
+                                                                                <strong
+                                                                                    style="font-size: 17px; margin-bottom: 3px;">
+                                                                                    <%= product.productName %>
+                                                                                </strong>
+
+                                                                                <!-- Other product details -->
+                                                                                <p
+                                                                                    style="font-size: 14px; margin-bottom: 5px;">
+                                                                                    Brand: <%= product.brandName %>
+                                                                                </p>
+                                                                                <p
+                                                                                    style="font-size: 14px; margin-bottom: 5px;">
+                                                                                    Color: <%= product.color %>
+                                                                                </p>
+                                                                                <p
+                                                                                    style="font-size: 14px; margin-bottom: 5px;">
+                                                                                    Price: <%= product.price %>
+                                                                                </p>
+
+                                                                                <!-- Buttons with spacing -->
+                                                                                <!-- Buttons with spacing -->
+                                                                                <!-- Buttons with spacing -->
+                                                                                <div
+                                                                                    class="d-flex justify-content-between">
+                                                                                    <button type="button"
+                                                                                        class="btn btn-success mr-2"
+                                                                                        onclick="viewProduct('<%= product._id %>')">View
+                                                                                        Product</button>
+                                                                                    <button type="button"
+                                                                                        class="btn btn-danger"
+                                                                                        onclick="removeFromWishlist('<%= product._id %>')">Remove
+                                                                                        from Wishlist</button>
+                                                                                </div>
+
+
+                                                                            </div>
+                                                                            <hr style="border-top: 1px solid #d1d1d1;">
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <% }) %>
-                                        <% } %>
+                                                <% }) %>
+                                                    <% } %>
                                     </div>
-                                    
-                                    
-                                    
+
+
+
+
+                                    <script>
+
+
+
+                                        function viewProduct(productId) {
+                                            // Construct the URL with the product ID as a query parameter
+                                            const url = `/user-product?id=${productId}`;
+                                            // Redirect the user to the /user-product route with the product ID as a query parameter
+                                            window.location.href = url;
+                                        }
+
+                                        function removeFromWishlist(productId) {
+                                            // Construct the request body
+                                            const body = JSON.stringify({ productId });
+
+                                            // Send a fetch request to the /removeWishlist route
+                                            fetch('/removeWishlist', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                body: body
+                                            })
+                                                .then(response => {
+                                                    if (response.ok) {
+                                                        console.log('Product removed from wishlist successfully');
+                                                        // Handle success, if needed
+                                                        location.reload()
+                                                    } else {
+                                                        console.error('Failed to remove product from wishlist');
+                                                        // Handle failure, if needed
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    console.error('Error occurred while removing product from wishlist:', error);
+                                                    // Handle error, if needed
+                                                });
+                                        }
+
+
+
+                                    </script>
 
 
 
@@ -383,16 +460,14 @@
 
 
 
-                                   
-                                    
-                                  
-								   <!--------------------------------------  -->
 
-								   
-								</div>
-	                		</div><!-- End .col-lg-9 -->
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
+                                    <!--------------------------------------  -->
+
+
+                                </div>
+                            </div><!-- End .col-lg-9 -->
+                        </div><!-- End .row -->
+                    </div><!-- End .container -->
                 </div><!-- End .dashboard -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
