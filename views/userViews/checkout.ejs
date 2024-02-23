@@ -205,23 +205,24 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control" name="coupon" placeholder="Coupon code">
                                     <div class="input-group-append">
-                                        <button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
+                                        <button class="btn btn-outline-primary-2" type="submit"><i
+                                                class="icon-long-arrow-right"></i></button>
                                     </div><!-- .End .input-group-append -->
                                 </div><!-- End .input-group -->
                             </form>
                         </div>
-                    
-                    
+
+
                         <script>
                             document.addEventListener('DOMContentLoaded', () => {
                                 const couponForm = document.getElementById('couponForm');
-                        
+
                                 couponForm.addEventListener('submit', async (event) => {
                                     event.preventDefault(); // Prevent the default form submission behavior
-                        
+
                                     const formData = new FormData(couponForm); // Get the form data
                                     const requestBody = Object.fromEntries(formData.entries()); // Convert form data to a plain object
-                        
+
                                     try {
                                         const response = await fetch('/userCoupon', {
                                             method: 'POST',
@@ -230,7 +231,7 @@
                                             },
                                             body: JSON.stringify(requestBody) // Convert the object to JSON and send it as the request body
                                         });
-                        
+
                                         if (response.ok) {
                                             console.log('Coupon data sent successfully');
                                             const responseData = await response.json(); // Parse the JSON response
@@ -246,7 +247,7 @@
                                                     messageElement.style.color = 'green';
                                                     // Hide the coupon form
                                                     couponForm.style.display = 'none';
-                                                    
+
                                                     // Update the subtotal value in the table
                                                     const subtotalElement = document.getElementById('subtotalValue');
                                                     if (subtotalElement) {
@@ -270,230 +271,273 @@
                                 });
                             });
                         </script>
-                        
-                        
-                   
-                    
 
 
 
-                                <form action="/order" method="post">
-                                    <div class="row">
-                                        <div class="col-lg-9">
-                                            <h2 class="checkout-title">Select Shipping Address</address>
-                                            </h2><!-- End .checkout-title -->
-                                            <% if(locals.error) { %>
 
-                                                <h2 style="color: crimson;" class="checkout-title">
-                                                    <%= error %>
-                                                        </address>
-                                                </h2><!-- End .checkout-title -->
 
-                                                <% } %>
-                                                    <div class="row">
-                                                        <% if(locals.userAddress) { %>
-                                                            <% userAddress.forEach(detail=> { %>
-                                                                <% detail.address.forEach((address, index)=> { %>
-                                                                    <div class="card mb-4 mr-4"
-                                                                        id="address_<%= address._id %>"
-                                                                        style="width: 30rem; cursor: pointer; padding: 10px; border: 1px solid #ccc; background-color: #fff;"
-                                                                        onclick="selectAddress('<%= address._id %>')">
-                                                                        <div class="card-body"
-                                                                            style="position: relative;">
-                                                                            <p><br>
-                                                                                <%= address.name %> <br>
-                                                                                    Mob: <%= address.phone %><br>
-                                                                                        <%= address.building %><br>
-                                                                                            <%= address.city %><br>
-                                                                                                <%= address.district %>
-                                                                                                    <br>
-                                                                                                    <%= address.pincode
-                                                                                                        %><br>
-                                                                                                        <%= address.state
-                                                                                                            %><br>
-                                                                            </p>
-                                                                            <div class="tick-icon"
-                                                                                id="tick_<%= address._id %>"
-                                                                                style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background-color: green; display: none;">
-                                                                            </div>
-                                                                        </div>
+
+
+                        <form id="orderForm" action="/order" method="post">
+                            <div class="row">
+                                <div class="col-lg-9">
+                                    <h2 class="checkout-title">Select Shipping Address</h2><!-- End .checkout-title -->
+                                    <% if(locals.error) { %>
+                                        <h2 style="color: crimson;" class="checkout-title">
+                                            <%= error %>
+                                        </h2><!-- End .checkout-title -->
+                                        <% } %>
+                                            <div class="row">
+                                                <% if(locals.userAddress) { %>
+                                                    <% userAddress.forEach(detail=> { %>
+                                                        <% detail.address.forEach((address, index)=> { %>
+                                                            <div class="card mb-4 mr-4" id="address_<%= address._id %>"
+                                                                style="width: 30rem; cursor: pointer; padding: 10px; border: 1px solid #ccc; background-color: #fff;"
+                                                                onclick="selectAddress('<%= address._id %>')">
+                                                                <div class="card-body" style="position: relative;">
+                                                                    <p><br>
+                                                                        <%= address.name %> <br>
+                                                                            Mob: <%= address.phone %><br>
+                                                                                <%= address.building %><br>
+                                                                                    <%= address.city %><br>
+                                                                                        <%= address.district %><br>
+                                                                                            <%= address.pincode %><br>
+                                                                                                <%= address.state %><br>
+                                                                    </p>
+                                                                    <div class="tick-icon" id="tick_<%= address._id %>"
+                                                                        style="position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; background-color: green; display: none;">
                                                                     </div>
-                                                                    <% }) %>
-                                                                        <% }) %>
-                                                                            <% } %>
+                                                                </div>
+                                                            </div>
+                                                            <% }) %>
+                                                                <% }) %>
+                                                                    <% } %>
+                                                                        <input type="hidden" id="selectedAddressId"
+                                                                            name="selectedAddressId" value="">
+                                            </div>
+                                </div>
+                                <aside class="col-lg-3">
+                                    <div class="summary">
+                                        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                                        <% if(locals.userCart) { %>
+                                            <table class="table table-summary">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Qty</th>
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% userCart.product.forEach(product=> { %>
+                                                        <tr>
+                                                            <td><a href="#">
+                                                                    <%= product.name %>
+                                                                </a></td>
+                                                            <td>
+                                                                <%= product.quantity %>
+                                                            </td>
+                                                            <td>$<%= product.total %>
+                                                            </td>
+                                                        </tr>
+                                                        <% }) %>
+                                                            <tr>
+                                                                <td>Total:</td>
+                                                                <td>$<%= userCart.subTotal %>
+                                                                </td>
+                                                            </tr><!-- End .summary-total -->
+                                                            <tr>
+                                                                <td>Shipping:</td>
+                                                                <td>Free shipping</td>
+                                                            </tr>
+                                                            <tr class="summary-subtotal">
+                                                                <td>Subtotal:</td>
+                                                                <td id="subtotalValue">$<%= userCart.subTotal %>
+                                                                </td>
+                                                            </tr><!-- End .summary-subtotal -->
+                                                </tbody>
+                                            </table><!-- End .table table-summary -->
+                                            <div class="accordion-summary" id="accordion-payment">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="paymentOption"
+                                                        id="cashOnDelivery" value="Cash On Delivery">
+                                                    <label class="form-check-label" for="cashOnDelivery">Cash On
+                                                        Delivery</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="paymentOption"
+                                                        id="onlinePayment" value="Online Payment">
+                                                    <label class="form-check-label" for="onlinePayment">Online
+                                                        Payment</label>
+                                                </div>
+                                                <button type="submit"
+                                                    class="btn btn-outline-primary-2 btn-order btn-block"
+                                                    onclick="submitOrder()">
+                                                    <span class="btn-text">Place Order</span>
+                                                    <span class="btn-hover-text">Place Order</span>
+                                                </button>
+                                                <input type="hidden" id="couponIdInput" name="couponId" value="">
+                                                <!-- Hidden input field to store the selected payment option -->
 
-                                                                                <input type="hidden"
-                                                                                    id="selectedAddressId"
-                                                                                    name="selectedAddressId" value="">
+                                                <input type="hidden" id="formDataInput" name="formData" value="">
 
-                                                    </div>
-                                                    <!-- Your table section goes here if needed -->
-                                        </div>
+                                            </div><!-- End .accordion-summary -->
+                                            <% } %>
+                                    </div><!-- End .summary -->
+                                </aside><!-- End .col-lg-3 -->
+                            </div><!-- End .row -->
+                        </form>
 
-                                        <style>
-                                            .card {
-                                                margin-bottom: 20px;
-                                            }
+                        <script>
+                            function selectAddress(addressId) {
+                                const selectedAddress = document.getElementById(`address_${addressId}`);
+                                const selectedAddressIdInput = document.getElementById('selectedAddressId');
 
-                                            .mr-4 {
-                                                margin-right: 20px;
-                                            }
-                                        </style>
+                                // Remove background color from all addresses
+                                const addresses = document.querySelectorAll('.card');
+                                addresses.forEach(address => {
+                                    address.style.backgroundColor = '#fff';
+                                });
 
-                                        <script>
-                                            function selectAddress(addressId) {
-                                                const selectedAddress = document.getElementById(`address_${addressId}`);
-                                                const selectedAddressIdInput = document.getElementById('selectedAddressId');
+                                // Apply green background color to the selected address
+                                selectedAddress.style.backgroundColor = 'lightgreen';
 
-                                                // Remove background color from all addresses
-                                                const addresses = document.querySelectorAll('.card');
-                                                addresses.forEach(address => {
-                                                    address.style.backgroundColor = '#fff';
-                                                });
+                                // Set the selected address ID in the hidden input field
+                                selectedAddressIdInput.value = addressId;
+                            }
+                        </script>
+                        <script>
+                            function submitOrder(event) {
+                                // Prevent the form from submitting by default
+                                event.preventDefault();
 
-                                                // Apply green background color to the selected address
-                                                selectedAddress.style.backgroundColor = 'lightgreen';
+                                // Check if a payment option is selected
+                                const cashOnDelivery = document.getElementById('cashOnDelivery');
+                                const onlinePayment = document.getElementById('onlinePayment');
 
-                                                // Set the selected address ID in the hidden input field
-                                                selectedAddressIdInput.value = addressId;
-                                            }
+                                let paymentOption = '';
 
-                                        </script>
+                                if (cashOnDelivery.checked) {
+                                    paymentOption = 'Cash On Delivery';
+                                } else if (onlinePayment.checked) {
+                                    paymentOption = 'Online Payment';
+                                } else {
+                                    // If neither payment option is selected, display an alert or error message
+                                    alert('Please select a payment option.');
+                                    return; // Exit the function without submitting the form
+                                }
+
+                                // Create a data object with only the selected payment option
+                                const formData = {
+                                    paymentOption: paymentOption
+                                };
+
+                                // If you need to perform any other actions or validations, you can add them here
+
+                                // Submit the form with the selected payment option
+                                const form = document.getElementById('orderForm');
+                                const formDataInput = document.getElementById('formDataInput');
+                                formDataInput.value = JSON.stringify(formData); // Set the value of the hidden input field
+                                form.submit();
+                            }
+
+                            document.addEventListener('DOMContentLoaded', () => {
+                                // Add event listener to the "Place Order" button
+                                const placeOrderButton = document.querySelector('.btn-order');
+                                placeOrderButton.addEventListener('click', submitOrder);
+                            });
+                        </script>
 
 
-<aside class="col-lg-3">
-    <div class="summary">
-        <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
-        <% if(locals.userCart) { %>
-            <table class="table table-summary">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Qty</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% userCart.product.forEach(product => { %>
-                        <tr>
-                            <td><a href="#"><%= product.name %></a></td>
-                            <td><%= product.quantity %></td>
-                            <td>$<%= product.total %></td>
-                        </tr>
-                    <% }) %>
-                    <tr>
-                        <td>Total:</td>
-                        <td>$<%= userCart.subTotal %></td>
-                    </tr><!-- End .summary-total -->
-                    
-                    <tr>
-                        <td>Shipping:</td>
-                        <td>Free shipping</td>
-                    </tr>
-                    <tr class="summary-subtotal">
-                        <td>Subtotal:</td>
-                        <td id="subtotalValue">$<%= userCart.subTotal %></td>
-                    </tr><!-- End .summary-subtotal -->
-                </tbody>
-            </table><!-- End .table table-summary -->
-            <div class="accordion-summary" id="accordion-payment">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" style="margin-top: 6.5px;" checked required>
-                    <label class="form-check-label" for="flexCheckDefault">Cash on delivery</label>
-                </div>
-                <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block" onclick="submitOrder()">
-                    <span class="btn-text">Place Order</span>
-                    <span class="btn-hover-text">Proceed to Checkout</span>
-                </button>
-                <input type="hidden" id="couponIdInput" name="couponId" value="">
-            </div><!-- End .accordion-summary -->
-        <% } %>
-    </div><!-- End .summary -->
-</aside><!-- End .col-lg-3 -->
 
-                                    </div><!-- End .row -->
-                                </form>
-                    </div><!-- End .container -->
-                </div><!-- End .checkout -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
 
-        <footer class="footer">
+                    </div><!-- End .summary -->
+                    </aside><!-- End .col-lg-3 -->
 
-            <div class="footer-middle">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="widget widget-about">
-                                <img src="/user/assets/images/demos/demo-4/logo-footer.png" class="footer-logo"
-                                    alt="Footer Logo" width="105" height="25">
-                                <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate
-                                    magna eros eu erat. </p>
 
-                                <div class="widget-call">
-                                    <i class="icon-phone"></i>
-                                    Got Question? Call us 24/7
-                                    <a href="tel:#">+0123 456 789</a>
-                                </div><!-- End .widget-call -->
-                            </div><!-- End .widget about-widget -->
-                        </div><!-- End .col-sm-6 col-lg-3 -->
+                </div><!-- End .row -->
+                </form>
+            </div><!-- End .container -->
+    </div><!-- End .checkout -->
+    </div><!-- End .page-content -->
+    </main><!-- End .main -->
 
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="widget">
-                                <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
+    <footer class="footer">
 
-                                <ul class="widget-list">
-                                    <li><a href="about.html">About Molla</a></li>
-                                    <li><a href="#">Our Services</a></li>
-                                    <li><a href="#">How to shop on Molla</a></li>
-                                    <li><a href="faq.html">FAQ</a></li>
-                                    <li><a href="contact.html">Contact us</a></li>
-                                </ul><!-- End .widget-list -->
-                            </div><!-- End .widget -->
-                        </div><!-- End .col-sm-6 col-lg-3 -->
+        <div class="footer-middle">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="widget widget-about">
+                            <img src="/user/assets/images/demos/demo-4/logo-footer.png" class="footer-logo"
+                                alt="Footer Logo" width="105" height="25">
+                            <p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate
+                                magna eros eu erat. </p>
 
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="widget">
-                                <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
+                            <div class="widget-call">
+                                <i class="icon-phone"></i>
+                                Got Question? Call us 24/7
+                                <a href="tel:#">+0123 456 789</a>
+                            </div><!-- End .widget-call -->
+                        </div><!-- End .widget about-widget -->
+                    </div><!-- End .col-sm-6 col-lg-3 -->
 
-                                <ul class="widget-list">
-                                    <li><a href="#">Payment Methods</a></li>
-                                    <li><a href="#">Money-back guarantee!</a></li>
-                                    <li><a href="#">Returns</a></li>
-                                    <li><a href="#">Shipping</a></li>
-                                    <li><a href="#">Terms and conditions</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                </ul><!-- End .widget-list -->
-                            </div><!-- End .widget -->
-                        </div><!-- End .col-sm-6 col-lg-3 -->
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="widget">
+                            <h4 class="widget-title">Useful Links</h4><!-- End .widget-title -->
 
-                        <div class="col-sm-6 col-lg-3">
-                            <div class="widget">
-                                <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
+                            <ul class="widget-list">
+                                <li><a href="about.html">About Molla</a></li>
+                                <li><a href="#">Our Services</a></li>
+                                <li><a href="#">How to shop on Molla</a></li>
+                                <li><a href="faq.html">FAQ</a></li>
+                                <li><a href="contact.html">Contact us</a></li>
+                            </ul><!-- End .widget-list -->
+                        </div><!-- End .widget -->
+                    </div><!-- End .col-sm-6 col-lg-3 -->
 
-                                <ul class="widget-list">
-                                    <li><a href="#">Sign In</a></li>
-                                    <li><a href="cart.html">View Cart</a></li>
-                                    <li><a href="#">My Wishlist</a></li>
-                                    <li><a href="#">Track My Order</a></li>
-                                    <li><a href="#">Help</a></li>
-                                </ul><!-- End .widget-list -->
-                            </div><!-- End .widget -->
-                        </div><!-- End .col-sm-6 col-lg-3 -->
-                    </div><!-- End .row -->
-                </div><!-- End .container -->
-            </div><!-- End .footer-middle -->
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="widget">
+                            <h4 class="widget-title">Customer Service</h4><!-- End .widget-title -->
 
-            <div class="footer-bottom">
-                <div class="container">
-                    <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p>
-                    <!-- End .footer-copyright -->
-                    <figure class="footer-payments">
-                        <img src="/user/assets/images/payments.png" alt="Payment methods" width="272" height="20">
-                    </figure><!-- End .footer-payments -->
-                </div><!-- End .container -->
-            </div><!-- End .footer-bottom -->
-        </footer><!-- End .footer -->
+                            <ul class="widget-list">
+                                <li><a href="#">Payment Methods</a></li>
+                                <li><a href="#">Money-back guarantee!</a></li>
+                                <li><a href="#">Returns</a></li>
+                                <li><a href="#">Shipping</a></li>
+                                <li><a href="#">Terms and conditions</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                            </ul><!-- End .widget-list -->
+                        </div><!-- End .widget -->
+                    </div><!-- End .col-sm-6 col-lg-3 -->
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="widget">
+                            <h4 class="widget-title">My Account</h4><!-- End .widget-title -->
+
+                            <ul class="widget-list">
+                                <li><a href="#">Sign In</a></li>
+                                <li><a href="cart.html">View Cart</a></li>
+                                <li><a href="#">My Wishlist</a></li>
+                                <li><a href="#">Track My Order</a></li>
+                                <li><a href="#">Help</a></li>
+                            </ul><!-- End .widget-list -->
+                        </div><!-- End .widget -->
+                    </div><!-- End .col-sm-6 col-lg-3 -->
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .footer-middle -->
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p>
+                <!-- End .footer-copyright -->
+                <figure class="footer-payments">
+                    <img src="/user/assets/images/payments.png" alt="Payment methods" width="272" height="20">
+                </figure><!-- End .footer-payments -->
+            </div><!-- End .container -->
+        </div><!-- End .footer-bottom -->
+    </footer><!-- End .footer -->
     </div><!-- End .page-wrapper -->
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 

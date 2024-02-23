@@ -54,6 +54,7 @@ userRouter.post("/deleteAddress",controllers.deleteAddress)
 userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
 userRouter.get("/orderConfirm",controllers.OrderComplete)
+userRouter.post("/processPayment",controllers.paymentCompleted)
 
 userRouter.get("/orderStatus",controllers.loadOrderStatus)
 userRouter.post("/viewOrderDetails",controllers.orderStatus)

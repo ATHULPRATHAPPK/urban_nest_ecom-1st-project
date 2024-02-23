@@ -12,6 +12,11 @@ const orderSchema = new mongoose.Schema({
        type :Object,
        required :true
     },
+    paymentType: {
+       
+        type: String,
+       
+    },
     product: [
 
         {   productId:{
@@ -50,6 +55,7 @@ const orderSchema = new mongoose.Schema({
                 type: String,
                
             },
+           
             productImage: [
                 {
                     filename: {
