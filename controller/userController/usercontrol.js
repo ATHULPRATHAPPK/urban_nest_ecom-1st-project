@@ -3,7 +3,7 @@ const mongoose = require("mongoose")
 const path = require("path")
 const express = require("express")
 const app = express()
-const paypal= require("paypal-rest-sdk")
+const paypal = require("paypal-rest-sdk")
 const ejs = require("ejs")
 const userModel = require("../../model/userModel/signUp")
 const otpModel = require("../../model/userModel/otp")
@@ -13,6 +13,7 @@ const orderModel = require("../../model/userModel/orderModel")
 const productModel = require("../../model/adminModels/productModel")
 const wishlistModel = require("../../model/userModel/wishlist")
 const couponModel = require("../../model/adminModels/couponSchema")
+const walletModel = require("../../model/userModel/wallet")
 const { log } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
@@ -31,7 +32,7 @@ paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'AW-cypdE3e713qSMccOo7HehvDyHu9YVyGIt66nTlNweiZMZf2i5zM5fXYfftZlsQFhqbUNmrZmn8kzX',
     'client_secret': 'ELYw0V15FGaChBEJcnQqcjBCpvuO0JSPBQ9yV8v3yih0TqcEPnHSaPB13z9-KLN0uLXVmf61GbX44e5g'
-  });
+});
 //--------------------------
 
 //----------------------------home page load-------------------------------------------------------------
@@ -249,10 +250,23 @@ const loginload = async (req, res) => {
 
 
     const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
+   
     if (userdata) {
-
+        const id = userdata._id
         req.session.userId = email1
         console.log(req.session.userId);
+
+        let userWallet = await walletModel.findOne({ userId: id });
+
+        // If the user doesn't have a wallet, create a new one
+        if (!userWallet) {
+            userWallet = new walletModel({
+                userId: id,
+                balance: 0,
+                transactions: [] // You can initialize transactions array if needed
+            });
+            await userWallet.save();
+        }
 
         res.redirect("/")
     }
@@ -982,6 +996,8 @@ const deleteAddress = async (req, res) => {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
+        const addressId = req.body.addressId ;
+        console.log(addressId);
         const result = await addressModel.updateOne(
             { userId: userId },
             { $pull: { address: { _id: req.body.addressId } } }
@@ -1004,9 +1020,10 @@ const loadCheckout = async (req, res) => {
 
         const userData = await userModel.findOne({ email: req.session.userId })
         const userId = userData._id
+        const message = userData
         const error = req.query.error;
         const userAddress = await addressModel.find({ userId: userId })
-        const message = userData
+      
         const userCart = await cartModel.findOne({ userId: userId })
 
         if (error === 'address_not_selected') {
@@ -1035,140 +1052,141 @@ const loadOrder = async (req, res) => {
 
     const userData = await userModel.findOne({ email: req.session.userId })
     const userId = userData._id
-    console.log(" userId ", userId );
-    const paymentMode = req.body. paymentOption
+    console.log(" userId ", userId);
+    const paymentMode = req.body.paymentOption
 
     if (req.session.userId) {
         const selectedAddressId = req.body.selectedAddressId;
         if (selectedAddressId) {
-            console.log("address is present"); 
-    if(paymentMode==='Online Payment'){ 
+            console.log("address is present");
+            if (paymentMode === 'Online Payment') {
 
-console.log("payment is online");
-const couponCode = req.body.couponId;
-
-
-// if(couponCode ){
+                console.log("payment is online");
+                const couponCode = req.body.couponId;
 
 
-// console.log("coupon present...");
+                // if(couponCode ){
 
 
-// }else{
-
-// const cartDetails = await cartModel.findOne({userId:userId})
+                // console.log("coupon present...");
 
 
+                // }else{
+
+                // const cartDetails = await cartModel.findOne({userId:userId})
 
 
-// }
-const cartDetails = await cartModel.findOne({userId:userId})
-const subTotal = cartDetails.subTotal
 
-res.render("payment",{cartDetails,subTotal,selectedAddressId})
-     
 
-}   else{  
-            const couponCode = req.body.couponId;
-            if (couponCode) {
+                // }
+                const cartDetails = await cartModel.findOne({ userId: userId }).populate("userId")
+                const subTotal = cartDetails.subTotal
+                console.log(cartDetails);
+                res.render("payment", { cartDetails, subTotal, selectedAddressId })
 
-                console.log("coupen present", couponCode);
-                const coupenDetails = await couponModel.findOne({ code: couponCode })
-                const userCart = await cartModel.findOne({ userId: userId })
-                for (const cartProduct of userCart.product) {
-                    const product = await productModel.findOne({ _id: cartProduct.productId });
-                   
-                    if (product) {
-                        product.quantity -= cartProduct.quantity;
-                        if (product.quantity >= 0) {
-                            await product.save();
-                        } else {
-                            // The product is less than one
-                            res.redirect("/login");
-                            return; // Return here to prevent further processing
+
+            } else {
+                const couponCode = req.body.couponId;
+                if (couponCode) {
+
+                    console.log("coupen present", couponCode);
+                    const coupenDetails = await couponModel.findOne({ code: couponCode })
+                    const userCart = await cartModel.findOne({ userId: userId })
+                    for (const cartProduct of userCart.product) {
+                        const product = await productModel.findOne({ _id: cartProduct.productId });
+
+                        if (product) {
+                            product.quantity -= cartProduct.quantity;
+                            if (product.quantity >= 0) {
+                                await product.save();
+                            } else {
+                                // The product is less than one
+                                res.redirect("/login");
+                                return; // Return here to prevent further processing
+                            }
                         }
                     }
+                    const userAddress = await addressModel.findOne({ userId: userId });
+
+                    const newSubTotal = userCart.subTotal - coupenDetails.discountAmount
+                    console.log(" newSubTotal", newSubTotal);
+                    if (userAddress) {
+                        const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                        const orderDetails = orderModel({
+                            userId: userId,
+                            address: selectedAddress,
+
+                            product: userCart.product.map(product => ({
+                                productId: product.productId,
+                                name: product.name,
+                                quantity: product.quantity,
+                                price: product.price,
+                                total: product.total,
+                                paymentType: "COD",
+                                productImage: product.productImage
+                            })),
+                            subTotal: newSubTotal
+                        });
+                        await orderDetails.save();
+                        await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+                        res.redirect("/orderConfirm");
+                        console.log(userId);
+                        await couponModel.updateOne({ code: couponCode }, { $push: { userIds: userId } });
+
+                    } else {
+                        res.redirect("/checkout?error=address_not_selected");
+                    }
+
                 }
-                const userAddress = await addressModel.findOne({ userId: userId });
-
-            const  newSubTotal = userCart.subTotal - coupenDetails.discountAmount
-            console.log(" newSubTotal", newSubTotal);
-                if (userAddress) {
-                    const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
-                    const orderDetails = orderModel({
-                        userId: userId,
-                        address: selectedAddress,
-                        paymentType:"COD",
-                        product: userCart.product.map(product => ({
-                            productId: product.productId,
-                            name: product.name,
-                            quantity: product.quantity,
-                            price: product.price,
-                            total: product.total,
-                         
-                            productImage: product.productImage
-                        })),
-                        subTotal: newSubTotal
-                    });
-                    await orderDetails.save();
-                    await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
-                    res.redirect("/orderConfirm");
-                    console.log( userId );
-                    await couponModel.updateOne({ code:couponCode }, { $push: { userIds: userId } });
-
-                } else {
-                    res.redirect("/checkout?error=address_not_selected");
-                }
-
-            }
-            else {
-                const userCart = await cartModel.findOne({ userId: userId })
-                for (const cartProduct of userCart.product) {
-                    const product = await productModel.findOne({ _id: cartProduct.productId });
-                    // console.log("product in the product model is", product);
-                    if (product) {
-                        product.quantity -= cartProduct.quantity;
-                        if (product.quantity >= 0) {
-                            await product.save();
-                        } else {
-                            // The product is less than one
-                            res.redirect("/login");
-                            return; // Return here to prevent further processing
+                else {
+                    const userCart = await cartModel.findOne({ userId: userId })
+                    for (const cartProduct of userCart.product) {
+                        const product = await productModel.findOne({ _id: cartProduct.productId });
+                        // console.log("product in the product model is", product);
+                        if (product) {
+                            product.quantity -= cartProduct.quantity;
+                            if (product.quantity >= 0) {
+                                await product.save();
+                            } else {
+                                // The product is less than one
+                                res.redirect("/login");
+                                return; // Return here to prevent further processing
+                            }
                         }
                     }
-                }
 
-                // After processing all cart products, create the order
-                const userAddress = await addressModel.findOne({ userId: userId });
-                if (userAddress) {
-                    const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
-                    const orderDetails = orderModel({
-                        userId: userId,
-                        address: selectedAddress,
-                        paymentType:"COD",
-                        product: userCart.product.map(product => ({
-                            productId: product.productId,
-                            name: product.name,
-                            quantity: product.quantity,
-                            price: product.price,
-                            total: product.total,
-                         
-                            productImage: product.productImage
-                        })),
-                        subTotal: userCart.subTotal
-                    });
-                    await orderDetails.save();
-                    await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
-                    res.redirect("/orderConfirm");
+                    // After processing all cart products, create the order
+                    const userAddress = await addressModel.findOne({ userId: userId });
+                    if (userAddress) {
+                        const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                        const orderDetails = orderModel({
+                            userId: userId,
+                            address: selectedAddress,
 
+                            product: userCart.product.map(product => ({
+                                productId: product.productId,
+                                name: product.name,
+                                quantity: product.quantity,
+                                price: product.price,
+                                total: product.total,
+                                paymentType: "COD",
 
+                                productImage: product.productImage
+                            })),
+                            subTotal: userCart.subTotal
+                        });
+                        await orderDetails.save();
+                        await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+                        res.redirect("/orderConfirm");
 
 
-                } else {
-                    res.redirect("/checkout?error=address_not_selected");
+
+
+                    } else {
+                        res.redirect("/checkout?error=address_not_selected");
+                    }
                 }
             }
-        }
         } else {
             res.redirect("/checkout?error=address_not_selected");
         }
@@ -1195,7 +1213,9 @@ const OrderComplete = (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const paymentCompleted = async (req, res) => {
-    const { subtotal, addressId } = req.body;
+    const { subtotal, addressId, response } = req.body;
+    console.log(response);
+
 
     // Retrieve user data
     const userData = await userModel.findOne({ email: req.session.userId });
@@ -1203,7 +1223,7 @@ const paymentCompleted = async (req, res) => {
 
     // Retrieve user cart
     const userCart = await cartModel.findOne({ userId: userId });
-    const userAddress= await addressModel.findOne({userId:userId})
+    const userAddress = await addressModel.findOne({ userId: userId })
     if (userCart) {
         // Check if userAddress is defined and has the address property
         if (userAddress && userAddress.address) {
@@ -1214,13 +1234,14 @@ const paymentCompleted = async (req, res) => {
             const orderDetails = orderModel({
                 userId: userId,
                 address: selectedAddress,
-                paymentType: "ONLINE",
+
                 product: userCart.product.map(product => ({
                     productId: product.productId,
                     name: product.name,
                     quantity: product.quantity,
                     price: product.price,
                     total: product.total,
+                    paymentType: "ONLINE",
                     productImage: product.productImage
                 })),
                 subTotal: subtotal
@@ -1232,7 +1253,7 @@ const paymentCompleted = async (req, res) => {
             // Delete user's cart
             await cartModel.deleteOne({ userId: userId });
 
-          
+
         } else {
             // If userAddress is not defined or does not have the address property, handle the error
             console.error("User address is undefined or does not have the address property");
@@ -1252,40 +1273,76 @@ const paymentCompleted = async (req, res) => {
 
 const orderCancel = async (req, res) => {
 
-    const { productId, orderId } = req.body
+    if (req.session.userId) {
+        const userData = userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+
+        const { productId, orderId } = req.body
+
+        // const productDetaills = await orderModel({_id:orderId})
+
+        //updating the value of adminstatus to cancel
+        let cancelledProduct = await orderModel.findOneAndUpdate(
+            { _id: orderId },
+            { $set: { 'product.$[elem].adminStatus': 5 } },
+            { arrayFilters: [{ 'elem._id': productId }], new: true }
+        );
+
+        const paymentType = cancelledProduct.product[0].paymentType
+        if (paymentType === "ONLINE") {
+            const cancelledAmount = cancelledProduct.product[0].total;
+            const userId = cancelledProduct.userId;
+            const currentDate = new Date();
+            const day = currentDate.getDate();
+            const month = currentDate.getMonth() + 1; // Note: January is 0, so we add 1
+            const year = currentDate.getFullYear();
+
+            const formattedDate = `${day}-${month}-${year}`;
+
+            // Increment balance and push new transaction
+            await walletModel.updateOne(
+                { userId: userId },
+                {
+                    $inc: { balance: cancelledAmount },
+                    $push: {
+                        transaction: {
+                            date: formattedDate,
+                            amount: cancelledAmount,
+                            reason: 'Refund for cancelled order'
+                        }
+                    }
+                }
+            );
+
+            console.log('Balance incremented and transaction added successfully.');
+        }
+
+        // console.log("cancelledProduct", cancelledProduct);
+        // console.log("productId", productId);
+        //update the product quqntity in product model with respet to the cancelled qunity
+        const product = cancelledProduct.product.find(p => p._id.toString() === productId.toString());
 
 
 
-    //updating the value of adminstatus to cancel
-    let cancelledProduct = await orderModel.findOneAndUpdate(
-        { _id: orderId },
-        { $set: { 'product.$[elem].adminStatus': 5 } },
-        { arrayFilters: [{ 'elem._id': productId }], new: true }
-    );
-
-    console.log("cancelledProduct", cancelledProduct);
-    console.log("productId", productId);
-    //update the product quqntity in product model with respet to the cancelled qunity
-    const product = cancelledProduct.product.find(p => p._id.toString() === productId.toString());
-
-    // Product object found, do something with it
-
-
-    const pId = product.productId
-    const qty = product.quantity
-
-    const productDocument = await productModel.findById(pId);
-    console.log("productDocument", productDocument);
-    const productQty = productDocument.quantity
-    const totalQty = productQty + qty
-    console.log("totalQty", totalQty);
-    const quantityUpdate = await productModel.updateOne(
-        { _id: pId }, // Filter criteria to find the product by its ID
-        { $set: { quantity: totalQty } } // Update operation to set the quantity to totalQty
-    );
+        const pId = product.productId
+        const qty = product.quantity
+        // updating quantity
+        const productDocument = await productModel.findById(pId);
+        console.log("productDocument", productDocument);
+        const productQty = productDocument.quantity
+        const totalQty = productQty + qty
+        console.log("totalQty", totalQty);
+        const quantityUpdate = await productModel.updateOne(
+            { _id: pId }, // Filter criteria to find the product by its ID
+            { $set: { quantity: totalQty } } // Update operation to set the quantity to totalQty
+        );
 
 
-    res.status(200).json();
+        res.status(200).json();
+    } else {
+        res.redirect("/login");
+    }
+
 
 }
 
@@ -1380,6 +1437,9 @@ const returnRequest = async (req, res) => {
 
 
 
+
+
+
 //----------------------------------------------------------------------------------// 
 //========================== user wishlist==========================================//
 //----------------------------------------------------------------------------------// 
@@ -1387,23 +1447,42 @@ const userWishlist = async (req, res) => {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId });
         const userId = userData._id;
+       
+        
 
+        const message = userData
         const userWishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId");
         console.log("user wishlist", userWishlist);
-
+if(userWishlist){
         let productDetails = [];
         userWishlist.product.forEach(product => {
             productDetails.push(product.productId); // Pushing the productId object directly
         });
 
         console.log("product details", productDetails);
-        res.render("userWishlist", { productDetails });
+        res.render("userWishlist", { productDetails,message });
+    }else{
+        res.render("userWishlist",{message});
+    }
     } else {
         res.redirect("/login");
     }
 }
 
 
+
+const editDetails = async (req,res)=>{
+
+    
+    const {name,mobile} = req.body
+
+    await userModel.updateOne(
+        { email: req.session.userId }, // Filter criteria: Find the document with the specified email
+        { $set: { name: name, mobile: mobile } } // Update operation: Set the name and mobile fields with the provided values
+    );
+    
+    res.status(200).json("ok");
+}
 
 //----------------------------------------------------------------------------------// 
 //========================== add wishlist==========================================//
@@ -1414,6 +1493,8 @@ const addWishlist = async (req, res) => {
     if (req.session.userId) {
         const userDetails = await userModel.findOne({ email: req.session.userId })
         const userId = userDetails._id
+
+        const message = userDetails 
         console.log(productId);
         const userwishlist = await wishlistModel.find({ userId: userId })
         if (userwishlist.length > 0) {
@@ -1505,50 +1586,50 @@ const addUserCoupon = async (req, res) => {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const userId = userData._id
-      
+
         if (couponPresent.length > 0) {
 
-          
+
             if (couponPresent.some(coupon => coupon.userIds.includes(userId))) {
                 // Coupon is already used by the user
                 res.status(200).json({ message: `Coupon is already used.` });
-            }else{
-      //find the current date
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
-      const day = String(today.getDate()).padStart(2, '0'); // Add leading zero if necessary
-      const currentDate = `${year}-${month}-${day}`;
-            //validating the coupon expired or not
-            for (const coupon of couponPresent) {
+            } else {
+                //find the current date
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero if necessary
+                const day = String(today.getDate()).padStart(2, '0'); // Add leading zero if necessary
+                const currentDate = `${year}-${month}-${day}`;
+                //validating the coupon expired or not
+                for (const coupon of couponPresent) {
 
 
-                if (currentDate >= coupon.startDate && currentDate <= coupon.expirationDate) {
-                    console.log(`Coupon ${coupon.code} is valid today.`);
+                    if (currentDate >= coupon.startDate && currentDate <= coupon.expirationDate) {
+                        console.log(`Coupon ${coupon.code} is valid today.`);
 
-                    const userCart = await cartModel.findOne({ userId: userId })
+                        const userCart = await cartModel.findOne({ userId: userId })
 
-                    console.log(userCart.subTotal);
-                    console.log(coupon.minOrderAmount);
-                    if (userCart.subTotal >= coupon.minOrderAmount) {
-                        //if the coupen is applicable change the subtotal
-                        const newSubTotal = userCart.subTotal - coupon.discountAmount
-                        console.log(newSubTotal);
+                        console.log(userCart.subTotal);
+                        console.log(coupon.minOrderAmount);
+                        if (userCart.subTotal >= coupon.minOrderAmount) {
+                            //if the coupen is applicable change the subtotal
+                            const newSubTotal = userCart.subTotal - coupon.discountAmount
+                            console.log(newSubTotal);
 
-                        res.status(200).json({ applied: newSubTotal });
+                            res.status(200).json({ applied: newSubTotal });
+
+                        } else {
+                            res.status(200).json({ message: `minimum amount to apply this coupon is ${coupon.minOrderAmount}` });
+                        }
+
+
 
                     } else {
-                        res.status(200).json({ message: `minimum amount to apply this coupon is ${coupon.minOrderAmount}` });
+                        res.status(200).json({ message: `Coupon ${coupon.code} is expired.` });
                     }
 
-
-
-                } else {
-                    res.status(200).json({ message: `Coupon ${coupon.code} is expired.` });
                 }
-
             }
-        }
 
         } else {
             res.status(200).json({ message: `Coupon is invalid.` });
@@ -1559,8 +1640,25 @@ const addUserCoupon = async (req, res) => {
     }
 }
 
+//----------------------------------------------------------------------------------// 
+//========================== load wallet  ==========================================//
+//----------------------------------------------------------------------------------// 
 
 
+const loadWallet = async (req, res) => {
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+        const message = userData
+        const userWallet = await walletModel.findOne({ userId: userId }).populate("userId")
+        console.log(userWallet);
+        res.render("userWallet", { userWallet, message })
+    }
+    else {
+        res.redirect("/login")
+    }
+}
 
 
 
@@ -1589,7 +1687,7 @@ module.exports = {
     userOrders,
     userAddress,
     userWishlist,
-
+    editDetails,
 
 
     addAddress,
@@ -1605,5 +1703,6 @@ module.exports = {
     returnRequest,
     addWishlist,
     removeWishlist,
-    addUserCoupon
+    addUserCoupon,
+    loadWallet
 }

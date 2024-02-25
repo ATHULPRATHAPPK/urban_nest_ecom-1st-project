@@ -4,6 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban nest</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="/admin/assets/vendors/mdi/css/materialdesignicons.min.css">
@@ -17,6 +18,7 @@
     <link rel="stylesheet" href="/admin/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="/admin/assets/images/favicon.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
     <div class="container-scroller">
@@ -294,10 +296,49 @@
                 <div class="card bg-gradient-danger card-img-holder text-white">
                   <div class="card-body">
                     <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                    <h4 class="font-weight-normal mb-3">Weekly Sales <i class="mdi mdi-chart-line mdi-24px float-right"></i>
+                    <h4 class="font-weight-normal mb-3">Overall Sales<i class="mdi mdi-chart-line mdi-24px float-right"></i>
+                      <% if(locals.overallSales) { %>
                     </h4>
-                    <h2 class="mb-5">$ 15,0000</h2>
-                    <h6 class="card-text">Increased by 60%</h6>
+                    <h2 class="mb-5">$ <%= overallSales %></h2>
+                   
+                     <% } else{ %>
+                      <h2 class="mb-5">$ 0</h2>
+
+                   <%  } %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-danger card-img-holder text-white">
+                  <div class="card-body">
+                    <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                    <h4 class="font-weight-normal mb-3">Delivered Orders<i class="mdi mdi-bookmark-outline mdi-24px float-right"></i>
+                    </h4>
+                    <% if(locals. totalOrders) { %>
+                    </h4>
+                    <h2 class="mb-5"> <%=  totalOrders %></h2>
+                   
+                     <% } else{ %>
+                      <h2 class="mb-5"> 0</h2>
+
+                   <%  } %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 stretch-card grid-margin">
+                <div  class="card bg-gradient-danger card-img-holder text-white">
+                  <div class="card-body">
+                    <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                    <h4 class="font-weight-normal mb-3">Overall Orders <i class="mdi mdi-diamond mdi-24px float-right"></i>
+                    </h4>
+                    <% if(locals.totalOrdersCount) { %>
+                    </h4>
+                    <h2 class="mb-5"> <%=  totalOrdersCount %></h2>
+                   
+                     <% } else{ %>
+                      <h2 class="mb-5"> 0</h2>
+
+                   <%  } %>
                   </div>
                 </div>
               </div>
@@ -305,21 +346,49 @@
                 <div class="card bg-gradient-info card-img-holder text-white">
                   <div class="card-body">
                     <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                    <h4 class="font-weight-normal mb-3">Weekly Orders <i class="mdi mdi-bookmark-outline mdi-24px float-right"></i>
+                    <h4 class="font-weight-normal mb-3">Pending Order to Ship <i class="mdi mdi-diamond mdi-24px float-right"></i>
                     </h4>
-                    <h2 class="mb-5">45,6334</h2>
-                    <h6 class="card-text">Decreased by 10%</h6>
+                    <% if(locals.pendingToShipCount) { %>
+                    </h4>
+                    <h2 class="mb-5"> <%=  pendingToShipCount %></h2>
+                   
+                     <% } else{ %>
+                      <h2 class="mb-5"> 0</h2>
+
+                   <%  } %>
                   </div>
                 </div>
               </div>
               <div class="col-md-4 stretch-card grid-margin">
-                <div class="card bg-gradient-success card-img-holder text-white">
+                <div class="card bg-gradient-info card-img-holder text-white">
                   <div class="card-body">
                     <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
-                    <h4 class="font-weight-normal mb-3">Visitors Online <i class="mdi mdi-diamond mdi-24px float-right"></i>
+                    <h4 class="font-weight-normal mb-3">Pending orders to deliver<i class="mdi mdi-bookmark-outline mdi-24px float-right"></i>
+                      <% if(locals. pendingToDeliverCount) { %>
+                      </h4>
+                      <h2 class="mb-5"> <%=  pendingToDeliverCount %></h2>
+                     
+                       <% } else{ %>
+                        <h2 class="mb-5"> 0</h2>
+  
+                     <%  } %>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 stretch-card grid-margin">
+                <div class="card bg-gradient-info card-img-holder text-white">
+                  <div class="card-body">
+                    <img src="/admin/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                    <h4 class="font-weight-normal mb-3">Returned Orders<i class="mdi mdi-bookmark-outline mdi-24px float-right"></i>
+                 
+                    <% if(locals.totalRetuns) { %>
                     </h4>
-                    <h2 class="mb-5">95,5741</h2>
-                    <h6 class="card-text">Increased by 5%</h6>
+                    <h2 class="mb-5"> <%= totalRetuns %></h2>
+                   
+                     <% } else{ %>
+                      <h2 class="mb-5"> 0</h2>
+
+                   <%  } %>
                   </div>
                 </div>
               </div>
@@ -328,23 +397,51 @@
               <div class="col-md-7 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <div class="clearfix">
-                      <h4 class="card-title float-left">Visit And Sales Statistics</h4>
-                      <div id="visit-sale-chart-legend" class="rounded-legend legend-horizontal legend-top-right float-right"></div>
-                    </div>
-                    <canvas id="visit-sale-chart" class="mt-4"></canvas>
-                  </div>
+                    <canvas id="myPieChart" width="400" height="400"></canvas>
+                    <script>
+                        // Get the canvas element
+                        const ctx = document.getElementById('myPieChart').getContext('2d');
+                     const returnd =   '<%= locals.totalRetuns%>' ;
+                     const delivered = '<%= locals.totalOrders%>' ;
+                       // Define data for the pie chart
+// Define data for the pie chart
+const data = {
+    labels: ['Returns', 'Delivered'],
+    datasets: [{
+        label: 'Orders',
+        data: [parseInt(returnd), parseInt(delivered)],
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.5)', // Red for Returns
+            'rgba(54, 162, 235, 0.5)'   // Blue for Delivered
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)'
+        ],
+        borderWidth: 1
+    }]
+};
+
+
+                        
+                        // Create the pie chart
+                        const myPieChart = new Chart(ctx, {
+                            type: 'pie',
+                            data: data,
+                            options: {
+                                responsive: false,
+                                maintainAspectRatio: false,
+                                title: {
+                                    display: true,
+                                    text: 'Orders Status'
+                                }
+                            }
+                        });
+                    </script>
+                </div>
                 </div>
               </div>
-              <div class="col-md-5 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Traffic Sources</h4>
-                    <canvas id="traffic-chart"></canvas>
-                    <div id="traffic-chart-legend" class="rounded-legend legend-vertical legend-bottom-left pt-4"></div>
-                  </div>
-                </div>
-              </div>
+             
             </div>
           
           <!-- --------------------------------- -->

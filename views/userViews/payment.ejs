@@ -55,7 +55,9 @@
     <script>
         const subTotal = parseFloat(<%= locals.cartDetails.subTotal %>).toFixed(2) * 100;
         const addressId = '<%= locals.selectedAddressId %>';
-    
+        const name = '<%= locals.cartDetails.userId.name %>';
+        const email = '<%= locals.cartDetails.userId.email %>';
+        console.log("name",name);
         var rzp = new Razorpay({
             key: 'rzp_test_hdRlvOizJD5EhB',
             amount: subTotal,
@@ -64,7 +66,8 @@
             description: 'Purchase Description',
             image: 'logo.png',
             handler: function (response) {
-                const data = { subtotal: subTotal / 100, addressId }; // Convert back to decimal
+               
+                const data = { subtotal: subTotal / 100, addressId ,response}; // Convert back to decimal
                 fetch('/processPayment', {
                     method: 'POST',
                     headers: {
@@ -85,8 +88,8 @@
                 });
             },
             prefill: {
-                name: 'John Doe',
-                email: 'john@example.com',
+                name: name,
+                email: email,
                 contact: '9999999999'
             },
             notes: {

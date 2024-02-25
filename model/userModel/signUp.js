@@ -18,7 +18,7 @@ const userData= new mongoose.Schema({
     },
     mobile:{
         type: Number,
-        require:true
+       
     },
 
     status:{

@@ -46,11 +46,13 @@ userRouter.get("/userOrder",controllers.userOrders)
 userRouter.get("/userAddress",controllers.userAddress)
 userRouter.get("/userWishlist",controllers.userWishlist)
 
+userRouter.get("/userWallet",controllers.loadWallet)
+userRouter.post('/editDetails',controllers.editDetails)
 
 
-//edit and delete address pending
+
 userRouter.post('/addAddress',controllers.addAddress)
-userRouter.post("/deleteAddress",controllers.deleteAddress)
+userRouter.post('/deleteaddress', controllers.deleteAddress);
 userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
 userRouter.get("/orderConfirm",controllers.OrderComplete)

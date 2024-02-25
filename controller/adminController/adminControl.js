@@ -13,6 +13,7 @@ const userModel = require("../../model/userModel/signUp")
 const categoryModel = require("../../model/adminModels/categoryModel")
 const orderModel = require("../../model/userModel/orderModel")
 const couponModel = require("../../model/adminModels/couponSchema")
+const  walletModel =require("../../model/userModel/wallet")
 const { log } = require("console")
 const bodyparser = require("body-parser")
 const productModel = require("../../model/adminModels/productModel")
@@ -35,36 +36,356 @@ const adminlogin = (req, res) => {
 }
 
 // ---------------------------------------------------admin home-----------
-const admindash = (req, res) => {
+const admindash = async (req, res) => {
     
-    res.render("adminHome")
+    const totalOnlineOrder = await orderModel.aggregate([
+        { 
+            $match: { 
+                'product.paymentType': 'ONLINE', 
+                'product.returnStatus': { $ne: 3 }, 
+                'product.adminStatus': { $ne: 5 }
+            } 
+        },
+        { 
+            $project: { 
+                product: { 
+                    $filter: { 
+                        input: '$product', 
+                        as: 'prod', 
+                        cond: { 
+                            $and: [
+                                { $eq: ['$$prod.paymentType', 'ONLINE'] }, 
+                                { $ne: ['$$prod.returnStatus', 3] }
+                            ] 
+                        } 
+                    } 
+                } 
+            } 
+        },
+        { $unwind: '$product' },
+        { 
+            $group: { 
+                _id: null, 
+                total: { $sum: '$product.total' } 
+            } 
+        }
+    ]);
+
+    const totalOflineOrder = await orderModel.aggregate([
+        { 
+            $match: { 
+                'product.paymentType': 'COD', 
+                'product.adminStatus': 4,
+                'product.returnStatus': { $ne: 3 }
+            } 
+        },
+        { 
+            $group: { 
+                _id: null, 
+                total: { $sum: '$subTotal' } 
+            } 
+        }
+    ]);
+
+    const totalOnline = totalOnlineOrder.length > 0 ? totalOnlineOrder[0].total : 0;
+    const totalOffline = totalOflineOrder.length > 0 ? totalOflineOrder[0].total : 0;
+    const overallSales = totalOffline + totalOnline;
+    console.log("overallSales:", overallSales);
+
+
+// total oredrs
+const numberOfOrders = await orderModel.aggregate([
+    { $match: {
+        "product.adminStatus": 4, // Match documents where adminStatus is equal to 4
+        "product.returnStatus": { $ne: 3 } // Match documents where returnStatus is not equal to 3
+      }
+    },
+    {
+        $project: {
+            productCount: { $size: '$product' }
+        }
+    },
+    {
+        $group: {
+            _id: null,
+            totalProductCount: { $sum: '$productCount' }
+        }
+    }
+]);
+
+// Access the total product count from the result
+const totalOrders = numberOfOrders.length > 0 ?  numberOfOrders[0].totalProductCount : 0;
+console.log('Total number of products:', totalOrders);
+
+// pending order to ship 
+const pendingToShipTotal = await orderModel.aggregate([
+    {
+      $unwind: "$product" // Unwind the product array
+    },
+    {
+      $match: {
+        "product.adminStatus": { $lt: 2 } // Match documents where adminStatus is less than 2
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 } // Count the number of matching documents
+      }
+    }
+  ]);
+  
+  const pendingToDeliverTotal = await orderModel.aggregate([
+    {
+      $unwind: "$product" // Unwind the product array
+    },
+    {
+      $match: {
+        "product.adminStatus": { $lt: 4 } // Match documents where adminStatus is less than 4
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 } // Count the number of matching documents
+      }
+    }
+  ]);
+  
+  // Extract the counts from the aggregation result
+  const pendingToShipCount = pendingToShipTotal.length > 0 ? pendingToShipTotal[0].count : 0;
+  const pendingToDeliverCount = pendingToDeliverTotal.length > 0 ? pendingToDeliverTotal[0].count : 0;
+  
+
+//pending returns
+const totalReturns = await orderModel.aggregate([
+    {
+      $unwind: "$product" // Unwind the product array
+    },
+    {
+      $match: {
+        "product.returnStatus": 3 // Match documents where returnStatus is 3
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalReturns: { $sum: 1 } // Count the number of documents
+      }
+    }
+  ]);
+  const totalRetuns = totalReturns.length > 0 ? totalReturns[0].totalReturns : 0;
+console.log( totalRetuns);
+
+// total orders
+const allOrders = await orderModel.aggregate([
+    {
+      $match: {
+        'product': { $exists: true, $ne: [] } // Match documents where the product array exists and is not empty
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalProductCount: { $sum: { $size: "$product" } }
+      }
+    }
+  ]);
+  
+  const totalOrdersCount = allOrders.length > 0 ? allOrders[0].totalProductCount : 0;
+  
+
+
+        
+            res.render("adminHome", { overallSales,totalOrders,pendingToShipCount, pendingToDeliverCount,totalRetuns,totalOrdersCount });
 }
 
 //-----------------------------------------------------------------admin home validation------------------------------------------------  
 
 const adminload = async (req, res) => {
-
     try {
         const email1 = req.body.email;
-        const password1 = req.body.password
+        const password1 = req.body.password;
         console.log(email1);
         console.log(password1);
-        const admindata = await admin.findOne({ email: email1, password: password1 })
+        const admindata = await admin.findOne({ email: email1, password: password1 });
         if (admindata) {
-
             req.session.admin = email1;
             console.log("admin", req.session.admin);
-            res.render("adminHome")
-        }
-        else {
-            res.render("login", { message: "email and password are incorrect" })
-        }
+
+            // Dash details
+            const totalOnlineOrder = await orderModel.aggregate([
+                { 
+                    $match: { 
+                        'product.paymentType': 'ONLINE', 
+                        'product.returnStatus': { $ne: 3 }, 
+                        'product.adminStatus': { $ne: 5 }
+                    } 
+                },
+                { 
+                    $project: { 
+                        product: { 
+                            $filter: { 
+                                input: '$product', 
+                                as: 'prod', 
+                                cond: { 
+                                    $and: [
+                                        { $eq: ['$$prod.paymentType', 'ONLINE'] }, 
+                                        { $ne: ['$$prod.returnStatus', 3] }
+                                    ] 
+                                } 
+                            } 
+                        } 
+                    } 
+                },
+                { $unwind: '$product' },
+                { 
+                    $group: { 
+                        _id: null, 
+                        total: { $sum: '$product.total' } 
+                    } 
+                }
+            ]);
+        
+            const totalOflineOrder = await orderModel.aggregate([
+                { 
+                    $match: { 
+                        'product.paymentType': 'COD', 
+                        'product.adminStatus': 4,
+                        'product.returnStatus': { $ne: 3 }
+                    } 
+                },
+                { 
+                    $group: { 
+                        _id: null, 
+                        total: { $sum: '$subTotal' } 
+                    } 
+                }
+            ]);
+        
+            const totalOnline = totalOnlineOrder.length > 0 ? totalOnlineOrder[0].total : 0;
+            const totalOffline = totalOflineOrder.length > 0 ? totalOflineOrder[0].total : 0;
+            const overallSales = totalOffline + totalOnline;
+            console.log("overallSales:", overallSales);
+        
+        
+        // total oredrs
+        const numberOfOrders = await orderModel.aggregate([
+            { $match: {
+                "product.adminStatus": 4, // Match documents where adminStatus is equal to 4
+                "product.returnStatus": { $ne: 3 } // Match documents where returnStatus is not equal to 3
+              }
+            },
+            {
+                $project: {
+                    productCount: { $size: '$product' }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProductCount: { $sum: '$productCount' }
+                }
+            }
+        ]);
+        
+        // Access the total product count from the result
+        const totalOrders = numberOfOrders.length > 0 ?  numberOfOrders[0].totalProductCount : 0;
+        console.log('Total number of products:', totalOrders);
+        
+        // pending order to ship 
+        const pendingToShipTotal = await orderModel.aggregate([
+            {
+              $unwind: "$product" // Unwind the product array
+            },
+            {
+              $match: {
+                "product.adminStatus": { $lt: 2 } // Match documents where adminStatus is less than 2
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 } // Count the number of matching documents
+              }
+            }
+          ]);
+          
+          const pendingToDeliverTotal = await orderModel.aggregate([
+            {
+              $unwind: "$product" // Unwind the product array
+            },
+            {
+              $match: {
+                "product.adminStatus": { $lt: 4 } // Match documents where adminStatus is less than 4
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 } // Count the number of matching documents
+              }
+            }
+          ]);
+          
+          // Extract the counts from the aggregation result
+          const pendingToShipCount = pendingToShipTotal.length > 0 ? pendingToShipTotal[0].count : 0;
+          const pendingToDeliverCount = pendingToDeliverTotal.length > 0 ? pendingToDeliverTotal[0].count : 0;
+          
+        
+        //pending returns
+        const totalReturns = await orderModel.aggregate([
+            {
+              $unwind: "$product" // Unwind the product array
+            },
+            {
+              $match: {
+                "product.returnStatus": 3 // Match documents where returnStatus is 3
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                totalReturns: { $sum: 1 } // Count the number of documents
+              }
+            }
+          ]);
+          const totalRetuns = totalReturns.length > 0 ? totalReturns[0].totalReturns : 0;
+        console.log( totalRetuns);
+
+
+// total orders
+const allOrders = await orderModel.aggregate([
+    {
+      $match: {
+        'product': { $exists: true, $ne: [] } // Match documents where the product array exists and is not empty
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        totalProductCount: { $sum: { $size: "$product" } }
+      }
     }
-    catch (error) {
+  ]);
+  
+  const totalOrdersCount = allOrders.length > 0 ? allOrders[0].totalProductCount : 0;
+  
+
+
+        
+            res.render("adminHome", { overallSales,totalOrders,pendingToShipCount, pendingToDeliverCount,totalRetuns,totalOrdersCount });
+     
+
+         
+        } else {
+            res.render("login", { message: "email and password are incorrect" });
+        }
+    } catch (error) {
         console.error(error);
     }
-
 }
+
 
 //-----------------------------admin delete sesssion----------
 
@@ -805,6 +1126,40 @@ if (status == 3) {
     } catch (error) {
         console.error("Error occurred while finding product details:", error);
     }
+
+    const userData = await orderModel.find({_id: orderId})
+    console.log("userData",userData);
+    const userId = userData[0].userId;
+
+    let retunedProduct = await orderModel.findOne(
+        { _id: orderId },
+        { product: { $elemMatch: { _id: productId } } }
+    );
+console.log("retunedProduct",retunedProduct);    
+  
+const  cancelledAmount = retunedProduct.product[0].total;
+// const userId = retunedProduct.userId;
+const currentDate = new Date();
+const day = currentDate.getDate();
+const month = currentDate.getMonth() + 1; // Note: January is 0, so we add 1
+const year = currentDate.getFullYear();
+
+const formattedDate = `${day}-${month}-${year}`;
+
+await walletModel.updateOne(
+    { userId: userId },
+    {
+        $inc: { balance: cancelledAmount },
+        $push: {
+            transaction: {
+                date: formattedDate,
+                amount: cancelledAmount,
+                reason: 'Refund for cancelled order'
+            }
+        }
+    }
+);
+
 }
 
 

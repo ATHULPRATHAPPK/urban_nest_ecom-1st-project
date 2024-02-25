@@ -314,6 +314,9 @@
                                     <li class="nav-item">
 								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="/userWishlist" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wishlist</a>
 								    </li>
+                                    <li class="nav-item">
+								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="/userWallet" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
+								    </li>
 								    
 								    <li class="nav-item">
 								        <a class="nav-link" href="/logout">Sign Out</a>
@@ -331,12 +334,88 @@
                                                         <h5 class="card-title">Personal Information</h5>
                                                         <div class="row">
                                                             <div class="col-md-6 mb-3">
-                                                                <p class="card-text" style="font-size: 16px;"><strong>Name:</strong> <%= message.name %></p>
+                                                                <p class="card-text" style="font-size: 16px;"><strong>Name:</strong> <span id="existingName"><%= message.name %></span></p>
                                                                 <p class="card-text" style="font-size: 16px;"><strong>Email:</strong> <%= message.email %></p>
-                                                                <p class="card-text" style="font-size: 16px;"><strong>Mobile:</strong> 12345678</p>
-                                                                <button class="btn btn-primary mt-3" style="font-size: 16px;" onclick="editInfo()">Edit</button>
+                                                                <p class="card-text" style="font-size: 16px;"><strong>Mobile:</strong> <span id="existingMobile"><%= message.mobile %></span></p>
+                                                                <button type="button" class="btn btn-primary mt-3" style="font-size: 16px;" data-toggle="modal" data-target="#editModal">
+                                                                    Edit
+                                                                </button>
                                                             </div>
                                                         </div>
+                                                        
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="editModalLabel">Edit Information</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form id="editForm">
+                                                                            <div class="form-group">
+                                                                                <label for="editName">Name</label>
+                                                                                <input type="text" class="form-control" id="editName" name="name" value="<%= message.name %>" required pattern="[^\s].*">
+                                                                                <small id="nameHelp" class="form-text text-muted">Name cannot be empty.</small>
+                                                                            
+                                                                            </div>
+                                                                            <div class="form-group">
+                                                                                <label for="editMobile">Mobile</label>
+                                                                                <input type="text" class="form-control" id="editMobile" name="mobile" value="<%= message.mobile %>" required pattern="[0-9]+" title="Please enter numbers only">
+                                                                                <small id="mobileHelp" class="form-text text-muted">Please enter numbers only.</small>
+                                                                            </div>
+                                                                            </div>
+                                                                            <!-- Add other form fields as needed -->
+                                                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+                                                        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+                                                        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+                                                    
+                                                       <!-- Add this script after the modal content -->
+<script>
+    // Handle form submission
+    $('#editForm').submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Get form data
+        const formData = $(this).serialize();
+        
+        // Send fetch request to editDetails router
+        fetch('/editDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Handle response data if needed
+            console.log(data);
+            // Close the modal
+            $('#editModal').modal('hide');
+            // Reload the page or update UI as needed
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle error and display a message to the user
+        });
+    });
+</script>
+
                                                         <div class="row">
                                                             <div class="col-md-6 mb-3">
                                                                 <!-- Dropdown button with increased size -->
@@ -345,7 +424,20 @@
                                                                       Password And Security
                                                                     </button>
                                                                     <ul class="dropdown-menu">
-                                                                        <li><a class="dropdown-item" href="#" onclick="openPasswordModal()">Change Password</a></li>
+                                                                        <li><a class="dropdown-item" href="/forgotpassword" onclick="confirmPasswordChange()">Change Password</a></li>
+
+                                                                        <script>
+                                                                            function confirmPasswordChange() {
+                                                                                // Show a confirmation dialog
+                                                                                if (confirm("Are you sure you want to change your password?")) {
+                                                                                    // If the user confirms, navigate to the forgotpassword route
+                                                                                    window.location.href = "/forgotpassword";
+                                                                                } else {
+                                                                                    // If the user cancels, do nothing
+                                                                                    return false;
+                                                                                }
+                                                                            }
+                                                                        </script>
                                                                         <li><a class="dropdown-item" href="#">Privacy & Security</a></li>                                                                  
                                                                     </ul>
                                                                 </div>

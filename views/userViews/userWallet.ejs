@@ -37,11 +37,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-0y8LxkFrb7VsVUosM5CPbjemfDdGKW5lAcn6nYen7FwRejLzZXTzhxUc+gjcRJrA+ZO8MIU5kMc+u7a4CPkLSg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -130,9 +129,9 @@
                             confirmButtonText: 'Yes, sign me out!'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                //confirmed, proceed with sign out action
+                                // User confirmed, proceed with sign out action
                                 // Replace the URL with the sign-out endpoint or action
-                                window.location.href = "logout"; // Example URL for sign-out action
+                                window.location.href = "/user-logout"; // Example URL for sign-out action
                             }
                         });
                     });
@@ -152,7 +151,12 @@
                         </a>
                     </div>
 
-                   
+                    <div class="header-center">
+                        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+
+                        </div><!-- End .header-search -->
+                    </div>
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
@@ -209,77 +213,19 @@
                                 <p>Cart</p>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-cart-products">
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Beige knitted elastic runner shoes</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $84.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="/user/assets/images/products/cart/product-1.jpg"
-                                                    alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Blue utility pinafore denim dress</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $76.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a class="product-image">
-                                                <img src="/public/images/logo nest.png" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-                                </div><!-- End .cart-product -->
-
-                                <div class="dropdown-cart-total">
-                                    <span>Total</span>
-
-                                    <span class="cart-total-price">$160.00</span>
-                                </div><!-- End .dropdown-cart-total -->
-
-                                <div class="dropdown-cart-action">
-                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
-                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div><!-- End .dropdown-cart-total -->
-                            </div><!-- End .dropdown-menu -->
-                        </div><!-- End .cart-dropdown -->
+                          
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 
-        </header><!-- End .header -->
+        </header><!-- End .header -->>
 
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('/user/assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Order Status</h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
+            <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">Wallet</h1>
+                </div><!-- End .container -->
+            </div><!-- End .page-header -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                 <div class="container">
                     <ol class="breadcrumb">
@@ -289,366 +235,107 @@
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
-
+        
             <div class="page-content">
-            	
-              
-                <!-- Custom CSS for additional styling -->
-                <style>
-                    /* Adjustments to match Bootstrap's spacing */
-                    .product-details {
-                        margin-top: 50px;
-                    }
-                    .product-image img {
-                        max-width: 100%;
-                        height: auto;
-                    }
-                    .step-wizard {
-
-   
-    height: auto;
-    width: 100%;
-    display: flex;
-  margin-top: 50px;
-    justify-content: center;
-    align-items: center;
-}
-.step-wizard-list{
-    background: #ffff;
-    color: #333;
-    list-style-type: none;
-    /* border: 1px solid rgb(236, 236, 236); */
-    border-radius: 10px;
-    display: flex;
-   
-    position: relative;
-    z-index: 10;
-}
-
-.step-wizard-item{
-    padding: 0 20px;
-    flex-basis: 0;
-    -webkit-box-flex: 1;
-    -ms-flex-positive:1;
-    flex-grow: 1;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    min-width: 170px;
-    position: relative;
-}
-.step-wizard-item + .step-wizard-item:after{
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 19px;
-    background: #808587;
-    width: 100%;
-    height: 2px;
-    transform: translateX(-50%);
-    z-index: -10;
-}
-.progress-count{
-    height: 40px;
-    width:40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: 600;
-    margin: 0 auto;
-    position: relative;
-    z-index:10;
-    color: transparent;
-}
-.progress-count:after{
-    content: "";
-    height: 40px;
-    width: 40px;
-    background: #119813;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: -10;
-}
-.progress-count:before{
-    content: "";
-    height: 10px;
-    width: 20px;
-    border-left: 3px solid #fff;
-    border-bottom: 3px solid #fff;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -60%) rotate(-45deg);
-    transform-origin: center center;
-}
-.progress-label{
-    font-size: 14px;
-    font-weight: 600;
-    margin-top: 10px;
-}
-.current-item .progress-count:before,
-.current-item ~ .step-wizard-item .progress-count:before{
-    display: none;
-}
-.current-item ~ .step-wizard-item .progress-count:after{
-    height:10px;
-    width:10px;
-}
-.current-item ~ .step-wizard-item .progress-label{
-    opacity: 0.5;
-}
-.current-item .progress-count:after{
-    background: #fff;
-    border: 2px solid #04bb14;
-}
-.current-item .progress-count{
-    color: #21d4fd;
-}
-                </style>
-    
-  
-         
-            
-            <hr>
-            <% if (locals.userAddress) { %>
-                <div class="col-md-6">
-                    <div class="product-image">
-                        <h4 class="fw-bold">Shipping Address</h4>
-                        <p>
-                            <%= userAddress.name %><br>
-                         Mob:   <%= userAddress.phone %><br>
-                            <%= userAddress.building %><br>
-                            <%= userAddress.city %><br>
-                            <%= userAddress.district %><br>
-                            <%= userAddress.state %><br>
-                            <%= userAddress.pincode %><br>
-                        </p>
-                    </div>
-                </div>
-            <% } %>
-            
-            <hr>
-         <%if (locals.trimmedOrderId)   { %>
-            <% if (locals.filteredProducts) { %> 
-                <% filteredProducts.forEach(product => { %>     
+                <div class="dashboard">
                     <div class="container">
-                        <div class="wrap-content">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="product">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="product-info" style="font-size: 16px; margin-top: 5px;">
-                                                    <img src="/uploads/<%= product.productImage[0].filename %>" alt="<%= product.name %>" style="max-width: 100%;">
+                        <div class="row">
+                            <aside class="col-md-4 col-lg-3">
+                                <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/account" role="tab" aria-controls="tab-orders" aria-selected="false">Dashboard</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/userOrder" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/userAddress" role="tab" aria-controls="tab-address" aria-selected="false">Addresses</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/userWishlist" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wishlist</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="/userWallet" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="/logout">Sign Out</a>
+                                    </li>
+                                </ul>
+                            </aside><!-- End .col-lg-3 -->
+                            <% if (locals.userWallet) { %>
+                                <div class="col-md-8 col-lg-9">
+                                    <div class="tab-content">
+                                        <div id="edit-profile-section" style="display: block;">
+                                  
+                                            <div class="mt-5">
+                                                <h3  style="font-size: 20px;">Your Wallet</h3>
+                                                <div class="table-responsive">
+                                                    <div class="d-flex">
+                                                        <div class="card p-4 w-100">
+                                                            <div class="d-flex flex-row justify-content-between text-align-center">
+                                                                <i class="fas fa-ellipsis-v"></i>
+                                                            </div>
+                                                            <p class="text-dark">Account Name: <%= userWallet.userId.name %></p>
+                                                            <div class="card-bottom pt-3 px-3 mb-2">
+                                                                <div class="d-flex flex-row justify-content-between text-align-center">
+                                                                    <div class="d-flex flex-column" style="color: #adb5bd; font-size: 13px;">
+                                                                        <span>Balance amount</span>
+                                                                        <p>$ <span class="text-black"><%= userWallet.balance %></span></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="new-div">
+                                                                <div class="car">
+                                                                    <div class="card-body">
+                                                                        <h4 class="card-title text-center">Transaction History</h4>
+                                                                        <hr>
+                                                                        <table class="table">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Date</th>
+                                                                                    <th>Amount</th>
+                                                                                    <th>Reason</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <% if (userWallet.transaction.length > 0) { %>
+                                                                                    <% userWallet.transaction.forEach(transaction => { %>
+                                                                                        <tr>
+                                                                                            <td><%= transaction.date %></td>
+                                                                                            <td>₹<%= transaction.amount %></td>
+                                                                                            <td><%= transaction.reason %></td>
+                                                                                        </tr>
+                                                                                    <% }); %>
+                                                                                <% } else { %>
+                                                                                    <tr>
+                                                                                        <tr>
+                                                                                            <td colspan="3" style="font-size: 20px;">No transactions</td>
+                                                                                        </tr>
+                                                                                        
+                                                                                    </tr>
+                                                                                <% } %>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <!-- <button class="btn text-white w-100" style="background-color: #3E454D">Button Label</button> -->
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="product-info" style="font-size: 16px;">
-                                        <strong class="fw-bold" style="margin-bottom: 5px;"><%= product.name %></strong> <br>
-                                        <strong>Quantity:</strong> <%= product.quantity %><br>
-                                        <strong>Total:</strong> <%= product.total %> <br>
-                                        <% if (locals.productDetails) { %>   
-                                            <strong>Brand:</strong> <%= productDetails.brandName %> <br>
-                                            <strong>Processor:</strong> <%= productDetails.processor %> <br>
-                                            <strong>Internal storage:</strong> <%= productDetails.internalStorage %> <br>
-                                            <strong>RAM:</strong> <%= productDetails.ram %> <br>
-                                            <strong>Color:</strong> <%= productDetails.color %> <br>
-                                            <strong>Description:</strong> <%= productDetails.description %> <br>
-                                        <% } %>
-                                
-                                        <% if (product.adminStatus <= 4) { %>
-                                            <% if (product.adminStatus < 4) { %>
-                                                <button class="btn btn-danger btn-lg" onclick="confirmCancellation('<%= product._id %>', '<%= trimmedOrderId %>')">Cancel</button>
-                                            <% } else if (product.adminStatus == 4) { %>
-                                                     <% if(product.returnStatus==1) { %>
-
-                                                        <p><h1 style="color: rgb(22, 9, 209);"> Return requested</h1></p>
-                                                    <% } else if (product.returnStatus== 2) { %>
-                                                        <p><h1 style="color: rgb(250, 63, 0);"> Return rejected</h1></p>
-                                                
-                                                    <% }  else if (product.returnStatus== 3  ) { %>
-                                                        <p><h1 style="color: rgb(0, 255, 13);"> Return Approved</h1></p>
-                                                
-                                                    <% } 
-                                                
-                                                else { %>
-                                                <!-- Button to open textarea for return request -->
-                                                <button class="btn btn-primary btn-lg" onclick="openReturnTextArea('<%= product._id %>')">Return</button>
-                                                <!-- Textarea for return request -->
-                                                <div id="returnTextArea<%= product._id %>" style="display: none;">
-                                                    <textarea class="form-control" id="returnReason<%= product._id %>" rows="3"></textarea>
-                                                    <button class="btn btn-success" onclick="confirmReturn('<%= product._id %>','<%= trimmedOrderId %>')">Submit Return</button>
-                                                </div>
-                                           <% } %>
-
-                                            <% } %>
-                                        <% } else { %>
-                                            <p><h1 style="color: red;">Order Cancelled</h1></p>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                
-                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-                                
-                                <script>
-                                    function openReturnTextArea(productId) {
-                                        const returnTextArea = document.getElementById('returnTextArea' + productId);
-                                        returnTextArea.style.display = 'block';
-                                    }
-                                
-                                    function confirmReturn(productId,orderId) {
-                                        const returnReason = document.getElementById('returnReason' + productId).value;
-                                        Swal.fire({
-                                            title: "Are you sure?",
-                                            text: "You want to submit this return request?",
-                                            icon: "warning",
-                                            buttons: true,
-                                            dangerMode: true,
-                                        }).then((willSubmit) => {
-
-                                            if (willSubmit.isConfirmed) {
-                                                console.log("if is working....");
-                                                
-                                                submitReturn(productId,orderId, returnReason);
-                                            } else {
-                                                
-                                                const returnTextArea = document.getElementById('returnTextArea' + productId);
-                                                returnTextArea.style.display = 'none';
-                                            }
-                                        });
-                                    }
-                                
-                                    function submitReturn(productId,orderId, returnReason) {
-                                     
-                                    
-                                        fetch('/returnRequest', {
-                                           
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                                productId: productId,
-                                                orderId:orderId,
-                                                returnReason: returnReason,
-                                               
-
-                                            }),
-                                        }).then(response => response.json())
-                                          .then(data => {
-                                              console.log(data);
-                                              Swal.fire("Return Request Submitted Successfully", {
-                                                  icon: "success",
-                                               
-                                              },window.location.reload());
-                                              const returnTextArea = document.getElementById('returnTextArea' + productId);
-                                              returnTextArea.style.display = 'none';
-                                          })
-                                          .catch((error) => {
-                                              console.error('Error:', error);
-                                              Swal.fire("Error occurred while submitting return request", {
-                                                  icon: "error",
-                                              });
-                                              const returnTextArea = document.getElementById('returnTextArea' + productId);
-                                              returnTextArea.style.display = 'none';
-                                          });
-                                    }
-                                </script>
-                                
-                                
-                                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-                                
-                                <script>
-                                    function confirmCancellation(productId, orderId) {
-                                        Swal.fire({
-                                            title: 'Are you sure?',
-                                            text: 'Do you want to cancel this order?',
-                                            icon: 'warning',
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Yes, cancel it!',
-                                            cancelButtonText: 'No, keep it'
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                cancelOrder(productId, orderId);
-                                            }
-                                        });
-                                    }
-                                
-                                    function cancelOrder(productId, orderId) {
-                                        fetch('/cancelOrder', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                productId: productId,
-                                                orderId: orderId
-                                            })
-                                        }).then(response => {
-                                            // Handle response
-                                            window.location.reload()
-                                        }).catch(error => {
-                                            // Handle error
-                                        });
-                                    }
-                                </script>
-                                
-                            </div>
-                        </div>
-                    </div>
-            
-                    <% if (product.adminStatus !== 5) { %>
-                        <div class="row">
-                            <section class="step-wizard">
-                                <ul class="step-wizard-list">
-                                    <li class="step-wizard-item">
-                                        <span class="progress-count"></span>
-                                        <span class="progress-label">Order Confirmed</span>
-                                    </li>
-                                    <li class="step-wizard-item current-item">
-                                        <span class="progress-count"></span>
-                                        <span class="progress-label">Packed</span>
-                                    </li>
-                                    <li class="step-wizard-item">
-                                        <span class="progress-count"></span>
-                                        <span class="progress-label">Shipped</span>
-                                    </li>
-                                    <li class="step-wizard-item">
-                                        <span class="progress-count"></span>
-                                        <span class="progress-label">Delivered</span>
-                                    </li>
-                                </ul>
-                            </section>
-                        </div>
-                    <% } %>
-            
-                    <!-- Script for progress bar -->
-                    <script>
-                        const stepWizardItems = document.querySelectorAll('.step-wizard-item');
-                        const status = <%= product.adminStatus %>;
-                        window.onload = function() {
-                            goToStep(status); // Call goToStep() with the desired step number (e.g., 2)
-                        };
-                    </script>
-                <% }) %>
-            <% } %>
-            
-          <% } %>  
-            
-            
-
-
-
+                                </div><!-- End .col-lg-9 -->
+                            <% } %>
+                            
+                        </div><!-- End .row -->
+                    </div><!-- End .container -->
+                </div><!-- End .dashboard -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+        
+
         <footer class="footer">
 
             <div class="footer-middle">
@@ -937,36 +624,8 @@
         </div><!-- End .mobile-menu-wrapper -->
     </div><!-- End .mobile-menu-container -->
 
-
-
- 
     
-   
-    <script>
-        // Function to update the step based on the passed argument
-        function goToStep(step) {
-            // Convert the step argument to a number
-            const value  = parseInt(step);
-            const targetStep = value+1;
 
-            // If the target step is within the range of steps
-            if (targetStep >= 1 && targetStep-1 <= stepWizardItems.length) {
-                // Remove the 'current-item' class from all items
-                stepWizardItems.forEach(item => {
-                    item.classList.remove('current-item');
-                });
-
-                // Add the 'current-item' class to the target step
-                stepWizardItems[targetStep - 1].classList.add('current-item');
-            } else {
-                console.log('Invalid step');
-            }
-        }
-
-        // Call goToStep() function with the desired step number when the page loads
-       
-    </script>
-    
     <!-- Plugins JS File -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -986,8 +645,6 @@
     <!-- Main JS File -->
     <script src="/user/assets/js/main.js"></script>
     <script src="/user/assets/js/demos/demo-4.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 </body>
 
 
