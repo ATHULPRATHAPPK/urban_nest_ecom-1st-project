@@ -89,7 +89,12 @@ const orderSchema = new mongoose.Schema({
         default:true,
         type: Boolean,
         required: true
-    }
+    },
+    date: {
+        type: Date,
+        default: Date.now
+      }
+      
           
  
 })

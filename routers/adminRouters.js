@@ -10,7 +10,8 @@ adminRouter.set("view engine", "ejs")
 adminRouter.set("views", "views/adminViews")
 const bodyparser = require("body-parser")
 
-const adminMiddleware = require("../middleware/adminMiddleware")
+const adminMiddleware = require("../middleware/adminMiddleware");
+const { isLogin } = require("../middleware/userMiddleware");
 
 adminRouter.use(bodyparser.urlencoded({ extended: true }))
 adminRouter.use(bodyparser.json())
@@ -79,6 +80,9 @@ adminRouter.post("/adminReturnStatus",adminMiddleware.isLogin,controllers.update
 adminRouter.get("/coupon",adminMiddleware.isLogin,controllers.loadCoupon)
 adminRouter.post("/addCoupon",adminMiddleware.isLogin,controllers.addCoupon)
 adminRouter.post("/deleteCoupon",adminMiddleware.isLogin,controllers.deleteCoupon)
-
+adminRouter.get("/SalesDash",adminMiddleware.isLogin,controllers.loadSalesDash)
+adminRouter.put("/generateReport",adminMiddleware.isLogin,controllers.generateSalesReport)
+adminRouter.post('/generateMonthlyReport',adminMiddleware.isLogin,controllers.generateMonthlyReport)
+adminRouter.post('/generateWeeklyReport',adminMiddleware.isLogin,controllers.generateWeeklyReport)
 
 module.exports = adminRouter

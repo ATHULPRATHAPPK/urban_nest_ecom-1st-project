@@ -4,17 +4,21 @@ const path = require("path")
 const express = require("express")
 const app = express()
 const paypal = require("paypal-rest-sdk")
+const puppeteer=require("puppeteer")
 const ejs = require("ejs")
 const userModel = require("../../model/userModel/signUp")
 const otpModel = require("../../model/userModel/otp")
 const cartModel = require("../../model/userModel/cart")
 const addressModel = require("../../model/userModel/addressModel")
+const moment = require('moment');
+const categoryModel = require("../../model/adminModels/categoryModel")
 const orderModel = require("../../model/userModel/orderModel")
 const productModel = require("../../model/adminModels/productModel")
 const wishlistModel = require("../../model/userModel/wishlist")
 const couponModel = require("../../model/adminModels/couponSchema")
 const walletModel = require("../../model/userModel/wallet")
-const { log } = require("console")
+
+const { log, Console } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
 const nodemailer = require("nodemailer")
@@ -632,7 +636,7 @@ const loadCart = async (req, res) => {
             else {
                 console.log("user cart not presnt");
                 const noCartDetails = "no user presnt"
-                res.render("cart", { noCartDetails, })
+                res.render("cart", { noCartDetails })
             }
         }
         else {
@@ -826,7 +830,9 @@ const updateQuantity = async (req, res) => {
 
         console.log("Received productId:", productId);
         console.log("Received newQuantity:", newQuantity);
-
+        const productDetaills = await productModel.find({_id:productId})
+        console.log(productDetaills[0].quantity," quantity");
+if(productDetaills[0].quantity >= newQuantity){
         const cart = await cartModel.findOne({ userId: userId, "product.productId": productId });
         if (cart) {
             const product = cart.product.find(product => product.productId === productId);
@@ -860,6 +866,9 @@ const updateQuantity = async (req, res) => {
             { $set: { "product.$.quantity": newQuantity } }
         );
         res.status(200).json({ success: true });
+}else{
+    res.status(200).json({ success: productDetaills[0].quantity });
+}
     } catch (error) {
         console.error("Error updating quantity:", error);
         res.status(500).json({ success: false, error: "Internal server error" });
@@ -1030,12 +1039,16 @@ const loadCheckout = async (req, res) => {
 
             res.render('checkout', { userAddress, message, userCart, error: 'can not continue without selecting an address' });
         } else if (!userCart) {
+
             res.render('checkout', { userAddress, message, userCart, error: 'your cart is empty' });
         }
 
         else {
 
-            res.render("checkout", { userAddress, userCart, message })
+            const userWallet = await walletModel.find({userId:userId })
+            const walletBalance = userWallet[0].balance
+console.log(walletBalance,"walletBalance");
+            res.render("checkout", { userAddress, userCart, message,  walletBalance})
         }
     }
     else {
@@ -1054,7 +1067,7 @@ const loadOrder = async (req, res) => {
     const userId = userData._id
     console.log(" userId ", userId);
     const paymentMode = req.body.paymentOption
-
+    const couponCode = req.body.couponId;
     if (req.session.userId) {
         const selectedAddressId = req.body.selectedAddressId;
         if (selectedAddressId) {
@@ -1062,31 +1075,48 @@ const loadOrder = async (req, res) => {
             if (paymentMode === 'Online Payment') {
 
                 console.log("payment is online");
-                const couponCode = req.body.couponId;
+             
 
 
-                // if(couponCode ){
+                if(couponCode ){
+
+                    const coupenDetails = await couponModel.findOne({ code: couponCode })
+                    const cartDetails = await cartModel.findOne({ userId: userId }).populate("userId")
+                    const userCart = await cartModel.findOne({ userId: userId })
+                    for (const cartProduct of userCart.product) {
+                        const product = await productModel.findOne({ _id: cartProduct.productId });
+
+                        if (product) {
+                            product.quantity -= cartProduct.quantity;
+                            if (product.quantity) {
+                                console.log("this if is working");
+                                await product.save();
+                            } else {
+                                // The product is less than one
+                                console.log("this else is working");
+                                res.redirect("/login");
+                                return; // Return here to prevent further processing
+                            }
+                        }
+                    }
+
+                    const newSubTotal = userCart.subTotal - coupenDetails.discountAmount
+                   
+                    res.render("payment", { cartDetails, subTotal:newSubTotal , selectedAddressId })
+
+                }else{
+
+                    const cartDetails = await cartModel.findOne({ userId: userId }).populate("userId")
+                    const subTotal = cartDetails.subTotal
+                    console.log(cartDetails);
+                    res.render("payment", { cartDetails, subTotal, selectedAddressId })
+
+                }
+              
 
 
-                // console.log("coupon present...");
-
-
-                // }else{
-
-                // const cartDetails = await cartModel.findOne({userId:userId})
-
-
-
-
-                // }
-                const cartDetails = await cartModel.findOne({ userId: userId }).populate("userId")
-                const subTotal = cartDetails.subTotal
-                console.log(cartDetails);
-                res.render("payment", { cartDetails, subTotal, selectedAddressId })
-
-
-            } else {
-                const couponCode = req.body.couponId;
+            } else if(paymentMode === 'Cash On Delivery'){
+                
                 if (couponCode) {
 
                     console.log("coupen present", couponCode);
@@ -1186,6 +1216,174 @@ const loadOrder = async (req, res) => {
                         res.redirect("/checkout?error=address_not_selected");
                     }
                 }
+            }else{
+                console.log("payment is from wallet");
+
+                const userWallet = await walletModel.find({userId:userId})
+                const walletBalance = userWallet[0].balance 
+               
+                const userCart = await cartModel.find({userId:userId})
+                const cartTotal = userCart[0].subTotal
+               console.log(cartTotal,walletBalance);
+
+              
+                    console.log("wallet using ");
+                
+                if (couponCode) {
+
+                    console.log("coupen present", couponCode);
+                    const coupenDetails = await couponModel.findOne({ code: couponCode })
+                    const userCart = await cartModel.findOne({ userId: userId })
+                    for (const cartProduct of userCart.product) {
+                        const product = await productModel.findOne({ _id: cartProduct.productId });
+
+                        if (product) {
+                            product.quantity -= cartProduct.quantity;
+                            if (product.quantity >= 0) {
+                                await product.save();
+                            } else {
+                                // The product is less than one
+                                res.redirect("/login");
+                                return; // Return here to prevent further processing
+                            }
+                        }
+                    }
+                    const userAddress = await addressModel.findOne({ userId: userId });
+
+                    const newSubTotal = userCart.subTotal - coupenDetails.discountAmount
+                    console.log(" newSubTotal", newSubTotal);
+                    if (userAddress) {
+                        const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                        const orderDetails = orderModel({
+                            userId: userId,
+                            address: selectedAddress,
+
+                            product: userCart.product.map(product => ({
+                                productId: product.productId,
+                                name: product.name,
+                                quantity: product.quantity,
+                                price: product.price,
+                                total: product.total,
+                                paymentType: 'Online Payment',
+                                productImage: product.productImage
+                            })),
+                            subTotal: newSubTotal
+                        });
+                        await orderDetails.save();
+                        await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+                       
+                        console.log(userId);
+                        await couponModel.updateOne({ code: couponCode }, { $push: { userIds: userId } });
+// update wallet amount------------------------
+const currentDate = new Date();
+            const day = currentDate.getDate();
+            const month = currentDate.getMonth() + 1; // Note: January is 0, so we add 1
+            const year = currentDate.getFullYear();
+
+            const formattedDate = `${day}-${month}-${year}`;
+            const newWalletBalance =  walletBalance- newSubTotal 
+            // Increment balance and push new transaction
+            console.log("newWalletBalance",newWalletBalance);
+            console.log("walletBalance",walletBalance);
+            console.log("newSubTotal ",newSubTotal );
+
+            await walletModel.updateOne(
+                { userId: userId },
+                {
+                    $set: { balance: newWalletBalance },
+                    $push: {
+                        transaction: {
+                            date: formattedDate,
+                            amount: newSubTotal,
+                            reason: 'product purchased'
+                        }
+                    }
+                }
+            );
+            res.redirect("/orderConfirm");
+//-------------------------
+                    } else {
+                        res.redirect("/checkout?error=address_not_selected");
+                    }
+
+                }
+                else {
+                    console.log("without coupen is working");
+                    const userCart = await cartModel.findOne({ userId: userId })
+                    for (const cartProduct of userCart.product) {
+                        const product = await productModel.findOne({ _id: cartProduct.productId });
+                        // console.log("product in the product model is", product);
+                        if (product) {
+                            product.quantity -= cartProduct.quantity;
+                            if (product.quantity >= 0) {
+                                await product.save();
+                            } else {
+                                // The product is less than one
+                                res.redirect("/login");
+                                return; // Return here to prevent further processing
+                            }
+                        }
+                    }
+
+                    // After processing all cart products, create the order
+                    const userAddress = await addressModel.findOne({ userId: userId });
+                    if (userAddress) {
+                        const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
+                        const orderDetails = orderModel({
+                            userId: userId,
+                            address: selectedAddress,
+
+                            product: userCart.product.map(product => ({
+                                productId: product.productId,
+                                name: product.name,
+                                quantity: product.quantity,
+                                price: product.price,
+                                total: product.total,
+                                paymentType: 'Online Payment',
+
+                                productImage: product.productImage
+                            })),
+                            subTotal: userCart.subTotal
+                        });
+                        await orderDetails.save();
+                        await cartModel.deleteOne({ userId: userId }); // Delete cart when payment completed
+
+                        const currentDate = new Date();
+                        const day = currentDate.getDate();
+                        const month = currentDate.getMonth() + 1; // Note: January is 0, so we add 1
+                        const year = currentDate.getFullYear();
+            
+                        const formattedDate = `${day}-${month}-${year}`;
+                        const newWalletBalance =  walletBalance- cartTotal
+                        // Increment balance and push new transaction
+                        console.log("newWalletBalance",newWalletBalance);
+                        console.log("walletBalance",walletBalance);
+                        console.log("newSubTotal ",cartTotal );
+            
+                        await walletModel.updateOne(
+                            { userId: userId },
+                            {
+                                $set: { balance: newWalletBalance },
+                                $push: {
+                                    transaction: {
+                                        date: formattedDate,
+                                        amount: cartTotal,
+                                        reason: 'product purchased'
+                                    }
+                                }
+                            }
+                        );
+                        
+                        res.redirect("/orderConfirm");
+
+
+
+
+                    } else {
+                        res.redirect("/checkout?error=address_not_selected");
+                    }
+                }
+        
             }
         } else {
             res.redirect("/checkout?error=address_not_selected");
@@ -1660,6 +1858,136 @@ const loadWallet = async (req, res) => {
     }
 }
 
+//----------------------------------------------------------------------------------// 
+//=================== coupon product   ==========================================//
+//----------------------------------------------------------------------------------// 
+
+const userCoupon = async (req,res)=>{
+
+
+    if (req.session.userId) {
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+        const message = userData
+      
+        const coupons =  await  couponModel.find()
+
+
+        res.render("usercoupon",{coupons,message})
+     
+    }
+    else {
+        res.redirect("/login")
+    }
+
+}
+
+//----------------------------------------------------------------------------------// 
+//=================== invoice     ==========================================//
+//----------------------------------------------------------------------------------// 
+
+
+const loadInvoice = async (req, res) => {
+    try {
+        const productId = req.params.productId ; // Use req.params for URL parameters
+        const orderId = req.query.orderId;
+        console.log(orderId, "orderId ", productId, " productId");
+        
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId });
+            const userId = userData._id;
+            const message = userData;
+        
+            const orderData = await orderModel.find({ _id: orderId });
+            console.log("orderData", orderData);
+            const filteredProducts = orderData.flatMap(order => {
+                return order.product.filter(product => String(product._id) === productId);
+            });
+            console.log("filteredProducts",filteredProducts)
+    
+           
+
+          
+
+            const dateString = orderData[0].date;
+            const originalDate = new Date(dateString);
+            const formattedDate = moment(originalDate).format('DD/MM/YYYY');
+            console.log(formattedDate); 
+            
+            
+            const data = {
+                order: orderData,
+                filteredProducts: filteredProducts,
+                user: userData,
+                date:formattedDate 
+            };
+            
+
+const ejsTemplate = path.resolve(__dirname,'../../views/userViews/invoice.ejs');
+
+
+      const ejsData = await ejs.renderFile(ejsTemplate, data);
+  
+//       // Launch Puppeteer and generate PDF
+      const browser = await puppeteer.launch({ headless: true });
+      const page = await browser.newPage();
+      await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+      const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+  
+//       // Close the browser
+      await browser.close();
+  
+//       // Set headers for inline display in the browser
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'inline; filename=order_invoice.pdf'
+      }).send(pdfBuffer);
+
+
+  
+            
+             
+            
+        }else {
+            res.redirect("/login");
+        }
+    } catch (error) {
+        console.error(error);
+       
+    }
+};
+
+const changePassword = async  (req,res)=>{
+    try {
+
+const { currentPassword, newPassword } = req.body
+if (req.session.userId) {
+    const userData = await userModel.findOne({ email: req.session.userId });
+    const userId = userData._id;
+    
+    if (userData.password === currentPassword) {
+        console.log("Password is correct");
+
+console.log(userId,"userId");
+        await userModel.updateOne({ _id: userId }, { $set: { password: newPassword } })
+
+        return res.status(200).send({ message: 'Password changed successfully' });
+        
+    } else {
+        console.log("Password mismatch");
+        // Send response to frontend
+        return res.status(400).send({ message: 'Password is incorrect' });
+    }
+}
+else {
+    res.redirect("/login")
+}
+} catch (error) {
+    console.error(error);
+   
+}
+}
+
 
 
 module.exports = {
@@ -1688,7 +2016,7 @@ module.exports = {
     userAddress,
     userWishlist,
     editDetails,
-
+    changePassword,
 
     addAddress,
     deleteAddress,
@@ -1704,5 +2032,7 @@ module.exports = {
     addWishlist,
     removeWishlist,
     addUserCoupon,
-    loadWallet
+    loadWallet,
+    userCoupon,
+    loadInvoice 
 }

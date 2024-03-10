@@ -259,56 +259,79 @@
             <div class="d-flex justify-content-center align-items-center" ><h3>Edit Category</h3></div>
           <div class="content-wrapper">
            <div>
-            <form  action="/editCategory" method="post" >
-
-             
-            
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="btn btn-gradient-primary">Main Category</span>
-                </div>
-                <select name="mainCategory" class="form-select"  value="<%= message.category %>" id="inputGroupSelect02" required>
-                  
-                    <option value="laptops">Laptops</option>
-                    <option value="mobile">Mobiles</option>
-                    <option value="tablets">Tablets</option>
-                </select>
-                
-            </div>
-            <div  class="input-group mb-3">
-                <div  class="input-group-prepend">
-                    <span  class="btn btn-gradient-primary">Subcategory</span>
-                </div>
-              
-                <input id="subcategoryInput"  name="subcategory"  type="text" class="form-control"  value="<%= message.subcategory %>" required>
-            </div>
-            <script>
-              document.getElementById('subcategoryInput').addEventListener('input', function() {
-                  this.value = this.value.toLowerCase();
-              });
-          </script>
-            <% if(typeof locals.duplicates != "undefined") { %>
-                <div class="d-flex justify-content-center">   <a class="text-danger" style="text-decoration: none;"><%= duplicates %></a>
-                </div>
-                 <% } %>
-            
-            
-            <div class="form-floating">
-                <textarea name="discription" class="form-control" id="floatingTextarea2" style="height: 100px"><%= message.discription %></textarea>
-                <label for="floatingTextarea2">Category Description</label>
-            </div>
-            <input  type="hidden" name="id" value="<%= message._id %>" >
-             
-            <div class="d-flex justify-content-end mt-2"> 
-              <button type="button" class="btn btn-outline-primary btn-fw" onclick="showConfirmation()">Save Changes</button>
-          </div>
-            
-
-       
-             
-        </form>
+            <form id="editCategoryForm" action="/editCategory" method="post">
+              <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                      <span class="btn btn-gradient-primary">Main Category</span>
+                  </div>
+                  <select name="mainCategory" class="form-select" value="<%= message.category %>" id="inputGroupSelect02" required>
+                      <option value="laptops">Laptops</option>
+                      <option value="mobile">Mobiles</option>
+                      <option value="tablets">Tablets</option>
+                  </select>
+              </div>
+              <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                      <span class="btn btn-gradient-primary">Subcategory</span>
+                  </div>
+                  <input id="subcategoryInput" name="subcategory" type="text" class="form-control" value="<%= message.subcategory %>" required pattern="[a-zA-Z0-9\s]+" title="Subcategory can only contain letters, numbers, and spaces">
+              </div>
+              <script>
+                  document.getElementById('subcategoryInput').addEventListener('input', function() {
+                      this.value = this.value.replace(/[^\w\s]/gi, ''); // Removes symbols
+                  });
+              </script>
+              <% if(typeof locals.duplicates != "undefined") { %>
+                  <div class="d-flex justify-content-center">
+                      <a class="text-danger" style="text-decoration: none;"><%= duplicates %></a>
+                  </div>
+              <% } %>
+              <div class="form-floating">
+                  <textarea name="discription" class="form-control" id="floatingTextarea2" style="height: 100px" required><%= message.discription %></textarea>
+                  <label for="floatingTextarea2">Category Description</label>
+              </div>
+              <input type="hidden" name="id" value="<%= message._id %>">
+              <div class="d-flex justify-content-end mt-2">
+                  <button type="button" class="btn btn-outline-primary btn-fw" onclick="validateForm()">Save Changes</button>
+              </div>
+          </form>
    
        
+          <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+          <script>
+            function validateForm() {
+                // Get the input value
+                const subcategoryInput = document.getElementById('subcategoryInput').value;
+          
+                // Regular expression to check for symbols
+                const symbolRegex = /[^\w\s]/gi;
+          
+                // Check if the input value contains symbols
+                if (symbolRegex.test(subcategoryInput)) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Subcategory cannot contain symbols.',
+                        icon: 'error',
+                    });
+                    return;
+                }
+          
+                // Check if the input value is empty
+                if (subcategoryInput.trim() === "") {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Subcategory cannot be empty.',
+                        icon: 'error',
+                    });
+                    return;
+                }
+          
+                // If validation passes, submit the form
+                document.getElementById('editCategoryForm').submit();
+            }
+          </script>
+          
         
    </div>
           
@@ -342,7 +365,7 @@
       }).then((result) => {
           if (result.isConfirmed) {
               // If the user clicks the Confirm button, submit the form
-              document.getElementById('yourFormId').submit(); // Replace 'yourFormId' with the actual ID of your form
+              document.getElementById('editCategoryForm').submit();
           }
       });
   }

@@ -270,8 +270,13 @@
                 <i class="mdi mdi-chart-bar menu-icon"></i>
               </a>
             </li>
-           
-          
+            <li class="nav-item">
+              <a class="nav-link" href=" /SalesDash">
+                <span class="menu-title">Sales Report</span>
+                <i class="mdi mdi-chart-bar menu-icon"></i>
+              </a>
+            </li>
+            
           </ul>
         </nav>
         <!-- partial -->
@@ -393,56 +398,102 @@
                 </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-7 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <canvas id="myPieChart" width="400" height="400"></canvas>
-                    <script>
-                        // Get the canvas element
-                        const ctx = document.getElementById('myPieChart').getContext('2d');
-                     const returnd =   '<%= locals.totalRetuns%>' ;
-                     const delivered = '<%= locals.totalOrders%>' ;
-                       // Define data for the pie chart
-// Define data for the pie chart
-const data = {
-    labels: ['Returns', 'Delivered'],
-    datasets: [{
-        label: 'Orders',
-        data: [parseInt(returnd), parseInt(delivered)],
-        backgroundColor: [
-            'rgba(255, 99, 132, 0.5)', // Red for Returns
-            'rgba(54, 162, 235, 0.5)'   // Blue for Delivered
-        ],
-        borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)'
-        ],
-        borderWidth: 1
-    }]
-};
-
-
-                        
-                        // Create the pie chart
-                        const myPieChart = new Chart(ctx, {
-                            type: 'pie',
-                            data: data,
-                            options: {
-                                responsive: false,
-                                maintainAspectRatio: false,
-                                title: {
-                                    display: true,
-                                    text: 'Orders Status'
-                                }
+          <div class="row">
+            <div class="col-md-6">
+    <div class="card">
+        <div class="card-body">
+            <p style="font-size: 30px;">Overall Order Details</p>
+            <canvas id="myPieChart" width="300" height="300"></canvas>
+            <p style="color: red;">Return Orders: <%= locals.totalRetuns %></p>
+            <p style="color: red;">Delivered Orders: <%= locals.totalOrders %></p>
+            <p style="color: red;">Cancelled Orders: <%= locals.cancelled %></p>
+            <p style="color: red;">Pending Orders To Deliver: <%=locals.pendingToDeliverCount %></p>
+            <script>
+                // Get the canvas element
+                const ctx = document.getElementById('myPieChart').getContext('2d');
+                const returnd = '<%= locals.totalRetuns%>';
+                const delivered = '<%= locals.totalOrders%>';
+                const cancelled = "<%= locals.cancelled%>";
+                const pendingToDelivery = "<%=locals.pendingToDeliverCount%>";
+                // Define data for the pie chart
+                const data = {
+                    labels: ['Returns', 'Delivered', 'Cancelled', 'Pending to Deliver'],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [parseInt(returnd), parseInt(delivered), parseInt(cancelled), parseInt(pendingToDelivery)],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)', // Red for Returns
+                            'rgba(54, 162, 235, 0.5)', // Blue for Delivered
+                            'rgba(255, 205, 86, 0.5)', // Yellow for Cancelled
+                            'rgba(90, 92, 192, 0.5)' // Green for Pending to Deliver
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 205, 86, 1)',
+                            'rgba(90, 92, 192, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+                // Create the pie chart
+                const myPieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        title: {
+                            display: true,
+                            text: 'Orders Status'
+                        }
+                    }
+                });
+            </script>
+        </div>
+    </div>
+          </div>
+        <div class="col-md-6">
+    <p style="font-size: 30px;">Monthly Sales revenue <i class="mdi mdi-chart-line mdi-24px float-right"></i></p>
+    <canvas id="monthlySalesChart" width="800" height="400"></canvas>
+    <script>
+        // Data obtained from the backend
+        const dataForGraph = JSON.parse('<%- JSON.stringify(locals.dataForGraph) %>');
+    
+        // Render the graph dynamically
+        renderChart(dataForGraph);
+    
+        function renderChart(data) {
+            const ctx = document.getElementById('monthlySalesChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.months,
+                    datasets: [{
+                        label: 'Monthly Sales',
+                        data: data.sales,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
                             }
-                        });
-                    </script>
-                </div>
-                </div>
-              </div>
-             
-            </div>
+                        }]
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+
+        
+</div>
+
           
           <!-- --------------------------------- -->
             

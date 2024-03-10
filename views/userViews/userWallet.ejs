@@ -169,52 +169,33 @@
                                 <p>Compare</p>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a>
-                                        </h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a>
-                                        </h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
+                            
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="/userWishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count badge">3</span>
+                                   
                                 </div>
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
 
                         <div class="dropdown cart-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" data-display="static">
+                            <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
+                                    <form method="post" action="/cart">
                                     <i class="icon-shopping-cart"></i>
-                                    <span class="cart-count">2</span>
+                                    <!-- <span class="cart-count">2</span> -->
+                                </form>
                                 </div>
                                 <p>Cart</p>
-                            </a>
+                            </a> 
+                       
 
-                          
-                    </div><!-- End .header-right -->
+                           
+                        </div><!-- End .cart-dropdown -->
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 
@@ -223,14 +204,14 @@
         <main class="main">
             <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
                 <div class="container">
-                    <h1 class="page-title">Wallet</h1>
+                    <h1 class="page-title">Coupon</h1>
                 </div><!-- End .container -->
             </div><!-- End .page-header -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                 <div class="container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                 
                         <li class="breadcrumb-item active" aria-current="page">My Account</li>
                     </ol>
                 </div><!-- End .container -->
@@ -258,7 +239,7 @@
                                         <a class="nav-link active" href="/userWallet" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="/logout">Sign Out</a>
+                                        <a class="nav-link" href="/couponDash">Coupon</a>
                                     </li>
                                 </ul>
                             </aside><!-- End .col-lg-3 -->
@@ -294,27 +275,36 @@
                                                                                 <tr>
                                                                                     <th>Date</th>
                                                                                     <th>Amount</th>
+                                                                                    <th>Status</th>
                                                                                     <th>Reason</th>
                                                                                 </tr>
                                                                             </thead>
                                                                             <tbody>
                                                                                 <% if (userWallet.transaction.length > 0) { %>
                                                                                     <% userWallet.transaction.forEach(transaction => { %>
-                                                                                        <tr>
-                                                                                            <td><%= transaction.date %></td>
-                                                                                            <td>₹<%= transaction.amount %></td>
-                                                                                            <td><%= transaction.reason %></td>
-                                                                                        </tr>
-                                                                                    <% }); %>
+                                                                                        <% if (transaction.reason === "product purchased") { %>
+                                                                                            <tr>
+                                                                                                <td><%= transaction.date %></td>
+                                                                                                <td> - $ <%= transaction.amount %></td>
+                                                                                                <td> Debited</td>
+                                                                                                <td><%= transaction.reason %></td>
+                                                                                            </tr>
+                                                                                        <% } else { %>
+                                                                                            <tr>
+                                                                                                <td><%= transaction.date %></td>
+                                                                                                <td> + $ <%= transaction.amount %></td>
+                                                                                                <td> Credited</td>
+                                                                                                <td><%= transaction.reason %></td>
+                                                                                            </tr>
+                                                                                        <% } %>
+                                                                                    <% }) %>
                                                                                 <% } else { %>
                                                                                     <tr>
-                                                                                        <tr>
-                                                                                            <td colspan="3" style="font-size: 20px;">No transactions</td>
-                                                                                        </tr>
-                                                                                        
+                                                                                        <td colspan="3" style="font-size: 20px;">No transactions</td>
                                                                                     </tr>
                                                                                 <% } %>
                                                                             </tbody>
+                                                                            
                                                                         </table>
                                                                         <!-- <button class="btn text-white w-100" style="background-color: #3E454D">Button Label</button> -->
                                                                     </div>

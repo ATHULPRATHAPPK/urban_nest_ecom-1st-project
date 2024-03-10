@@ -37,10 +37,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
         integrity="sha512-0y8LxkFrb7VsVUosM5CPbjemfDdGKW5lAcn6nYen7FwRejLzZXTzhxUc+gjcRJrA+ZO8MIU5kMc+u7a4CPkLSg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -154,7 +154,7 @@
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <h1>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp My Account</h1>
+
                         </div><!-- End .header-search -->
                     </div>
 
@@ -169,108 +169,33 @@
                                 <p>Compare</p>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a>
-                                        </h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a>
-                                        </h4>
-                                    </li>
-                                </ul>
 
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="/userWishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count badge">3</span>
+
                                 </div>
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
 
                         <div class="dropdown cart-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
+                            <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
-                                    <i class="icon-shopping-cart"></i>
-                                    <span class="cart-count">2</span>
+                                    <form method="post" action="/cart">
+                                        <i class="icon-shopping-cart"></i>
+                                        <!-- <span class="cart-count">2</span> -->
+                                    </form>
                                 </div>
                                 <p>Cart</p>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-cart-products">
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Beige knitted elastic runner shoes</a>
-                                            </h4>
 
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $84.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
 
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="/user/assets/images/products/cart/product-1.jpg"
-                                                    alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Blue utility pinafore denim dress</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $76.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a class="product-image">
-                                                <img src="/public/images/logo nest.png" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-                                </div><!-- End .cart-product -->
-
-                                <div class="dropdown-cart-total">
-                                    <span>Total</span>
-
-                                    <span class="cart-total-price">$160.00</span>
-                                </div><!-- End .dropdown-cart-total -->
-
-                                <div class="dropdown-cart-action">
-                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
-                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div><!-- End .dropdown-cart-total -->
-                            </div><!-- End .dropdown-menu -->
                         </div><!-- End .cart-dropdown -->
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
@@ -279,141 +204,208 @@
         </header><!-- End .header -->>
 
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">My Account<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
+            <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+                <div class="container">
+                    <h1 class="page-title">My Account<span>Shop</span></h1>
+                </div><!-- End .container -->
+            </div><!-- End .page-header -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                 <div class="container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                   
                         <li class="breadcrumb-item active" aria-current="page">My Account</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
             <div class="page-content">
-            	<div class="dashboard">
-	                <div class="container">
-	                	<div class="row">
-	                		<aside class="col-md-4 col-lg-3">
-	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
-								    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                <div class="dashboard">
+                    <div class="container">
+                        <div class="row">
+                            <aside class="col-md-4 col-lg-3">
+                                <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link" id="tab-orders-link" href="/account" role="tab" aria-controls="tab-orders" aria-selected="false">Dashboard</a>
+                                            <a class="nav-link" id="tab-orders-link" href="/account" role="tab"
+                                                aria-controls="tab-orders" aria-selected="false">Dashboard</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link active" id="tab-orders-link" href="/userOrder" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+                                            <a class="nav-link active" id="tab-orders-link" href="/userOrder" role="tab"
+                                                aria-controls="tab-orders" aria-selected="false">Orders</a>
                                         </li>
-                                      
+
                                         <li class="nav-item">
-                                         
-                                            <a class="nav-link" id="tab-address-link" href="/userAddress" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="tab-address-link"  href="/userWishlist" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wishlist</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="tab-address-link"  href="/userWallet" role="tab" aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
+
+                                            <a class="nav-link" id="tab-address-link" href="/userAddress" role="tab"
+                                                aria-controls="tab-address" aria-selected="false">Adresses</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/logout">Sign Out</a>
+                                            <a class="nav-link" id="tab-address-link" href="/userWishlist" role="tab"
+                                                aria-controls="tab-wishlist" aria-selected="false">Wishlist</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="tab-address-link" href="/userWallet" role="tab"
+                                                aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/couponDash">Coupon</a>
                                         </li>
                                     </ul>
-								</ul>
-	                		</aside><!-- End .col-lg-3 -->
+                                </ul>
+                            </aside><!-- End .col-lg-3 -->
 
-	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
-								   
+                            <div class="col-md-8 col-lg-9">
+                                <div class="tab-content">
                                     <div class="col-lg-10">
-                                        <% if(orderDetails && orderDetails.length > 0)  { %>
-                                            <% orderDetails.forEach((order, index) => { %>
+                                        <% if(orderDetails && orderDetails.length > 0) { %>
+                                            <% for (let i = orderDetails.length - 1; i >= 0; i--) { %>
+                                                <% const order = orderDetails[i]; %>
                                                 <div class="card card-dashboard">
                                                     <div class="card-body">
                                                         <div>
-                                                            <h4 style="font-size: 16px;">Order <%= index + 1 %></h4>
+                                                            <h4 style="font-size: 16px;">Order <%= orderDetails.length - i %></h4>
                                                             <p style="font-size: 14px;"><strong>Order Id:</strong> <%= order._id %></p>
-                                                            
                                                             <div>
                                                                 <h5 style="font-size: 14px;">Products</h5>
-                                                                <% order.product.forEach((product, productIndex) => { %>
-                                                                    <div class="product-details d-flex align-items-center">
+                                                                <% order.product.forEach((product, productIndex)=> { %>
+                                                                    <div
+                                                                        class="product-details d-flex align-items-center">
                                                                         <!-- Product image -->
-                                                                        <% if (product.productImage.length > 0) { %>
-                                                                            <figure class="product-media mr-3" style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
-                                                                                <% if (product.productImage[0].resizedFile) { %>
-                                                                                    <img src="/uploads/<%= product.productImage[0].resizedFile %>" alt="Product image" style="width: 50px; height: 50px;">
-                                                                                <% } else { %>
-                                                                                    <div style="width: 50px; height: 50px; background-color: white;"></div>
-                                                                                <% } %>
+                                                                        <% if (product.productImage.length> 0) { %>
+                                                                            <figure class="product-media mr-3"
+                                                                                style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
+                                                                                <% if
+                                                                                    (product.productImage[0].resizedFile)
+                                                                                    { %>
+                                                                                    <img src="/uploads/<%= product.productImage[0].resizedFile %>"
+                                                                                        alt="Product image"
+                                                                                        style="width: 50px; height: 50px;">
+                                                                                    <% } else { %>
+                                                                                        <div
+                                                                                            style="width: 50px; height: 50px; background-color: white;">
+                                                                                        </div>
+                                                                                        <% } %>
                                                                             </figure>
-                                                                        <% } %>
-                                                            
-                                                                        <!-- Product info -->
-                                                                        <div class="product-info">
-                                                                            <!-- Product name -->
-                                                                            <p style="font-size: 14px; margin-bottom: 5px;"><%= product.name %></p>
-                                                                            
-                                                                            <!-- Quantity and Total -->
-                                                                            <p style="font-size: 14px; margin-bottom: 5px;">Quantity: <%= product.quantity %>, Total: <%= product.total %></p>
-                                                                            
-                                                                            <!-- Order Status -->
-                                                                            <div>
-                                                                                <p style="margin: 0; font-weight: bold;">Order Status</p>
-                                                                                <% if(product.adminStatus === 1 )  { %>
-                                                                                    <p style="color: #076e0b; margin: 0;">Order Placed</p>
-                                                                                <% } else if(product.adminStatus === 2) { %>   
-                                                                                    <p style="color: #076e0b; margin: 0;">Packed</p>
-                                                                                <% }else if(product.adminStatus === 3) { %>   
-                                                                                    <p style="color: #076e0b; margin: 0;">Shipped</p>
-                                                                                <% }else if(product.adminStatus === 4) { %>   
-                                                                                    <p style="color: #076e0b; margin: 0;">Delivered</p>
-                                                                                <% }else { %>
-                                                                                    <p style="color: #f00303 ; margin: 0;">Cancelled</p>
-                                                                               <% } %> 
-                                                                            </div>
-                                                                        </div>
-                                                            
-                                                                        <!-- View Order Details button -->
-                                                                        <button type="button" class="btn btn-success ml-auto" onclick="viewOrderDetails('<%= product.productId %>',' <%= order._id %>')">View Order Details</button>
-                                    
+                                                                            <% } %>
+
+                                                                                <!-- Product info -->
+                                                                                <div class="product-info">
+                                                                                    <!-- Product name -->
+                                                                                    <p
+                                                                                        style="font-size: 14px; margin-bottom: 5px;">
+                                                                                        <%= product.name %>
+                                                                                    </p>
+
+                                                                                    <!-- Quantity and Total -->
+                                                                                    <p
+                                                                                        style="font-size: 14px; margin-bottom: 5px;">
+                                                                                        Quantity: <%= product.quantity
+                                                                                            %>, Total: <%= product.total
+                                                                                                %>
+                                                                                    </p>
+
+                                                                                    <!-- Order Status -->
+                                                                                    <div>
+                                                                                        <p
+                                                                                            style="margin: 0; font-weight: bold;">
+                                                                                            Order Status</p>
+                                                                                        <% if(product.adminStatus===1 )
+                                                                                            { %>
+                                                                                            <p
+                                                                                                style="color: #076e0b; margin: 0;">
+                                                                                                Order Placed</p>
+                                                                                            <% } else
+                                                                                                if(product.adminStatus===2)
+                                                                                                { %>
+                                                                                                <p
+                                                                                                    style="color: #076e0b; margin: 0;">
+                                                                                                    Packed</p>
+                                                                                                <% }else
+                                                                                                    if(product.adminStatus===3)
+                                                                                                    { %>
+                                                                                                    <p
+                                                                                                        style="color: #076e0b; margin: 0;">
+                                                                                                        Shipped</p>
+                                                                                                    <% }else
+                                                                                                        if(product.adminStatus===4)
+                                                                                                        { %>
+                                                                                                        <p
+                                                                                                            style="color: #076e0b; margin: 0;">
+                                                                                                            Delivered
+                                                                                                        </p>
+                                                                                                        <% }else { %>
+                                                                                                            <p
+                                                                                                                style="color: #f00303 ; margin: 0;">
+                                                                                                                Cancelled
+                                                                                                            </p>
+                                                                                                            <% } %>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <!-- View Order Details button -->
+                                                                                <button type="button"
+                                                                                    class="btn btn-success ml-auto"
+                                                                                    onclick="viewOrderDetails('<%= product.productId %>',' <%= order._id %>')">View
+                                                                                    Order Details</button>
+
                                                                     </div>
                                                                     <hr style="border-top: 1px solid #d1d1d1;">
-                                                                <% }) %>
+                                                                    <% }) %>
                                                             </div>
-                                                            
-                                                            <script>
-                                    
-                                    
-                                    function viewOrderDetails(productId, orderId) {
-                                        // Create an object with the data to be sent in the POST request
-                                        const requestData = {
-                                            productId: productId,
-                                            orderId: orderId
-                                    
-                                        };
-                                    
-                                        // Send a POST request to the server
-                                        fetch('/viewOrderDetails', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json'
-                                            },
-                                            body: JSON.stringify(requestData)
-                                            
-                                        })
+                                                            <!-- Render address details -->
+                                                            <div class="d-flex justify-content-end">
+                                                                <div class="mr-3">
+                                                                    <!-- Additional actions -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
+
+
+
+
+
+
+                     
+                            <script>
+
+
+                                function viewOrderDetails(productId, orderId) {
+                                    // Create an object with the data to be sent in the POST request
+                                    const requestData = {
+                                        productId: productId,
+                                        orderId: orderId
+
+                                    };
+
+                                    // Send a POST request to the server
+                                    fetch('/viewOrderDetails', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(requestData)
+
+                                    })
                                         .then(response => {
                                             if (!response.ok) {
                                                 throw new Error('Network response was not ok');
                                             }
                                             // Handle the response as needed
-                                          else{
-                                            console.log("out is comming");
-                                            window.location.href = `/orderStatus?productId=${productId}&orderId=${orderId}`;
-                                          }
+                                            else {
+                                                console.log("out is comming");
+                                                window.location.href = `/orderStatus?productId=${productId}&orderId=${orderId}`;
+                                            }
                                         })
                                         // .then(data => {
                                         //     // Handle the data returned by the server
@@ -424,46 +416,14 @@
                                             // Handle errors here
                                             console.error('Error:', error);
                                         });
-                                    }
-                                    
-                                    
-                                    
-                                                            </script>
-                                                            
-                                            
-                                               
-                                                           
-                                                            <!-- Render address details -->
-                                                          
-                                    
-                                                            <div class="d-flex justify-content-end">
-                                                                <div class="mr-3">
-                                    
-                                                                    
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            
-                                    
-                                    
-                                    
-                                                        </div>
-                                                        
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                            <% }) %>
-                                        <% } %>
-                                    </div>
-                                    
-                                  
-								   
+                                }
 
-								   
-								</div>
-	                		</div><!-- End .col-lg-9 -->
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
+
+
+                            </script>
+
+                        </div><!-- End .row -->
+                    </div><!-- End .container -->
                 </div><!-- End .dashboard -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->

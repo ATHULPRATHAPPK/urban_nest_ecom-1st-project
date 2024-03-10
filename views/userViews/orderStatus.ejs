@@ -412,6 +412,7 @@
                 </style>
     
   
+    
          
             
             <hr>
@@ -431,6 +432,19 @@
                     </div>
                 </div>
             <% } %>
+
+            <% if (locals.trimmedOrderId && locals.filteredProducts) { %>
+                <% locals.filteredProducts.forEach(product => { %>
+                    <% if (product.adminStatus == 4) { %>
+                        <div class="text-right">
+                            <strong style="font-size: larger;">Download invoice of the product</strong>
+                            <a href="/downloadInvoice/<%= product._id %>?orderId=<%= locals.trimmedOrderId %>" class="btn btn-primary btn-round">Download Invoice</a>
+                        </div>
+                    <% } %>
+                <% }); %>
+            <% } %>
+            
+            
             
             <hr>
          <%if (locals.trimmedOrderId)   { %>

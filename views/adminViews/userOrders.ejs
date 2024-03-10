@@ -398,6 +398,7 @@
                     <tr>
                       <th>Serial No</th>
                       <th>User Name</th>
+                      <th>Delivery Address</th>
                       <th>Product Name</th>
                       <th>Qty</th>
                       <th>Order status</th>
@@ -418,6 +419,14 @@
                               <td>
                                 <%= order.address.name %>
                               </td>
+                              <td>
+                                <p style="font-size: 10px; margin: 0;"><%= order.address.building %>, <%= order.address.city %>, <%= order.address.district %></p>
+                                <p style="font-size: 10px; margin: 0;">pin: <%= order.address.pincode %></p>
+                                <p style="font-size: 10px; margin: 0;">Mob: <%= order.address.phone %></p>
+                            </td>
+                            
+                            
+
                               <td>
                                 <%= product.name %>
                               </td>

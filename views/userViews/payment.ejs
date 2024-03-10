@@ -50,10 +50,10 @@
 <% if(locals.cartDetails && locals.cartDetails.subTotal && locals.selectedAddressId) { %>
     <div class="container">
         <h1>Payment</h1>
-        <button id="rzp-button">Continue Payment with Razorpay</button>
+        <button id="rzp-button">Continue Online Payment </button>
     </div>
     <script>
-        const subTotal = parseFloat(<%= locals.cartDetails.subTotal %>).toFixed(2) * 100;
+        const subTotal = parseFloat(<%= locals.subTotal %>).toFixed(2) * 100;
         const addressId = '<%= locals.selectedAddressId %>';
         const name = '<%= locals.cartDetails.userId.name %>';
         const email = '<%= locals.cartDetails.userId.email %>';

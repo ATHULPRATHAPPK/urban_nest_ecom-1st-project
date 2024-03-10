@@ -154,7 +154,7 @@
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <h1>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp My Account</h1>
+                           
                         </div><!-- End .header-search -->
                     </div>
 
@@ -169,108 +169,33 @@
                                 <p>Compare</p>
                             </a>
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <ul class="compare-products">
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a>
-                                        </h4>
-                                    </li>
-                                    <li class="compare-product">
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                        <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a>
-                                        </h4>
-                                    </li>
-                                </ul>
-
-                                <div class="compare-actions">
-                                    <a href="#" class="action-link">Clear All</a>
-                                    <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div>
-                            </div><!-- End .dropdown-menu -->
+                         
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="/userWishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <span class="wishlist-count badge">3</span>
+                                   
                                 </div>
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
 
+                      
                         <div class="dropdown cart-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false" data-display="static">
+                            <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
+                                    <form method="post" action="/cart">
                                     <i class="icon-shopping-cart"></i>
-                                    <span class="cart-count">2</span>
+                                    <!-- <span class="cart-count">2</span> -->
+                                </form>
                                 </div>
                                 <p>Cart</p>
-                            </a>
+                            </a> 
+                       
 
-                            <div class="dropdown-menu dropdown-menu-right">
-                                <div class="dropdown-cart-products">
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Beige knitted elastic runner shoes</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $84.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a href="product.html" class="product-image">
-                                                <img src="/user/assets/images/products/cart/product-1.jpg"
-                                                    alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-
-                                    <div class="product">
-                                        <div class="product-cart-details">
-                                            <h4 class="product-title">
-                                                <a href="product.html">Blue utility pinafore denim dress</a>
-                                            </h4>
-
-                                            <span class="cart-product-info">
-                                                <span class="cart-product-qty">1</span>
-                                                x $76.00
-                                            </span>
-                                        </div><!-- End .product-cart-details -->
-
-                                        <figure class="product-image-container">
-                                            <a class="product-image">
-                                                <img src="/public/images/logo nest.png" alt="product">
-                                            </a>
-                                        </figure>
-                                        <a href="#" class="btn-remove" title="Remove Product"><i
-                                                class="icon-close"></i></a>
-                                    </div><!-- End .product -->
-                                </div><!-- End .cart-product -->
-
-                                <div class="dropdown-cart-total">
-                                    <span>Total</span>
-
-                                    <span class="cart-total-price">$160.00</span>
-                                </div><!-- End .dropdown-cart-total -->
-
-                                <div class="dropdown-cart-action">
-                                    <a href="cart.html" class="btn btn-primary">View Cart</a>
-                                    <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i
-                                            class="icon-long-arrow-right"></i></a>
-                                </div><!-- End .dropdown-cart-total -->
-                            </div><!-- End .dropdown-menu -->
+                           
                         </div><!-- End .cart-dropdown -->
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
@@ -281,14 +206,14 @@
         <main class="main">
             <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
                 <div class="container">
-                    <h1 class="page-title">My Account<span>Shop</span></h1>
+                    <h1 class="page-title">Address</h1>
                 </div><!-- End .container -->
             </div><!-- End .page-header -->
             <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
                 <div class="container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                       
                         <li class="breadcrumb-item active" aria-current="page">My Account</li>
                     </ol>
                 </div><!-- End .container -->
@@ -324,7 +249,7 @@
                                                 aria-controls="tab-wishlist" aria-selected="false">Wallet</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="/logout">Sign Out</a>
+                                            <a class="nav-link" href="/couponDash">Coupon</a>
                                         </li>
                                     </ul>
                                 </ul>
@@ -350,8 +275,9 @@
                                                                     <%= address.name %> <br>
                                                                         <%= address.phone %><br>
                                                                             <%= address.building %><br>
-                                                                                <%= address.place %><br>
+                                                                                
                                                                                     <%= address.city %><br>
+                                                                                    <%= address.district %><br>
                                                                                         <%= address.state %><br>
                                                                                             <%= address.pincode %><br>
                                                                 </p>
@@ -362,12 +288,12 @@
                                                                         Delete
                                                                     </button>
                                                                     &nbsp;&nbsp;&nbsp;
-                                                                    <button href="#" data-toggle="modal"
+                                                                    <!-- <button href="#" data-toggle="modal"
                                                                         data-address-id="<%= address._id %>"
                                                                         class="edit-address" data-target="#modal2">
                                                                         Edit <i class="icon-edit"></i>
 
-                                                                    </button>
+                                                                    </button> -->
                                                                 </div>
                                                             </div>
                                                             <!-- End .card-body -->
@@ -445,7 +371,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                                  
+                                       
                                     </div>
                                     <script>
                                         document.addEventListener('DOMContentLoaded', function () {
@@ -549,12 +475,34 @@
 
 
 
-                                    <div class="card-body">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal"
-                                            data-target="#exampleModalCenter">
-                                            ADD NEW ADDRESS
-                                        </button>
-                                    </div>
+<div class="card-body">
+    <button type="button" class="btn btn-primary" onclick="showAddAddressConfirmation()">
+        ADD NEW ADDRESS
+    </button>
+</div>
+
+<!-- SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function showAddAddressConfirmation() {
+        // Show SweetAlert confirmation dialog
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to add a new address?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If the user confirms, open the modal
+                $('#exampleModalCenter').modal('show');
+            }
+        });
+    }
+</script>
+
                                     <!-- End Add Address Modal -->
 
                                     <!-- Add Address Button -->

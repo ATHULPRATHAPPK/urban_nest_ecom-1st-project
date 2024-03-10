@@ -57,6 +57,7 @@ userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
 userRouter.get("/orderConfirm",controllers.OrderComplete)
 userRouter.post("/processPayment",controllers.paymentCompleted)
+userRouter.post("/changePassword",controllers.changePassword)
 
 userRouter.get("/orderStatus",controllers.loadOrderStatus)
 userRouter.post("/viewOrderDetails",controllers.orderStatus)
@@ -69,5 +70,7 @@ userRouter.post("/removeWishlist",controllers.removeWishlist )
 
 
 userRouter.post("/userCoupon",controllers.addUserCoupon)
+userRouter.get("/couponDash",controllers.userCoupon)
+userRouter.get("/downloadInvoice/:productId",controllers.loadInvoice )
 
 module.exports= userRouter
