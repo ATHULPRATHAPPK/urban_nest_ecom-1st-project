@@ -471,6 +471,7 @@ const loadProduct = async (req, res) => {
     }
     else {
         res.render("productDetails", { productDetails })
+       
     }
 }
 
@@ -534,7 +535,7 @@ const loadMobiles = async (req, res) => {
                 const productIds = products.map(product => product._id);
                 res.render("products", { productMobile: mobileProducts, message, sectionIndex, productIds });
             } else {
-                res.render("products", { allProducts: productDetails, message, sectionIndex });
+                res.render("products", {productMobile: mobileProducts, message, sectionIndex });
             }
         }
         else {
@@ -660,7 +661,7 @@ const addToCart = async (req, res) => {
     const pQuantity = req.body.quantity
     const userData = req.body.userDetails
     const userdetails = JSON.parse(userData)
-    productDetails = await productModel.find({ _id: pId })
+    productDetails = await productModel.find({ _id: pId }).populate("subcategory")
     const cartUser = await cartModel.find({}).populate("userId")
     const isUserPresent = cartUser.some(cartDoc => cartDoc.userId._id.equals(userdetails._id));
     if (isUserPresent) {
@@ -687,18 +688,23 @@ const addToCart = async (req, res) => {
                 // Find the product within the cartItem's product array
                 const matchingProduct = cartItem.product.find(product => product.productId === productId);
                 const totalForProduct = matchingProduct.total;
-                const totalSum = totalForProduct + priceInt * quatityInt
+                const offerPrice = productDetails[0].subcategory.offerPercentage
+                const newPrice = priceInt -(priceInt * offerPrice / 100 )
+
+                const totalSum = totalForProduct + newPrice * quatityInt
+                const roundedTotal = totalSum.toFixed(2)
                 //---------------finding the existing subtotal in  the cart------
                 const userCart = await cartModel.find({ userId: userdetails._id })
                 const subTotalValue = userCart[0].subTotal;
-                const newSubTotal = subTotalValue + priceInt * quatityInt
+                const newSubTotal = subTotalValue + newPrice * quatityInt
+                const roundedSubTotal = newSubTotal.toFixed(2)
 
                 await cartModel.updateOne(
                     { userId: userdetails._id, "product.productId": productId },
                     {
                         $set: {
-                            "product.$.total": totalSum,
-                            subTotal: newSubTotal,
+                            "product.$.total": roundedTotal,
+                            subTotal: roundedSubTotal,
                         },
                     }
                 );
@@ -714,27 +720,35 @@ const addToCart = async (req, res) => {
             console.log("adding ne wproduct to the existing user cart");
             const priceInt = parseInt(productDetails[0].price, 10)
             const quatityInt = parseInt(pQuantity, 10)
+            const offerPrice = productDetails[0].subcategory.offerPercentage
+
+            const newPrice = priceInt -(priceInt * offerPrice / 100 )
+             const roundedPrice = newPrice.toFixed(2)
+     
+          
 
             //---------------finding subtotal-----------------
             const userCart = await cartModel.find({ userId: userdetails._id })
             const subTotalValue = userCart[0].subTotal;
-            const newSubTotal = subTotalValue + priceInt * quatityInt
+            const newSubTotal = subTotalValue + newPrice * quatityInt
 
+            const roundedSubTotal = newSubTotal.toFixed(2);
+            const roundedTotal =  (newPrice * quatityInt).toFixed(2)
             //--------------product details push in the product array-------
             const newProduct = {
                 productId: productDetails[0]._id,
                 name: productDetails[0].productName,
                 quantity: pQuantity,
-                price: productDetails[0].price,
+                price: roundedPrice ,
                 productImage: productDetails[0].productImage,
-                total: priceInt * quatityInt,
+                total:roundedTotal,
             }
             //--------updating the new product and adding to subtotal------
             await cartModel.updateOne(
                 { userId: userdetails._id },
                 {
                     $push: { product: newProduct },
-                    $set: { subTotal: newSubTotal }
+                    $set: { subTotal: roundedSubTotal }
                 }
             );
         }
@@ -746,8 +760,15 @@ const addToCart = async (req, res) => {
         const quatityInt = parseInt(pQuantity, 10)
         //-----------------cart data inserting
         console.log("creating new user cart");
-        //-----------------SUBTOTAL-----------------------    
-        const subTotal = priceInt * quatityInt
+        //-----------------SUBTOTAL-----------------------
+        const offerPrice = productDetails[0].subcategory.offerPercentage
+
+       const newPrice = priceInt -(priceInt * offerPrice / 100 )
+       const roundedPrice = newPrice.toFixed(2)
+       const roundedTotal = (newPrice * quatityInt).toFixed(2)
+        
+
+        const subTotal = newPrice * quatityInt
         // inserting new user cart details---------    
         const userCart = await cartModel({
             userId: userdetails._id,
@@ -755,9 +776,9 @@ const addToCart = async (req, res) => {
                 productId: productDetails[0]._id,
                 name: productDetails[0].productName,
                 quantity: pQuantity,
-                price: productDetails[0].price,
+                price: roundedPrice,
                 productImage: productDetails[0].productImage,
-                total: priceInt * quatityInt
+                total: roundedTotal
             }],
             subTotal: subTotal
         })
@@ -830,15 +851,17 @@ const updateQuantity = async (req, res) => {
 
         console.log("Received productId:", productId);
         console.log("Received newQuantity:", newQuantity);
-        const productDetaills = await productModel.find({_id:productId})
+        const productDetaills = await productModel.find({_id:productId}).populate("subcategory")
         console.log(productDetaills[0].quantity," quantity");
 if(productDetaills[0].quantity >= newQuantity){
         const cart = await cartModel.findOne({ userId: userId, "product.productId": productId });
         if (cart) {
             const product = cart.product.find(product => product.productId === productId);
             if (product) {
-                const price = product.price;
-                const total = newQuantity * price
+
+
+                const price = (product.price).toFixed(2);
+                const total = (newQuantity * price).toFixed(2);
                 console.log("new total", total);
                 await cartModel.updateOne(
                     { userId: userId, "product.productId": productId },
@@ -848,9 +871,10 @@ if(productDetaills[0].quantity >= newQuantity){
                 if (userCart.length > 0) {
                     const totalSum = userCart[0].product.reduce((accumulator, product) => accumulator + product.total, 0);
                     console.log("Total sum of 'total' field in the product array:", totalSum);
+                    const rondedTotal =  totalSum.toFixed(2)
                     await cartModel.updateOne(
                         { userId: userId, "product.productId": productId },
-                        { $set: { subTotal: totalSum } }
+                        { $set: { subTotal:  rondedTotal } }
                     );
                 } else {
                     console.error("Cart not found for the user.");

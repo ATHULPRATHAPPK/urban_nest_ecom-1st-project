@@ -360,7 +360,7 @@
                     <table class="table table-bordered table-striped">
                       <thead class="thead-dark">
                         <tr>
-                          <th>Serial No</th>
+                          <th>SNo</th>
                           <th>Category</th>
                           <th>Subcategory</th>
                           <th>Category discription</th>
@@ -368,6 +368,8 @@
                           <th>Action</th>
                           <th>Edit</th>
                           <th>Delete</th>
+                          <th>Offer Action</th>
+                          <th>Offer %</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -420,11 +422,39 @@
                                               onclick="showAlert('Delete Confirmation', 'Are you sure you want to delete this category?', 'error', 'Delete', function() { location.href='/admin/delete-category?id=<%= category[i]._id %>' })">Delete
                                               <i class="mdi mdi-delete"></i></button>
                                           </td>
+                                          <%if(category[i].offerPercentage == 0) { %>
+                                          <td>
+                                            <button class="btn btn-primary apply-button" onclick="openSweetAlert('<%=category[i]._id %> ')">Apply</button>
+                                          </td>
+                                       <%   }else{ %>
+                                        <td>
+                                          <button class="btn btn-info btn-sm" onclick="openSweetAlertEdit('<%= category[i]._id %>', <%= category[i].offerPercentage %>)">Edit</button>
+
+
+
+
+<button class="btn btn-warning btn-sm" onclick="openSweetAlertDelete('<%=category[i]._id %> ')">Delete</button>
+</td>               <%    } %>
+</td>
+<%if(category[i].offerPercentage == 0) { %>
+<td>
+  NA
+</td>
+<%   }else{ %>
+<td> 
+  <%=category[i].offerPercentage %> %
+</td>               <%    } %>
+
+
                                           <% } %>
                                             <% } %>
+                                           
                                               <!-- ... more rows ... -->
                       </tbody>
                     </table>
+
+                   
+
                   </div>
                 </div>
               </div>
@@ -449,21 +479,122 @@
   <!-- plugins:js -->
   <!-- Include SweetAlert library -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    function showAlert(title, text, icon, confirmButtonText, confirmAction) {
-      Swal.fire({
-        title: title,
-        text: text,
-        icon: icon,
-        confirmButtonText: confirmButtonText,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // If the user clicks the Confirm button, perform the specified action
-          confirmAction();
+<!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<!-- Include Axios library -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  async function openSweetAlert(categoryId) {
+    // Show SweetAlert modal with an input field
+    const { value: percentage } = await Swal.fire({
+      title: 'Enter Offer Percentage',
+      input: 'text',
+      inputLabel: 'Percentage',
+      inputPlaceholder: 'Enter the offer percentage...',
+      inputValidator: (value) => {
+        // Validate if the value is between 0 and 100
+        if (!value || isNaN(value) || parseFloat(value) < 0 || parseFloat(value) > 100) {
+          return 'You need to enter a valid percentage between 0 and 100!';
         }
-      });
+      }
+    })
+
+    // If the user entered a percentage value, call the ApplyOffer function
+    if (percentage) {
+      ApplyOffer(categoryId, percentage);
     }
-  </script>
+  }
+
+  async function ApplyOffer(categoryId, percentage) { 
+  try {
+    let response = await axios.post('applyOffer', { CatId: categoryId, Percentage: percentage });
+    if (response.ok) {
+      console.log('Offer applied successfully');
+      // Reload the page upon successful application of the offer
+      location.reload();
+    } else {
+      console.error('Error applying offer');
+      location.reload();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+</script>
+
+<script>
+  function openSweetAlertEdit(categoryId, percentage) {
+    Swal.fire({
+      title: 'Edit Percentage',
+      html: `<input id="percentageInput" class="swal2-input" type="number" min="0" max="100" value="${percentage}">`,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      showLoaderOnConfirm: true,
+      preConfirm: () => {
+        const newPercentage = document.getElementById('percentageInput').value;
+        // Validate the new percentage value
+        if (!newPercentage || isNaN(newPercentage) || parseFloat(newPercentage) < 0 || parseFloat(newPercentage) > 100) {
+          Swal.showValidationMessage('You need to enter a valid percentage between 0 and 100!');
+          return false; // Prevent closing the modal if validation fails
+        }
+        // Make an Axios request to the backend
+        return axios.post('/editOffer', { categoryId, newPercentage })
+          .then(response => {
+            // Handle the response from the backend as needed
+            console.log('Edit offer successful:', response.data);
+            return response.data;
+          })
+          .catch(error => {
+            // Handle errors from the backend
+            console.error('Error editing offer:', error.response.data);
+            Swal.showValidationMessage('Failed to update offer');
+          });
+      }
+    }).then((result) => {
+      // Show success message and reload the page if response is successful
+      if (result.value) {
+        Swal.fire('Success', 'Percentage updated successfully', 'success').then(() => {
+          location.reload();
+        });
+      }
+    });
+  }
+</script>
+
+
+
+<script>
+  function openSweetAlertDelete(categoryId) {
+    Swal.fire({
+      title: 'Remove Offer',
+      text: 'Are you sure you want to remove this offer?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If confirmed, send Axios request to delete the offer
+        axios.post('/offerDelete', { categoryId })
+          .then(response => {
+            console.log('Offer deleted successfully:', response.data);
+            // Show success message
+            Swal.fire('Deleted!', 'The offer has been removed.', 'success').then(() => {
+              // Reload the page
+              location.reload();
+            });
+          })
+          .catch(error => {
+            console.error('Error deleting offer:', error.response.data);
+            // Show error message
+            Swal.fire('Error', 'Failed to remove the offer.', 'error');
+          });
+      }
+    });
+  }
+</script>
 
 
   <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>

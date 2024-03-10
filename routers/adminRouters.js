@@ -85,4 +85,7 @@ adminRouter.put("/generateReport",adminMiddleware.isLogin,controllers.generateSa
 adminRouter.post('/generateMonthlyReport',adminMiddleware.isLogin,controllers.generateMonthlyReport)
 adminRouter.post('/generateWeeklyReport',adminMiddleware.isLogin,controllers.generateWeeklyReport)
 
+adminRouter.post("/applyOffer",adminMiddleware.isLogin,controllers.applyOffer)
+adminRouter.post("/editOffer",adminMiddleware.isLogin,controllers.editOffer)
+adminRouter.post("/offerDelete",adminMiddleware.isLogin,controllers.offerDelete)
 module.exports = adminRouter

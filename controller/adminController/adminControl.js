@@ -1587,6 +1587,71 @@ const generateWeeklyReport = async (req, res) => {
 
 
 
+//appling offer--------------------
+
+const applyOffer = async (req, res) => {
+    const parsedPercentage = parseFloat(req.body.Percentage);
+    const categoryId = req.body.CatId.trim(); // Remove extra spaces
+
+  
+
+    if (!isNaN(parsedPercentage) && parsedPercentage >= 0 && parsedPercentage <= 100) {
+        try {
+            // Convert categoryId to a valid ObjectId
+            
+
+            // If the parsed percentage is valid, update the category model
+            await categoryModel.updateOne({ _id: categoryId }, { $set: { offerPercentage: parsedPercentage } });
+            return res.status(200).json({ message: 'Offer percentage updated successfully.' });
+        } catch (error) {
+            console.error('Error updating offer percentage:', error);
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
+    } else {
+        // If the parsed percentage is not valid, return an error response
+        return res.status(400).json({ error: 'Invalid percentage value.' });
+    }
+}
+
+//edit  offer--------------------
+const editOffer = async (req,res)=>{
+    const parsedPercentage = parseFloat(req.body.newPercentage);
+    const categoryId = req.body.categoryId.trim(); // Remove extra spaces
+
+
+try {
+    // Convert categoryId to a valid ObjectId
+    
+
+    // If the parsed percentage is valid, update the category model
+    await categoryModel.updateOne({ _id: categoryId }, { $set: { offerPercentage: parsedPercentage } });
+    return res.status(200).json({ message: 'Offer percentage updated successfully.' });
+} catch (error) {
+    console.error('Error updating offer percentage:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+}
+
+}
+
+//delete offer--------------------
+const offerDelete = async (req,res)=>{
+    const categoryId = req.body.categoryId.trim();
+
+    try {
+        // Convert categoryId to a valid ObjectId
+        
+    
+        // If the parsed percentage is valid, update the category model
+        await categoryModel.updateOne({ _id: categoryId }, { $set: { offerPercentage: 0 } });
+        return res.status(200).json({ message: 'Offer percentage updated successfully.' });
+    } catch (error) {
+        console.error('Error updating offer percentage:', error);
+        return res.status(500).json({ error: 'Internal server error.' });
+    }
+}
+
+
+
 module.exports = {
     adminlogin,
     admindash,
@@ -1623,6 +1688,9 @@ module.exports = {
     loadSalesDash,
     generateSalesReport,
     generateMonthlyReport,
-    generateWeeklyReport
+    generateWeeklyReport,
+    applyOffer,
+    editOffer,
+    offerDelete
 
 }

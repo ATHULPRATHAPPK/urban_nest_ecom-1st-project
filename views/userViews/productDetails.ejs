@@ -369,7 +369,20 @@
                                         </div><!-- End .rating-container -->
 
                                         <div class="product-price">
-                                            <%= productDetails.price %>
+
+                                            <% if (productDetails.subcategory.offerPercentage > 0) { %>
+                                                $ <strike style="color: lightslategrey;"><%= productDetails.price %></strike>&nbsp;&nbsp;
+                                                <% discountedPrice = productDetails.price - (productDetails.price * productDetails.subcategory.offerPercentage / 100) %>
+                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                <span style="color: black; font-size: smaller;"><%= productDetails.subcategory.offerPercentage %> % offer</span>
+                                              <% } else { %>
+                                                $  <%= productDetails.price %>
+                                              <% } %>
+
+
+
+
+                                            
                                         </div><!-- End .product-price -->
                                         <div class="product-brand">
                                             <%= productDetails.brandName %>

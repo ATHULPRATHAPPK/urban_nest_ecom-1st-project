@@ -634,7 +634,17 @@
                                     </div><!-- End .product-cat -->
                                     <h3 class="product-title"><a href="/user-product?id=<%= n._id %>"><%= n.productName %></a></h3><!-- End .product-title -->
                                     <div class="product-price">
-                                        <span class="new-price"><%= n.price %></span>
+
+
+                                        <% if (n.subcategory.offerPercentage > 0) { %>
+                                            $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
+                                            <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
+                                            $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
+                                          <% } else { %>
+                                            <%= n.price %>
+                                          <% } %>
+                                       
                                         
                                     </div><!-- End .product-price -->
                                     <div class="ratings-container">
@@ -644,13 +654,7 @@
                                         <span class="ratings-text">( 4 Reviews )</span>
                                     </div><!-- End .rating-container -->
 
-                                    <div class="product-nav product-nav-dots">
-                                        <a href="#" class="active" style="background: #666666;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #ff887f;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #6699cc;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #f3dbc1;"><span class="sr-only">Color name</span></a>
-                                        <a href="#" style="background: #eaeaec;"><span class="sr-only">Color name</span></a>
-                                    </div><!-- End .product-nav -->
+                                 
                                 </div><!-- End .product-body -->
                             </div><!-- End .product -->
 
