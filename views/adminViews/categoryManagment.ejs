@@ -596,7 +596,21 @@
   }
 </script>
 
-
+<script>
+  function showAlert(title, text, icon, confirmButtonText, confirmAction) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: confirmButtonText,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // If the user clicks the Confirm button, perform the specified action
+        confirmAction();
+      }
+    });
+  }
+</script>
   <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page -->

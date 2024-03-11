@@ -1981,6 +1981,7 @@ const ejsTemplate = path.resolve(__dirname,'../../views/userViews/invoice.ejs');
     }
 };
 
+
 const changePassword = async  (req,res)=>{
     try {
 
@@ -2013,6 +2014,27 @@ else {
 }
 
 
+const paymentfailed = (req,res)=>{
+
+    try {
+        // Extract payment and order information from the request body
+      
+        console.log(req.body);
+   
+
+        res.status(200).json({ success: true, message: 'Failed payment handled successfully.' });
+    } catch (error) {
+        // Handle errors
+        console.error('Error handling failed payment:', error);
+        res.status(500).json({ success: false, message: 'Failed to handle payment failure.' });
+    }
+
+}
+
+const failedPage =(req,res)=>{
+    const data = "payment not completed"
+    res.render("orderConfirm",{data})
+}
 
 module.exports = {
     loadhome,
@@ -2048,6 +2070,8 @@ module.exports = {
     loadOrder,
     OrderComplete,
     paymentCompleted,
+    paymentfailed,
+    failedPage,
     // cancelOrder,
     loadOrderStatus,
     orderStatus,

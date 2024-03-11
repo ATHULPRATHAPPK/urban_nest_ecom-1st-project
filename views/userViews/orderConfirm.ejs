@@ -47,9 +47,36 @@
         .button:hover {
             background-color: #0056b3;
         }
+        .button2{
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 0 10px;
+            background-color: #d62b00;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button2:hover {
+            background-color: #ea8202;
+        }
     </style>
 </head>
 <body>
+
+    <% if(locals.data) { %>
+        <div class="container">
+            <div class="cross-icon">❌</div>
+            <div class="message">Payment Failed</div>
+            <div class="buttons">
+                <a href="/cart" class="button">Go Back to Cart</a>
+                <a href="/checkout" class="button2">Retry Payment</a>
+            </div>
+        </div>
+        
+
+
+   <% } else { %>
     <div class="container">
         <div class="tick-icon">✔️</div>
         <div class="message">Order Confirmed</div>
@@ -58,6 +85,7 @@
             <a href="/user-allProducts" class="button">Continue Shopping</a>
         </div>
     </div>
+  <%  } %>
 </body>
 </html>
 
