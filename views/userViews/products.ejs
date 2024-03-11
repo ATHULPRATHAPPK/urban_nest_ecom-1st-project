@@ -476,61 +476,190 @@
                                 </div><!-- End .toolbox-left -->
 
                                 <div class="toolbox-right">
-                                    <div class="toolbox-sort">
+
+
+
+                                    <% if (locals.allProducts) { %>
+                                        <div class="toolbox-sort">
+                                            <label for="sortby">Sort by:</label>
+                                            <div class="select-custom">
+                                                <select onchange="filterAllproduct()" name="sortby" id="sortbyAllproduct" class="form-control">
+                                                    <% if (locals.sort == 1) { %>
+                                                        <option value="High-to-low" selected>High To Low</option>
+                                                        <option value="Low-to-high">Low To High</option>
+                                                    <% } else if (locals.sort == -1) { %>
+                                                        <option value="High-to-low">High To Low</option>
+                                                        <option value="Low-to-high" selected>Low To High</option>
+                                                    <% } else { %>
+                                                        <option value="" disabled selected>Sort By</option>
+                                                        <option value="High-to-low">High To Low</option>
+                                                        <option value="Low-to-high">Low To High</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+
+
+
+                                    <% if(locals.productMobile) { %>
+                                        <div class="toolbox-sort">
                                         <label for="sortby">Sort by:</label>
                                         <div class="select-custom">
-                                            <select name="sortby" id="sortby" class="form-control">
-                                                <option value="popularity" selected="selected">Most Popular</option>
-                                                <option value="rating">Most Rated</option>
-                                                <option value="date">Date</option>
-                                            </select>
+                                        <select onchange="filterMobile()" name="sortby" id="sortbyMobile" class="form-control">
+                                        <% if (locals.sort == 1) { %>
+                                        <option value="High-to-low" selected>High To Low</option>
+                                        <option value="Low-to-high">Low To High</option>
+                                        <% } else if (locals.sort == -1) { %>
+                                        <option value="High-to-low">High To Low</option>
+                                        <option value="Low-to-high" selected>Low To High</option>
+                                        <% } else { %>
+                                        <option value="" disabled selected>Sort By</option>
+                                        <option value="High-to-low">High To Low</option>
+                                        <option value="Low-to-high">Low To High</option>
+                                        <% } %>
+                                        </select>
                                         </div>
-                                    </div><!-- End .toolbox-sort -->
+                                        </div>
+                                        <% } %>
+
+
+
+                                    <% if (locals.productLaptop) { %>
+                                        <div class="toolbox-sort">
+                                            <label for="sortby">Sort by:</label>
+                                            <div class="select-custom">
+                                                <select onchange="filterLaptop()" name="sortby" id="sortbyLaptop" class="form-control">
+                                                    <% if (locals.sort == 1) { %>
+                                                        <option value="High-to-low" selected>High To Low</option>
+                                                        <option value="Low-to-high">Low To High</option>
+                                                    <% } else if (locals.sort == -1) { %>
+                                                        <option value="High-to-low">High To Low</option>
+                                                        <option value="Low-to-high" selected>Low To High</option>
+                                                    <% } else { %>
+                                                        <option value="" disabled selected>Sort By</option>
+                                                        <option value="High-to-low">High To Low</option>
+                                                        <option value="Low-to-high">Low To High</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+
+
+
+                                    <% if (locals.productTablets) { %>
+                                        <div class="toolbox-sort">
+                                        <label for="sortby">Sort by:</label>
+                                        <div class="select-custom">
+                                        <select onchange="filterTablet()" name="sortby" id="sortbyTablet" class="form-control">
+                                        <% if (locals.sort == 1) { %>
+                                        <option value="High-to-low" selected>High To Low</option>
+                                        <option value="Low-to-high">Low To High</option>
+                                        <% } else if (locals.sort == -1) { %>
+                                        <option value="High-to-low">High To Low</option>
+                                        <option value="Low-to-high" selected>Low To High</option>
+                                        <% } else { %>
+                                        <option value="" disabled selected>Sort By</option>
+                                        <option value="High-to-low">High To Low</option>
+                                        <option value="Low-to-high">Low To High</option>
+                                        <% } %>
+                                        </select>
+                                        </div>
+                                        </div>
+                                        <% } %>
+
+
+
+                                        <% if (locals.allProducts) { %>
+
+                                            <div class="toolbox-layout">
+                                                <a href="/user-allProducts" class="btn-layout">
+                                                clear 
+                                                </a>
+                                            </div>
+
+                                     <%   } %>
+
+                                     <% if(locals.productMobile){ %>
+
+                                        <div class="toolbox-layout">
+                                            <a href="/user-mobiles" class="btn-layout">
+                                            clear 
+                                            </a>
+                                        </div>
+
+                                 <%   } %>
+
+                                 <% if  (locals.productLaptop) { %>
+
                                     <div class="toolbox-layout">
-                                        <a href="category-list.html" class="btn-layout">
-                                            <svg width="16" height="10">
-                                                <rect x="0" y="0" width="4" height="4" />
-                                                <rect x="6" y="0" width="10" height="4" />
-                                                <rect x="0" y="6" width="4" height="4" />
-                                                <rect x="6" y="6" width="10" height="4" />
-                                            </svg>
+                                        <a href="/user-laptops" class="btn-layout">
+                                        clear 
                                         </a>
+                                    </div>
 
-                                        <a href="category-2cols.html" class="btn-layout">
-                                            <svg width="10" height="10">
-                                                <rect x="0" y="0" width="4" height="4" />
-                                                <rect x="6" y="0" width="4" height="4" />
-                                                <rect x="0" y="6" width="4" height="4" />
-                                                <rect x="6" y="6" width="4" height="4" />
-                                            </svg>
-                                        </a>
+                             <%   } %>
+                             <% if (locals.productTablets) { %>
 
-                                        <a href="category.html" class="btn-layout active">
-                                            <svg width="16" height="10">
-                                                <rect x="0" y="0" width="4" height="4" />
-                                                <rect x="6" y="0" width="4" height="4" />
-                                                <rect x="12" y="0" width="4" height="4" />
-                                                <rect x="0" y="6" width="4" height="4" />
-                                                <rect x="6" y="6" width="4" height="4" />
-                                                <rect x="12" y="6" width="4" height="4" />
-                                            </svg>
-                                        </a>
+                                <div class="toolbox-layout">
+                                    <a href="/user-tablets" class="btn-layout">
+                                    clear 
+                                    </a>
+                                </div>
 
-                                        <a href="category-4cols.html" class="btn-layout">
-                                            <svg width="22" height="10">
-                                                <rect x="0" y="0" width="4" height="4" />
-                                                <rect x="6" y="0" width="4" height="4" />
-                                                <rect x="12" y="0" width="4" height="4" />
-                                                <rect x="18" y="0" width="4" height="4" />
-                                                <rect x="0" y="6" width="4" height="4" />
-                                                <rect x="6" y="6" width="4" height="4" />
-                                                <rect x="12" y="6" width="4" height="4" />
-                                                <rect x="18" y="6" width="4" height="4" />
-                                            </svg>
-                                        </a>
-                                    </div><!-- End .toolbox-layout -->
+                         <%   } %>
+                                
+                                  
+
+                                    
                                 </div><!-- End .toolbox-right -->
                             </div><!-- End .toolbox -->
+
+
+                            <script>
+                                function filterLaptop() {
+                                console.log("working");
+                                const selectedValue = document.getElementById('sortbyLaptop').value;
+                                const href = `/user-laptops?sortBy=${selectedValue}`;
+                                window.location.href = href;     
+                                
+                                }
+                                </script>
+
+
+<script>
+    function filterAllproduct() {
+    console.log("working");
+    const selectedValue = document.getElementById('sortbyAllproduct').value;
+    const href = `user-allProducts?sortBy=${selectedValue}`;
+    window.location.href = href;     
+    
+    }
+    </script>
+
+    </script>
+    <script>
+    function filterMobile() {
+    console.log("working");
+    const selectedValue = document.getElementById('sortbyMobile').value;
+    const href = `/user-mobiles?sortBy=${selectedValue}`;
+    window.location.href = href;     
+    
+    }
+    </script>
+
+<script>
+    function filterTablet() {
+    console.log("working");
+    const selectedValue = document.getElementById('sortbyTablet').value;
+    const href = `/user-tablets?sortBy=${selectedValue}`;
+    window.location.href = href;     
+    
+    }
+    </script>
 
                             <div class="products mb-3">
 

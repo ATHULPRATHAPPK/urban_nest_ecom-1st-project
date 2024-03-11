@@ -483,35 +483,87 @@ const loadLaptops = async (req, res) => {
         const laptopProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'laptops';
         });
+        const sortBy = req.query.sortBy;
         let sectionIndex = 0;
+       
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
             const userId = userData._id
             const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if(sortBy === "High-to-low"){
+                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+             
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    console.log("product ids", productIds);
+                    console.log("mobile ids working..");
+                    res.render("products", { productLaptop: sortedProduct , message, sectionIndex, productIds,sort:1 });
+                } else {
+    
+                    res.render("products", { productLaptop: sortedProduct , message, sectionIndex ,sort:1});
+                }
+            
+            }else if(sortBy === "Low-to-high"){
+
+          const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    console.log("product ids", productIds);
+                    console.log("mobile ids working..");
+                    res.render("products", { productLaptop: sortedProduct, message, sectionIndex, productIds,sort:-1 });
+                } else {
+    
+                    res.render("products", { productLaptop: sortedProduct, message, sectionIndex ,sort:-1});
+                }
+
+            }else{
+
             if (wishlist) {
                 const wishlistProducts = wishlist.product;
                 const products = wishlistProducts.map(item => item.productId);
                 //to filter the productid
                 const productIds = products.map(product => product._id);
                 console.log("product ids", productIds);
-                console.log("mobile ids working..");
+              
                 res.render("products", { productLaptop: laptopProducts, message, sectionIndex, productIds });
             } else {
 
                 res.render("products", { productLaptop: laptopProducts, message, sectionIndex });
             }
-        }
+        }}
         else {
 
+            if(sortBy === "High-to-low"){
+
+                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+
+             res.render("products", { productLaptop: sortedProduct, sectionIndex ,sort:1});    
+                
+            }else if(sortBy === "Low-to-high"){
+
+                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+                res.render("products", { productLaptop: sortedProduct, sectionIndex ,sort:-1});
+            }else{
+
             res.render("products", { productLaptop: laptopProducts, sectionIndex });
-        }
+        }}
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
     }
 };
+
 
 //------------------------------------------------------------mobile Page-------------------
 
@@ -521,13 +573,47 @@ const loadMobiles = async (req, res) => {
         const mobileProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'mobile';
         });
+        const sortBy = req.query.sortBy;
         let sectionIndex = 0;
+
+
         if (req.session.userId) {
             let sectionIndex = 0;
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
             const userId = userData._id
             const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if(sortBy === "High-to-low"){
+                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { productMobile:sortedProduct, message, sectionIndex, productIds,sort:1  });
+                } else {
+                    res.render("products", {productMobile: sortedProduct, message, sectionIndex,sort:1  });
+
+                }
+
+
+
+            }else if (sortBy === "Low-to-high"){
+                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { productMobile:  sortedProduct, message, sectionIndex, productIds,sort:-1  });
+                } else {
+                    res.render("products", {productMobile:  sortedProduct, message, sectionIndex ,sort:-1 });
+                }
+
+
+
+            }else{
+
             if (wishlist) {
                 const wishlistProducts = wishlist.product;
                 const products = wishlistProducts.map(item => item.productId);
@@ -537,10 +623,27 @@ const loadMobiles = async (req, res) => {
             } else {
                 res.render("products", {productMobile: mobileProducts, message, sectionIndex });
             }
+
+        }
         }
         else {
+
+            if(sortBy === "High-to-low"){
+
+const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+res.render("products", { productMobile: sortedProduct, sectionIndex,sort:1 });
+
+             }else if(sortBy === "Low-to-high"){
+
+                const sortedProduct =  mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+
+                res.render("products", {  productMobile: sortedProduct, sectionIndex ,sort:-1});
+
+             }else{
+
+
             res.render("products", { productMobile: mobileProducts, sectionIndex });
-        }
+        }}
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -550,19 +653,48 @@ const loadMobiles = async (req, res) => {
 
 //------------------------------------------------------------Tablets Page-------------------
 
-
 const loadTablets = async (req, res) => {
     try {
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
         const tabletsProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'tablets';
         });
+        const sortBy = req.query.sortBy;
         let sectionIndex = 0;
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId })
             const message = userData
             const userId = userData._id
             const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if(sortBy === "High-to-low"){
+                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                   
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { productTablets: sortedProduct, message, sectionIndex, productIds,sort:1 });
+                } else {
+                    res.render("products", { productTablets: sortedProduct, message, sectionIndex,sort:1 });
+                }
+
+            }else if (sortBy === "Low-to-high"){
+
+                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                   
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { productTablets: sortedProduct, message, sectionIndex, productIds,sort:-1 });
+                } else {
+                    res.render("products", { productTablets: sortedProduct, message, sectionIndex ,sort:-1});
+                }
+
+            }else{
+
             if (wishlist) {
                 const wishlistProducts = wishlist.product;
                 const products = wishlistProducts.map(item => item.productId);
@@ -572,10 +704,19 @@ const loadTablets = async (req, res) => {
             } else {
                 res.render("products", { productTablets: tabletsProducts, message, sectionIndex });
             }
+        } 
         }
         else {
+
+            if(sortBy === "High-to-low"){
+                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                res.render("products", { productTablets: sortedProduct, sectionIndex,sort:1 });
+            }    else if(sortBy === "Low-to-high"){
+                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                res.render("products", { productTablets: sortedProduct, sectionIndex,sort:-1 });
+            }  else{
             res.render("products", { productTablets: tabletsProducts, sectionIndex });
-        }
+        }}
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -590,12 +731,44 @@ const loadAllProducts = async (req, res) => {
     try {
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory");
         let sectionIndex = 0; // Define the section index here
+        const sortBy = req.query.sortBy;
         if (req.session.userId) {
             const userData = await userModel.findOne({ email: req.session.userId });
             const message = userData;
             const userId = userData._id
             //populate data collecting from product model
             const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if(sortBy === "High-to-low"){
+                const sortedProduct = productDetails.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { allProducts: sortedProduct, message, sectionIndex, productIds,sort:1 });
+    
+                } else {
+    
+                    res.render("products", { allProducts: sortedProduct, message, sectionIndex,sort:1 });
+                }
+
+
+            }else if (sortBy === "Low-to-high"){
+                const sortedProduct = productDetails.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                if (wishlist) {
+                    const wishlistProducts = wishlist.product;
+                    const products = wishlistProducts.map(item => item.productId);
+                    //to filter the productid
+                    const productIds = products.map(product => product._id);
+                    res.render("products", { allProducts: sortedProduct, message, sectionIndex, productIds ,sort:-1 });
+    
+                } else {
+    
+                    res.render("products", { allProducts: sortedProduct, message, sectionIndex,sort:-1  });
+                }
+
+            }else{
+
             if (wishlist) {
                 const wishlistProducts = wishlist.product;
                 const products = wishlistProducts.map(item => item.productId);
@@ -607,8 +780,22 @@ const loadAllProducts = async (req, res) => {
 
                 res.render("products", { allProducts: productDetails, message, sectionIndex, });
             }
+        }
         } else {
-            res.render("products", { allProducts: productDetails, sectionIndex });
+
+            if(sortBy === "High-to-low"){
+                const sortedProduct = productDetails.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                res.render("products", { allProducts: sortedProduct, sectionIndex,sort:1 });
+
+            }else if(sortBy === "Low-to-high"){
+
+                const sortedProduct = productDetails.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                res.render("products", { allProducts: sortedProduct, sectionIndex,sort:-1 });
+            }
+            else{
+                res.render("products", { allProducts: productDetails, sectionIndex });
+            }
+         
         }
     } catch (error) {
         console.error(error);
