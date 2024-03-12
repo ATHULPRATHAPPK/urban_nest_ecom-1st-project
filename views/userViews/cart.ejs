@@ -233,6 +233,8 @@
                                        
                                         <% userCartDetails.forEach((cartItem) => { %>
                                             <% cartItem.product.forEach((product) => { %>
+
+
                                            
                                                 <tr>
                                                     
@@ -251,6 +253,9 @@
                                                             </div><!-- End .product -->
  
                                                     </td>
+
+
+
                                                     <td class="price-col"><%= product.price %></td>
 
                  
@@ -284,6 +289,7 @@
                                                 // totalPriceElement.textContent = `₹${total.toFixed(2)}`;
                                             
                                                 // Update the quantity in the backend
+
                                                 updateQuantity(productId, quantity);
                                             }
                                             
@@ -298,7 +304,8 @@
                                                 .then(response => {
                                                     if (response.ok) {
                                                         window.location.reload()
-                                                        console.error('Failed to update quantity');
+                                                      
+                                                       
                                                     }
                                                 })
                                                 .catch(error => {
@@ -328,6 +335,9 @@
                                                     
                                                     <!-- Add code to display price, quantity, total, and remove button for each product -->
                                                 </tr>
+
+
+                                          
                                                 <% }) %>
                                     <%})%>  
                                   

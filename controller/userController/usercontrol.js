@@ -819,6 +819,10 @@ const loadCart = async (req, res) => {
                 return cart.userId._id.equals(targetUserId);
             });
             if (userCartDetails.length > 0) {
+
+
+//i want to work here
+
                 res.render("cart", { userCartDetails, message })
             }
             else {

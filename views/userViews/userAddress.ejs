@@ -305,7 +305,7 @@
                                                         <% }) %>
                                                             <% } %>
                                     </div>
-                                    <div class="modal fade" id="modal2" tabindex="-1" role="dialog"
+                                    <!-- <div class="modal fade" id="modal2" tabindex="-1" role="dialog"
                                         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
                                             <div class="modal-content" style="padding: 20px;">
@@ -362,8 +362,10 @@
                                                         </div>
 
                                                         <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Close</button>
+                                                          
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="hideAddAddressModal()">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
                                                             <button type="submit" class="btn btn-primary"
                                                                 onclick="updateAddress()">Save Changes</button>
                                                         </div>
@@ -372,7 +374,18 @@
                                             </div>
                                         </div>
                                        
-                                    </div>
+                                    </div> -->
+
+
+                                    
+                                   
+                                    
+
+
+
+
+
+
                                     <script>
                                         document.addEventListener('DOMContentLoaded', function () {
                                             const editForm = document.getElementById('editForm');
@@ -481,6 +494,61 @@
     </button>
 </div>
 
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add New Address</h5>
+                <button type="button" class="close" data-dismiss="modal" onclick="closeaddres()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm">
+                    <div class="form-group">
+                        <label for="name">&nbsp&nbsp Name:</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">&nbsp&nbsp Phone Number:</label>
+                        <input type="text" class="form-control" id="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="building">&nbsp&nbsp Building Name/House Name:</label>
+                        <input type="text" class="form-control" id="building" placeholder="Enter building or house name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">&nbsp&nbsp City:</label>
+                        <input type="text" class="form-control" id="city" placeholder="Enter your city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="district">&nbsp&nbsp District:</label>
+                        <input type="text" class="form-control" id="district" placeholder="Enter your district" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">&nbsp&nbsp State:</label>
+                        <input type="text" class="form-control" id="state" placeholder="Enter your state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pincode">&nbsp&nbsp Pincode:</label>
+                        <input type="text" class="form-control" id="pincode" placeholder="Enter your pincode" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeaddres()" data-dismiss="modal">Close</button>
+                        <button type="button" id="saveAddressBtn" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeaddres(){
+        $('#exampleModalCenter').modal('hide');
+    }
+</script>
+
 <!-- SweetAlert library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -509,75 +577,53 @@
 
 
 
-                                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-                                        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content" style="padding: 20px;">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLongTitle">Address</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form id="addressForm">
-                                                        <div class="form-group">
-                                                            <label for="name">Name:</label>
-                                                            <input type="text" class="form-control" required
-                                                                pattern="^(?!\s*$).+" id="name"
-                                                                placeholder="Enter your name">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="phone">Phone Number:</label>
-                                                            <input type="tel" class="form-control" required
-                                                                pattern="[0-9]{10}" id="phone"
-                                                                placeholder="Enter your phone number">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="city">Building Name/House Name</label>
-                                                            <input type="text" class="form-control" required
-                                                                pattern="^(?!\s*$).+" id="building"
-                                                                placeholder="Enter your Building Name/House Name">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="city">City:</label>
-                                                            <input type="text" class="form-control" required
-                                                                pattern="^(?!\s*$).+" id="city"
-                                                                placeholder="Enter your city">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="district">District:</label>
-                                                            <input type="text" class="form-control" required
-                                                                pattern="^(?!\s*$).+" id="district"
-                                                                placeholder="Enter your district">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="state">State:</label>
-                                                            <input type="text" class="form-control" required
-                                                                pattern="^(?!\s*$).+" id="state"
-                                                                placeholder="Enter your state">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="pincode">Pincode:</label>
-                                                            <input type="text" class="form-control" required
-                                                                id="pincode" placeholder="Enter your pincode">
-                                                        </div>
-
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Close</button>
-                                                            <button type="button" class="btn btn-primary"
-                                                                id="saveAddressBtn">Save Address</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+       
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="addressForm">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="text" class="form-control" id="phone" required>
+          </div>
+          <div class="form-group">
+            <label for="building">Building Name/House Name:</label>
+            <input type="text" class="form-control" id="building" required>
+          </div>
+          <div class="form-group">
+            <label for="city">City:</label>
+            <input type="text" class="form-control" id="city" required>
+          </div>
+          <div class="form-group">
+            <label for="district">District:</label>
+            <input type="text" class="form-control" id="district" required>
+          </div>
+          <div class="form-group">
+            <label for="state">State:</label>
+            <input type="text" class="form-control" id="state" required>
+          </div>
+          <div class="form-group">
+            <label for="pincode">Pincode:</label>
+            <input type="text" class="form-control" id="pincode" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" id="saveAddressBtn" class="btn btn-primary">Save Address</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 
@@ -587,57 +633,129 @@
                                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                                         <script>
                                             $(document).ready(function () {
+                                                // Handle click event for Save Address button
                                                 $('#saveAddressBtn').click(function () {
-                                                    // Show SweetAlert confirmation dialog
-                                                    Swal.fire({
-                                                        title: 'Add this address?',
-                                                        text: "Do you want to add this address?",
-                                                        icon: 'question',
-                                                        showCancelButton: true,
-                                                        confirmButtonColor: '#3085d6',
-                                                        cancelButtonColor: '#d33',
-                                                        confirmButtonText: 'Yes, add it!'
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            // Submit the form
-                                                            $('#addressForm').submit();
-                                                        }
-                                                    });
+                                                    if (validateForm()) {
+                                                        // If form is valid, show SweetAlert confirmation dialog
+                                                        Swal.fire({
+                                                            title: 'Add this address?',
+                                                            text: "Do you want to add this address?",
+                                                            icon: 'question',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#3085d6',
+                                                            cancelButtonColor: '#d33',
+                                                            confirmButtonText: 'Yes, add it!'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                // If user confirms, submit the form
+                                                                $('#addressForm').submit();
+                                                            }
+                                                        });
+                                                    }
                                                 });
+                                        
+                                                // Handle form submission
                                                 $('#addressForm').submit(function (event) {
                                                     event.preventDefault(); // Prevent the default form submission
-
-
-                                                    // Get form data
-                                                    var formData = {
-                                                        name: $('#name').val(),
-                                                        phone: $('#phone').val(), // Get phone number field value
-                                                        building: $('#building').val(), // Get building name/house name field value
-                                                        city: $('#city').val(), // Get city field value
-                                                        district: $('#district').val(), // Get district field value
-                                                        state: $('#state').val(), // Get state field value
-                                                        pincode: $('#pincode').val() // Get pincode field value
-                                                    };
-
-                                                    // Make AJAX POST request
-                                                    $.ajax({
-                                                        type: 'POST',
-                                                        url: '/addAddress',
-                                                        data: formData,
-                                                        success: function (response) {
-                                                            console.log(response.message); // Log success message
-                                                            $('#exampleModalCenter').modal('hide');
-
-
-                                                            window.location.reload();
-                                                        },
-                                                        error: function (xhr, status, error) {
-                                                            console.error('Error saving address:', error);
-                                                        }
-                                                    });
+                                        
+                                                    if (validateForm()) {
+                                                        // If form is valid, proceed with form submission via AJAX
+                                                        var formData = {
+                                                            name: $('#name').val(),
+                                                            phone: $('#phone').val(),
+                                                            building: $('#building').val(),
+                                                            city: $('#city').val(),
+                                                            district: $('#district').val(),
+                                                            state: $('#state').val(),
+                                                            pincode: $('#pincode').val()
+                                                        };
+                                        
+                                                        // AJAX request to add address
+                                                        $.ajax({
+                                                            type: 'POST',
+                                                            url: '/addAddress',
+                                                            data: formData,
+                                                            success: function (response) {
+                                                                Swal.fire({
+                                                                    title: 'Success!',
+                                                                    text: response.message,
+                                                                    icon: 'success',
+                                                                    timer: 2000,
+                                                                    timerProgressBar: true
+                                                                }).then(() => {
+                                                                    $('#exampleModalCenter').modal('hide');
+                                                                    window.location.reload();
+                                                                });
+                                                            },
+                                                            error: function (xhr, status, error) {
+                                                                console.error('Error saving address:', error);
+                                                            }
+                                                        });
+                                                    }
                                                 });
+                                        
+                                                // Function to validate form fields
+                                                function validateForm() {
+                                                    var name = $('#name').val().trim();
+                                                    var phone = $('#phone').val().trim();
+                                                    var building = $('#building').val().trim();
+                                                    var city = $('#city').val().trim();
+                                                    var district = $('#district').val().trim();
+                                                    var state = $('#state').val().trim();
+                                                    var pincode = $('#pincode').val().trim();
+                                        
+                                                    // Regular expressions for validation
+                                                    var namePattern = /^[A-Za-z\s]+$/;
+                                                    var phonePattern = /^\d{10}$/;
+                                                    var buildingPattern = /^[A-Za-z\s]+$/;
+                                                    var cityPattern = /^[A-Za-z\s]+$/;
+                                                    var districtPattern = /^[A-Za-z\s]+$/;
+                                                    var statePattern = /^[A-Za-z\s]+$/;
+                                                    var pincodePattern = /^\d{6}$/;
+                                        
+                                                    // Validation checks
+                                                    if (!namePattern.test(name)) {
+                                                        Swal.fire('Invalid Input', 'Name must contain only letters and spaces.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!phonePattern.test(phone)) {
+                                                        Swal.fire('Invalid Input', 'Phone number must contain 10 digits.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!buildingPattern.test(building)) {
+                                                        Swal.fire('Invalid Input', 'Building name must contain only letters and spaces.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!cityPattern.test(city)) {
+                                                        Swal.fire('Invalid Input', 'City must contain only letters and spaces.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!districtPattern.test(district)) {
+                                                        Swal.fire('Invalid Input', 'District must contain only letters and spaces.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!statePattern.test(state)) {
+                                                        Swal.fire('Invalid Input', 'State must contain only letters and spaces.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    if (!pincodePattern.test(pincode)) {
+                                                        Swal.fire('Invalid Input', 'Pincode must contain 6 digits.', 'error');
+                                                        return false;
+                                                    }
+                                        
+                                                    return true; // Form is valid
+                                                }
                                             });
                                         </script>
+                                        
+                                        
+                                        
                                     </div>
 
                                 </div><!-- End .col-lg-9 -->
