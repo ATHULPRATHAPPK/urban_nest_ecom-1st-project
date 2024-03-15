@@ -23,6 +23,7 @@
     "nodemailer": "^6.9.8",
     "paypal-rest-sdk": "^1.8.1",
     "puppeteer": "^22.4.1",
+    "querystring": "^0.2.1",
     "sharp": "^0.33.2"
   },
   "devDependencies": {

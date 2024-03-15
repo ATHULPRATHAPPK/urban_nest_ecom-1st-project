@@ -254,7 +254,11 @@
  
                                                     </td>
 
+<% if(product.stock==0) { %>
 
+<td>out of stock</td>
+
+ <% } else { %>
 
                                                     <td class="price-col"><%= product.price %></td>
 
@@ -273,6 +277,11 @@
                                                                 oninput="updateTotalPrice(this, '<%= product.price %>', '<%= product.productId %>')"
                                                             >
                                                         </div> 
+
+                                                        <% if(product.stock <= 3 ) { %>
+                                                        <p style="color: red;">only  <%=product.stock %> stock left</p>
+
+                                                      <%  }%>
                                          </td>
 
 
@@ -295,7 +304,7 @@
                                             
                                             function updateQuantity(productId, newQuantity) {
                                                 fetch('/updateQuantity', {
-                                                    method: 'POST',
+                                                    method: 'POST', 
                                                     headers: {
                                                         'Content-Type': 'application/json'
                                                     },
@@ -329,6 +338,7 @@
 
 
                                                     <td class="total-col"><%= product.total %></td>
+                                                    <%  } %>
                                                     <td class="remove-col">
                                                         <a  class="btn-remove" data-product-id="<%= product.productId %>"><i class="icon-close"></i></a>
                                                     </td>
@@ -336,7 +346,7 @@
                                                     <!-- Add code to display price, quantity, total, and remove button for each product -->
                                                 </tr>
 
-
+                                                
                                           
                                                 <% }) %>
                                     <%})%>  

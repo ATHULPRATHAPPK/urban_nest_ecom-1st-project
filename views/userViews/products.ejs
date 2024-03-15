@@ -132,20 +132,44 @@
                             <img src="/user/assets\images\logo nest.png" alt="Urban Nest" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
-
                     <div class="header-center">
                         <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
+                            <form id="searchForm" method="get">
                                 <div class="header-search-wrapper search-wrapper-wide">
                                     <label for="q" class="sr-only">Search</label>
-                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
                                     <input type="search" class="form-control" name="q" id="q"
                                         placeholder="Search product ..." required>
+                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
                                 </div><!-- End .header-search-wrapper -->
                             </form>
                         </div><!-- End .header-search -->
                     </div>
+                    <script>
+                        document.getElementById('searchForm').addEventListener('submit', function(event) {
+                            event.preventDefault(); // Prevent the form from submitting normally
+                    
+                            // Get the search input value
+                            var searchValue = document.getElementById('q').value;
+                    
+                            // Get the current URL
+                            var currentUrl = window.location.href;
+                    
+                            // Check if the search query parameter already exists in the URL
+                            var searchParam = 'q=';
+                            if (currentUrl.includes(searchParam)) {
+                                // If it exists, replace its value with the new search value
+                                var regex = new RegExp('(' + searchParam + '.*?)(&|$)');
+                                var newUrl = currentUrl.replace(regex, searchParam + encodeURIComponent(searchValue) + '$2');
+                            } else {
+                                // If it doesn't exist, add it as a new query parameter
+                                var newUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + searchParam + encodeURIComponent(searchValue);
+                            }
+                    
+                            // Redirect to the new URL
+                            window.location.href = newUrl;
+                        });
+                    </script>
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
@@ -471,7 +495,7 @@
                             <div class="toolbox">
                                 <div class="toolbox-left">
                                     <div class="toolbox-info">
-                                        Showing <span>9 of 56</span> Products
+
                                     </div><!-- End .toolbox-info -->
                                 </div><!-- End .toolbox-left -->
 
@@ -483,183 +507,221 @@
                                         <div class="toolbox-sort">
                                             <label for="sortby">Sort by:</label>
                                             <div class="select-custom">
-                                                <select onchange="filterAllproduct()" name="sortby" id="sortbyAllproduct" class="form-control">
-                                                    <% if (locals.sort == 1) { %>
+                                                <select onchange="filterAllproduct()" name="sortby"
+                                                    id="sortbyAllproduct" class="form-control">
+                                                    <% if (locals.sort==1) { %>
                                                         <option value="High-to-low" selected>High To Low</option>
                                                         <option value="Low-to-high">Low To High</option>
-                                                    <% } else if (locals.sort == -1) { %>
-                                                        <option value="High-to-low">High To Low</option>
-                                                        <option value="Low-to-high" selected>Low To High</option>
-                                                    <% } else { %>
-                                                        <option value="" disabled selected>Sort By</option>
-                                                        <option value="High-to-low">High To Low</option>
-                                                        <option value="Low-to-high">Low To High</option>
-                                                    <% } %>
+                                                        <% } else if (locals.sort==-1) { %>
+                                                            <option value="High-to-low">High To Low</option>
+                                                            <option value="Low-to-high" selected>Low To High</option>
+                                                            <% } else { %>
+                                                                <option value="" disabled selected>Sort By</option>
+                                                                <option value="High-to-low">High To Low</option>
+                                                                <option value="Low-to-high">Low To High</option>
+                                                                <% } %>
                                                 </select>
                                             </div>
                                         </div>
-                                    <% } %>
-
-
-
-
-                                    <% if(locals.productMobile) { %>
-                                        <div class="toolbox-sort">
-                                        <label for="sortby">Sort by:</label>
-                                        <div class="select-custom">
-                                        <select onchange="filterMobile()" name="sortby" id="sortbyMobile" class="form-control">
-                                        <% if (locals.sort == 1) { %>
-                                        <option value="High-to-low" selected>High To Low</option>
-                                        <option value="Low-to-high">Low To High</option>
-                                        <% } else if (locals.sort == -1) { %>
-                                        <option value="High-to-low">High To Low</option>
-                                        <option value="Low-to-high" selected>Low To High</option>
-                                        <% } else { %>
-                                        <option value="" disabled selected>Sort By</option>
-                                        <option value="High-to-low">High To Low</option>
-                                        <option value="Low-to-high">Low To High</option>
-                                        <% } %>
-                                        </select>
-                                        </div>
-                                        </div>
                                         <% } %>
 
 
 
-                                    <% if (locals.productLaptop) { %>
-                                        <div class="toolbox-sort">
-                                            <label for="sortby">Sort by:</label>
-                                            <div class="select-custom">
-                                                <select onchange="filterLaptop()" name="sortby" id="sortbyLaptop" class="form-control">
-                                                    <% if (locals.sort == 1) { %>
-                                                        <option value="High-to-low" selected>High To Low</option>
-                                                        <option value="Low-to-high">Low To High</option>
-                                                    <% } else if (locals.sort == -1) { %>
-                                                        <option value="High-to-low">High To Low</option>
-                                                        <option value="Low-to-high" selected>Low To High</option>
-                                                    <% } else { %>
-                                                        <option value="" disabled selected>Sort By</option>
-                                                        <option value="High-to-low">High To Low</option>
-                                                        <option value="Low-to-high">Low To High</option>
-                                                    <% } %>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    <% } %>
+
+                                            <% if(locals.productMobile) { %>
+                                                <div class="toolbox-sort">
+                                                    <label for="sortby">Sort by:</label>
+                                                    <div class="select-custom">
+                                                        <select onchange="filterMobile()" name="sortby"
+                                                            id="sortbyMobile" class="form-control">
+                                                            <% if (locals.sort==1) { %>
+                                                                <option value="High-to-low" selected>High To Low
+                                                                </option>
+                                                                <option value="Low-to-high">Low To High</option>
+                                                                <% } else if (locals.sort==-1) { %>
+                                                                    <option value="High-to-low">High To Low</option>
+                                                                    <option value="Low-to-high" selected>Low To High
+                                                                    </option>
+                                                                    <% } else { %>
+                                                                        <option value="" disabled selected>Sort By
+                                                                        </option>
+                                                                        <option value="High-to-low">High To Low</option>
+                                                                        <option value="Low-to-high">Low To High</option>
+                                                                        <% } %>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+
+
+
+                                                    <% if (locals.productLaptop) { %>
+                                                        <div class="toolbox-sort">
+                                                            <label for="sortby">Sort by:</label>
+                                                            <div class="select-custom">
+                                                                <select onchange="filterLaptop()" name="sortby"
+                                                                    id="sortbyLaptop" class="form-control">
+                                                                    <% if (locals.sort==1) { %>
+                                                                        <option value="High-to-low" selected>High To Low
+                                                                        </option>
+                                                                        <option value="Low-to-high">Low To High</option>
+                                                                        <% } else if (locals.sort==-1) { %>
+                                                                            <option value="High-to-low">High To Low
+                                                                            </option>
+                                                                            <option value="Low-to-high" selected>Low To
+                                                                                High</option>
+                                                                            <% } else { %>
+                                                                                <option value="" disabled selected>Sort
+                                                                                    By</option>
+                                                                                <option value="High-to-low">High To Low
+                                                                                </option>
+                                                                                <option value="Low-to-high">Low To High
+                                                                                </option>
+                                                                                <% } %>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <% } %>
 
 
 
 
-                                    <% if (locals.productTablets) { %>
-                                        <div class="toolbox-sort">
-                                        <label for="sortby">Sort by:</label>
-                                        <div class="select-custom">
-                                        <select onchange="filterTablet()" name="sortby" id="sortbyTablet" class="form-control">
-                                        <% if (locals.sort == 1) { %>
-                                        <option value="High-to-low" selected>High To Low</option>
-                                        <option value="Low-to-high">Low To High</option>
-                                        <% } else if (locals.sort == -1) { %>
-                                        <option value="High-to-low">High To Low</option>
-                                        <option value="Low-to-high" selected>Low To High</option>
-                                        <% } else { %>
-                                        <option value="" disabled selected>Sort By</option>
-                                        <option value="High-to-low">High To Low</option>
-                                        <option value="Low-to-high">Low To High</option>
-                                        <% } %>
-                                        </select>
-                                        </div>
-                                        </div>
-                                        <% } %>
+                                                            <% if (locals.productTablets) { %>
+                                                                <div class="toolbox-sort">
+                                                                    <label for="sortby">Sort by:</label>
+                                                                    <div class="select-custom">
+                                                                        <select onchange="filterTablet()" name="sortby"
+                                                                            id="sortbyTablet" class="form-control">
+                                                                            <% if (locals.sort==1) { %>
+                                                                                <option value="High-to-low" selected>
+                                                                                    High To Low</option>
+                                                                                <option value="Low-to-high">Low To High
+                                                                                </option>
+                                                                                <% } else if (locals.sort==-1) { %>
+                                                                                    <option value="High-to-low">High To
+                                                                                        Low</option>
+                                                                                    <option value="Low-to-high"
+                                                                                        selected>Low To High</option>
+                                                                                    <% } else { %>
+                                                                                        <option value="" disabled
+                                                                                            selected>Sort By</option>
+                                                                                        <option value="High-to-low">High
+                                                                                            To Low</option>
+                                                                                        <option value="Low-to-high">Low
+                                                                                            To High</option>
+                                                                                        <% } %>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <% } %>
 
 
 
-                                        <% if (locals.allProducts) { %>
+                                                                    <% if (locals.allProducts) { %>
 
-                                            <div class="toolbox-layout">
-                                                <a href="/user-allProducts" class="btn-layout">
-                                                clear 
-                                                </a>
-                                            </div>
+                                                                        <div class="toolbox-layout">
+                                                                            <a href="/user-allProducts"
+                                                                                class="btn-layout">
+                                                                                clear
+                                                                            </a>
+                                                                        </div>
 
-                                     <%   } %>
+                                                                        <% } %>
 
-                                     <% if(locals.productMobile){ %>
+                                                                            <% if(locals.productMobile){ %>
 
-                                        <div class="toolbox-layout">
-                                            <a href="/user-mobiles" class="btn-layout">
-                                            clear 
-                                            </a>
-                                        </div>
+                                                                                <div class="toolbox-layout">
+                                                                                    <a href="/user-mobiles"
+                                                                                        class="btn-layout">
+                                                                                        clear
+                                                                                    </a>
+                                                                                </div>
 
-                                 <%   } %>
+                                                                                <% } %>
 
-                                 <% if  (locals.productLaptop) { %>
+                                                                                    <% if (locals.productLaptop) { %>
 
-                                    <div class="toolbox-layout">
-                                        <a href="/user-laptops" class="btn-layout">
-                                        clear 
-                                        </a>
-                                    </div>
+                                                                                        <div class="toolbox-layout">
+                                                                                            <a href="/user-laptops"
+                                                                                                class="btn-layout">
+                                                                                                clear
+                                                                                            </a>
+                                                                                        </div>
 
-                             <%   } %>
-                             <% if (locals.productTablets) { %>
+                                                                                        <% } %>
+                                                                                            <% if
+                                                                                                (locals.productTablets)
+                                                                                                { %>
 
-                                <div class="toolbox-layout">
-                                    <a href="/user-tablets" class="btn-layout">
-                                    clear 
-                                    </a>
-                                </div>
+                                                                                                <div
+                                                                                                    class="toolbox-layout">
+                                                                                                    <a href="/user-tablets"
+                                                                                                        class="btn-layout">
+                                                                                                        clear
+                                                                                                    </a>
+                                                                                                </div>
 
-                         <%   } %>
-                                
-                                  
+                                                                                                <% } %>
 
-                                    
+
+
+
                                 </div><!-- End .toolbox-right -->
                             </div><!-- End .toolbox -->
 
 
-                            <script>
-                                function filterLaptop() {
-                                console.log("working");
-                                const selectedValue = document.getElementById('sortbyLaptop').value;
-                                const href = `/user-laptops?sortBy=${selectedValue}`;
-                                window.location.href = href;     
-                                
-                                }
-                                </script>
+                       
+<script>
+      function filterLaptop() {
+      
+        const selectedValue = document.getElementById('sortbyLaptop').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sortBy', selectedValue);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.location.href = newUrl;
+    }
+</script>
+                            
 
 
 <script>
     function filterAllproduct() {
-    console.log("working");
-    const selectedValue = document.getElementById('sortbyAllproduct').value;
-    const href = `user-allProducts?sortBy=${selectedValue}`;
-    window.location.href = href;     
-    
+        console.log("working");
+        const selectedValue = document.getElementById('sortbyAllproduct').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sortBy', selectedValue);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.location.href = newUrl;
     }
-    </script>
+</script>
 
-    </script>
-    <script>
+           
+                            
+<script>
     function filterMobile() {
-    console.log("working");
-    const selectedValue = document.getElementById('sortbyMobile').value;
-    const href = `/user-mobiles?sortBy=${selectedValue}`;
-    window.location.href = href;     
-    
+        console.log("working");
+        const selectedValue = document.getElementById('sortbyMobile').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sortBy', selectedValue);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.location.href = newUrl;
+
     }
-    </script>
+</script>
 
 <script>
-    function filterTablet() {
-    console.log("working");
-    const selectedValue = document.getElementById('sortbyTablet').value;
-    const href = `/user-tablets?sortBy=${selectedValue}`;
-    window.location.href = href;     
-    
+     function filterTablet() {
+        console.log("working");
+        const selectedValue = document.getElementById('sortbyTablet').value;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sortBy', selectedValue);
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.location.href = newUrl;
+
     }
-    </script>
+</script>
+
+                          
 
                             <div class="products mb-3">
 
@@ -668,6 +730,8 @@
 
                                     <!-- ----------------------------------------all products--------------------------------------------------- -->
                                     <% if (locals.allProducts) { %>
+
+                                        <% if(allProducts.length > 0 )   { %>
 
                                         <% allProducts.forEach((n)=> { %>
 
@@ -805,15 +869,20 @@
                                                                 <%= n.productName %>
                                                             </a></h3><!-- End .product-title -->
                                                         <div class="product-price">
-                                                            <% if (n.subcategory.offerPercentage > 0) { %>
-                                                                $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
-                                                                <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
-                                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
-                                                              <% } else { %>
-                                                                <%= n.price %>
-                                                              <% } %>
-                                                              
+                                                            <% if (n.subcategory.offerPercentage> 0) { %>
+                                                                $ <strike style="color: lightslategrey;">
+                                                                    <%= n.price %>
+                                                                </strike>&nbsp;&nbsp;
+                                                                <% discountedPrice=n.price - (n.price *
+                                                                    n.subcategory.offerPercentage / 100) %>
+                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        <span style="color: black; font-size: smaller;">
+                                                                            <%= n.subcategory.offerPercentage %> % offer
+                                                                        </span>
+                                                                        <% } else { %>
+                                                                            <%= n.price %>
+                                                                                <% } %>
+
                                                         </div><!-- End .product-price -->
                                                         <div class="ratings-container">
                                                             <div class="ratings">
@@ -842,13 +911,18 @@
                                                 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------ -->
                                             </div>
                                             <% }) %>
+                                      <%  }else { %>
+                                        <p style="font-size: xx-large;">no product avaliable</p>
 
+                                      <%  } %>
                                                 <% } %>
 
 
                                                     <!-- --------------------------------------------mobile----------------------------------------------------------------- -->
 
                                                     <% if (locals.productMobile) { %>
+
+                                                        <% if(productMobile.length > 0 )   { %>
 
                                                         <% productMobile.forEach((n)=> { %>
 
@@ -988,14 +1062,25 @@
                                                                                 <%= n.productName %>
                                                                             </a></h3><!-- End .product-title -->
                                                                         <div class="product-price">
-                                                                            <% if (n.subcategory.offerPercentage > 0) { %>
-                                                                                $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
-                                                                                <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
-                                                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
-                                                                              <% } else { %>
-                                                                                <%= n.price %>
-                                                                              <% } %>
+                                                                            <% if (n.subcategory.offerPercentage> 0) {
+                                                                                %>
+                                                                                $ <strike
+                                                                                    style="color: lightslategrey;">
+                                                                                    <%= n.price %>
+                                                                                </strike>&nbsp;&nbsp;
+                                                                                <% discountedPrice=n.price - (n.price *
+                                                                                    n.subcategory.offerPercentage / 100)
+                                                                                    %>
+                                                                                    $ <%= discountedPrice %>
+                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                        <span
+                                                                                            style="color: black; font-size: smaller;">
+                                                                                            <%= n.subcategory.offerPercentage
+                                                                                                %> % offer
+                                                                                        </span>
+                                                                                        <% } else { %>
+                                                                                            <%= n.price %>
+                                                                                                <% } %>
                                                                         </div><!-- End .product-price -->
                                                                         <div class="ratings-container">
                                                                             <div class="ratings">
@@ -1027,12 +1112,17 @@
                                                             </div><!-- End .row -->
                                                             <% }) %>
 
+                                                            <%  }else { %>
+                                                                <p style="font-size: xx-large;">no product avaliable</p>
+                        
+                                                              <%  } %>
+
                                                                 <% } %>
 
                                                                     <!--------------------------------------------------laptops----------------------------------------------------------  -->
 
                                                                     <% if (locals.productLaptop) { %>
-
+                                                                        <% if(productLaptop.length > 0 )   { %>
                                                                         <%productLaptop.forEach((n)=> { %>
 
                                                                             <div class="col-6 col-md-4 col-lg-4">
@@ -1069,10 +1159,10 @@
                                                                                                                             (matchFound)
                                                                                                                             {
                                                                                                                             %>
-                                                                                                                      
+
                                                                                                                             <div
                                                                                                                                 class="product-action-vertical">
-                                                                                                     
+
                                                                                                                                 <a class="btn-product-icon btn-wishlist btn-expandable"
                                                                                                                                     onclick="addToWishlist('<%= n._id %>', <%= sectionIndex %>)"
                                                                                                                                     style=" color: rgb(236, 6, 6);"><span>Added
@@ -1176,14 +1266,31 @@
                                                                                             </a></h3>
                                                                                         <!-- End .product-title -->
                                                                                         <div class="product-price">
-                                                                                            <% if (n.subcategory.offerPercentage > 0) { %>
-                                                                                                $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
-                                                                                                <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
-                                                                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                                <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
-                                                                                              <% } else { %>
-                                                                                                <%= n.price %>
-                                                                                              <% } %>
+                                                                                            <% if
+                                                                                                (n.subcategory.offerPercentage>
+                                                                                                0) { %>
+                                                                                                $ <strike
+                                                                                                    style="color: lightslategrey;">
+                                                                                                    <%= n.price %>
+                                                                                                </strike>&nbsp;&nbsp;
+                                                                                                <% discountedPrice=n.price
+                                                                                                    - (n.price *
+                                                                                                    n.subcategory.offerPercentage
+                                                                                                    / 100) %>
+                                                                                                    $ <%=
+                                                                                                        discountedPrice
+                                                                                                        %>
+                                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                        <span
+                                                                                                            style="color: black; font-size: smaller;">
+                                                                                                            <%= n.subcategory.offerPercentage
+                                                                                                                %> %
+                                                                                                                offer
+                                                                                                        </span>
+                                                                                                        <% } else { %>
+                                                                                                            <%= n.price
+                                                                                                                %>
+                                                                                                                <% } %>
                                                                                         </div>
                                                                                         <!-- End .product-price -->
                                                                                         <div class="ratings-container">
@@ -1217,6 +1324,10 @@
                                                                                 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------ -->
                                                                             </div><!-- End .row -->
                                                                             <% }) %>
+                                                                            <%  }else { %>
+                                                                                <p style="font-size: xx-large;">no product avaliable</p>
+                                        
+                                                                              <%  } %>
 
                                                                                 <% } %>
 
@@ -1224,7 +1335,7 @@
                                                                                     <!-- ---------------------------------------------------------tablets-------------------------------------------------------------------------- -->
 
                                                                                     <% if (locals.productTablets) { %>
-
+                                                                                        <% if(productLaptop.length > 0 )   { %>
                                                                                         <% productTablets.forEach((n)=>
                                                                                             { %>
 
@@ -1397,14 +1508,41 @@
                                                                                                         <!-- End .product-title -->
                                                                                                         <div
                                                                                                             class="product-price">
-                                                                                                            <% if (n.subcategory.offerPercentage > 0) { %>
-                                                                                                                $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
-                                                                                                                <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
-                                                                                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                                                <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
-                                                                                                              <% } else { %>
-                                                                                                                <%= n.price %>
-                                                                                                              <% } %>
+                                                                                                            <% if
+                                                                                                                (n.subcategory.offerPercentage>
+                                                                                                                0) { %>
+                                                                                                                $
+                                                                                                                <strike
+                                                                                                                    style="color: lightslategrey;">
+                                                                                                                    <%= n.price
+                                                                                                                        %>
+                                                                                                                </strike>&nbsp;&nbsp;
+                                                                                                                <% discountedPrice=n.price
+                                                                                                                    -
+                                                                                                                    (n.price
+                                                                                                                    *
+                                                                                                                    n.subcategory.offerPercentage
+                                                                                                                    /
+                                                                                                                    100)
+                                                                                                                    %>
+                                                                                                                    $
+                                                                                                                    <%= discountedPrice
+                                                                                                                        %>
+                                                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                                        <span
+                                                                                                                            style="color: black; font-size: smaller;">
+                                                                                                                            <%= n.subcategory.offerPercentage
+                                                                                                                                %>
+                                                                                                                                %
+                                                                                                                                offer
+                                                                                                                        </span>
+                                                                                                                        <% } else
+                                                                                                                            {
+                                                                                                                            %>
+                                                                                                                            <%= n.price
+                                                                                                                                %>
+                                                                                                                                <% }
+                                                                                                                                    %>
                                                                                                         </div>
                                                                                                         <!-- End .product-price -->
                                                                                                         <div
@@ -1446,7 +1584,10 @@
                                                                                                 <!-- ------------------------------------------------------------------------------------------------------------------------------------------------ -->
                                                                                             </div><!-- End .row -->
                                                                                             <% }) %>
-
+                                                                                            <%  }else { %>
+                                                                                                <p style="font-size: xx-large;">no product avaliable</p>
+                                                        
+                                                                                              <%  } %>
                                                                                                 <% } %>
 
 
@@ -1455,31 +1596,306 @@
                                 </div>
                             </div><!-- End .products -->
 
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item disabled">
-                                        <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1"
-                                            aria-disabled="true">
-                                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
-                                        </a>
-                                    </li>
-                                    <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a>
-                                    </li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item-total">of 6</li>
-                                    <li class="page-item">
-                                        <a class="page-link page-link-next" href="#" aria-label="Next">
-                                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"></i></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
+
+
+                            <!-- Pagination controls -->
+
+
+                            <% if (locals.allProducts) { %>
+                                <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                                    <ul class="pagination">
+                                        <% if (currentPage> 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="#"
+                                                    onclick="updatePagination(<%= currentPage - 1 %>)"
+                                                    aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <% } %>
+
+                                                <% for (let i=1; i <=totalPages; i++) { %>
+                                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                        <a class="page-link" href="#"
+                                                            onclick="updatePagination(<%= i %>)">
+                                                            <%= i %>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="#"
+                                                                    onclick="updatePagination(<%= currentPage + 1 %>)"
+                                                                    aria-label="Next">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+                                    </ul>
+                                </nav>
+
+                                <% } %>
+
+
+
+
+
+                                    <% if (locals.productMobile) { %>
+                                        <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                                            <ul class="pagination">
+                                                <% if (currentPage> 1) { %>
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="#"
+                                                            onclick="updatePaginationMobile(<%= currentPage - 1 %>)"
+                                                            aria-label="Previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+
+                                                        <% for (let i=1; i <=totalPages; i++) { %>
+                                                            <li
+                                                                class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                                <a class="page-link" href="#"
+                                                                    onclick="updatePaginationMobile(<%= i %>)">
+                                                                    <%= i %>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+
+                                                                <% if (currentPage < totalPages) { %>
+                                                                    <li class="page-item">
+                                                                        <a class="page-link" href="#"
+                                                                            onclick="updatePaginationMobile(<%= currentPage + 1 %>)"
+                                                                            aria-label="Next">
+                                                                            <span aria-hidden="true">&raquo;</span>
+                                                                        </a>
+                                                                    </li>
+                                                                    <% } %>
+                                            </ul>
+                                        </nav>
+
+                                        <% } %>
+
+                                        <% if (locals.productLaptop) { %>
+                                            <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                                                <ul class="pagination">
+                                                    <% if (currentPage> 1) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="#"
+                                                                onclick="updatePaginationLaptop(<%= currentPage - 1 %>)"
+                                                                aria-label="Previous">
+                                                                <span aria-hidden="true">&laquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+    
+                                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                                <li
+                                                                    class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                                    <a class="page-link" href="#"
+                                                                        onclick="updatePaginationLaptop(<%= i %>)">
+                                                                        <%= i %>
+                                                                    </a>
+                                                                </li>
+                                                                <% } %>
+    
+                                                                    <% if (currentPage < totalPages) { %>
+                                                                        <li class="page-item">
+                                                                            <a class="page-link" href="#"
+                                                                                onclick="updatePaginationLaptop(<%= currentPage + 1 %>)"
+                                                                                aria-label="Next">
+                                                                                <span aria-hidden="true">&raquo;</span>
+                                                                            </a>
+                                                                        </li>
+                                                                        <% } %>
+                                                </ul>
+                                            </nav>
+    
+                                            <% } %>
+
+
+
+                                            <% if (locals.productTablets) { %>
+                                                <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                                                    <ul class="pagination">
+                                                        <% if (currentPage> 1) { %>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="#"
+                                                                    onclick="updatePaginationTablet(<%= currentPage - 1 %>)"
+                                                                    aria-label="Previous">
+                                                                    <span aria-hidden="true">&laquo;</span>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+        
+                                                                <% for (let i=1; i <=totalPages; i++) { %>
+                                                                    <li
+                                                                        class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                                        <a class="page-link" href="#"
+                                                                            onclick="updatePaginationTablet(<%= i %>)">
+                                                                            <%= i %>
+                                                                        </a>
+                                                                    </li>
+                                                                    <% } %>
+        
+                                                                        <% if (currentPage < totalPages) { %>
+                                                                            <li class="page-item">
+                                                                                <a class="page-link" href="#"
+                                                                                    onclick="updatePaginationTablet(<%= currentPage + 1 %>)"
+                                                                                    aria-label="Next">
+                                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                                </a>
+                                                                            </li>
+                                                                            <% } %>
+                                                    </ul>
+                                                </nav>
+        
+                                                <% } %>
+    
+
+
+
+
+                                            <script>
+                                                // Function to update the pagination query parameter without reloading the page
+                                                function updatePaginationLaptop(pageNumber) {
+                                                    // Get the current URL
+                                                    let currentUrl = window.location.href;
+
+                                                    // Parse the URL to get its components
+                                                    let url = new URL(currentUrl);
+                                                    let params = new URLSearchParams(url.search);
+
+                                                    // Set the 'page' query parameter to the new page number
+                                                    params.set('page', pageNumber);
+
+                                                    // Remove the 'page' query parameter if pageNumber is 1
+                                                    if (pageNumber === 1) {
+                                                        params.delete('page');
+                                                    }
+
+                                                    // Construct the new URL with updated query parameters
+                                                    let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+                                                    // Replace the current URL with the new URL
+                                                    window.history.replaceState({ path: newUrl }, '', newUrl);
+
+                                                    window.location.reload()
+                                                }
+                                            </script>
+
+
+<script>
+    // Function to update the pagination query parameter without reloading the page
+    function updatePaginationTablet(pageNumber) {
+        // Get the current URL
+        let currentUrl = window.location.href;
+
+        // Parse the URL to get its components
+        let url = new URL(currentUrl);
+        let params = new URLSearchParams(url.search);
+
+        // Set the 'page' query parameter to the new page number
+        params.set('page', pageNumber);
+
+        // Remove the 'page' query parameter if pageNumber is 1
+        if (pageNumber === 1) {
+            params.delete('page');
+        }
+
+        // Construct the new URL with updated query parameters
+        let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+        // Replace the current URL with the new URL
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        window.location.reload()
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                            <script>
+                                                // Function to update the pagination query parameter without reloading the page
+                                                function updatePaginationMobile(pageNumber) {
+                                                    // Get the current URL
+                                                    let currentUrl = window.location.href;
+
+                                                    // Parse the URL to get its components
+                                                    let url = new URL(currentUrl);
+                                                    let params = new URLSearchParams(url.search);
+
+                                                    // Set the 'page' query parameter to the new page number
+                                                    params.set('page', pageNumber);
+
+                                                    // Remove the 'page' query parameter if pageNumber is 1
+                                                    if (pageNumber === 1) {
+                                                        params.delete('page');
+                                                    }
+
+                                                    // Construct the new URL with updated query parameters
+                                                    let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+                                                    // Replace the current URL with the new URL
+                                                    window.history.replaceState({ path: newUrl }, '', newUrl);
+
+                                                    window.location.reload()
+                                                }
+                                            </script>
+
+
+
+                                            <script>
+                                                // Function to update the pagination query parameter without reloading the page
+                                                function updatePagination(pageNumber) {
+                                                    // Get the current URL
+                                                    let currentUrl = window.location.href;
+
+                                                    // Parse the URL to get its components
+                                                    let url = new URL(currentUrl);
+                                                    let params = new URLSearchParams(url.search);
+
+                                                    // Set the 'page' query parameter to the new page number
+                                                    params.set('page', pageNumber);
+
+                                                    // Remove the 'page' query parameter if pageNumber is 1
+                                                    if (pageNumber === 1) {
+                                                        params.delete('page');
+                                                    }
+
+                                                    // Construct the new URL with updated query parameters
+                                                    let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+                                                    // Replace the current URL with the new URL
+                                                    window.history.replaceState({ path: newUrl }, '', newUrl);
+
+                                                    window.location.reload()
+                                                }
+                                            </script>
+
+
+
+
+
+
                         </div><!-- End .col-lg-9 -->
                         <aside class="col-lg-3 order-lg-first">
                             <div class="sidebar sidebar-shop">
                                 <div class="widget widget-clean">
-                                    <label>Filters:</label>
+                                    <label>Filters:</label><button id="collectSelectedDataButton">Collect Selected Data</button>
                                     <a href="#" class="sidebar-filter-clear">Clean All</a>
                                 </div><!-- End .widget widget-clean -->
 
@@ -1495,273 +1911,120 @@
                                         <div class="widget-body">
                                             <div class="filter-items filter-items-count">
                                                 <!-- ------------------------------------------------------------------------------------------------------------------- -->
-
+                                               
+                                                
 
 
                                                 <!-- --------------------------------------Allproduct  category--------------------------- -->
+          <% if (locals.allProducts) { %>
 
-                                                <% if (locals.allProducts && Array.isArray(locals.allProducts) &&
-                                                    locals.allProducts.length> 0) { %>
-                                                    <% const uniqueSubcategories=[...new
-                                                        Set(locals.allProducts.map(product=>
-                                                        product.subcategory.subcategory))] %>
-                                                        <% if (uniqueSubcategories.length> 0) { %>
-                                                            <div class="filter-item">
-                                                                <% uniqueSubcategories.forEach((subcategory, index)=> {
-                                                                    %>
-                                                                    <div class="custom-control custom-checkbox">
-                                                                        <input type="checkbox"
-                                                                            class="custom-control-input" id=<%="cat-" +
-                                                                            (index + 1) %>>
-                                                                        <label class="custom-control-label"
-                                                                            for=<%="cat-" + (index + 1) %>><%=
-                                                                                subcategory %> </label>
-                                                                        <!-- Add logic here to display the count for each subcategory if needed -->
-                                                                    </div><!-- End .custom-checkbox -->
-                                                                    <% }) %>
-                                                            </div><!-- End .filter-item -->
-                                                            <% } else { %>
-                                                                <p>No products found.</p>
+                                                <% if (locals.uniqueSubcategories && locals.uniqueSubcategories.length > 0) { %>
+                                                    <div class="filter-item">
+                                                        <% locals.uniqueSubcategories.forEach((subcategory, index) => { %>
+                                                            <div class="custom-control custom-checkbox">
+                                                                <% if (querydata.includes(subcategory)) { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %> checked>
+                                                                <% } else { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %>>
                                                                 <% } %>
-                                                                    <% }%>
+                                                                <label class="custom-control-label" for=<%= "category-" + (index + 1) %>>
+                                                                    <%= subcategory %>
+                                                                </label>
+                                                            </div><!-- End .custom-checkbox -->
+                                                        <% }) %>
+                                                    </div><!-- End .filter-item -->
+                                                <% } else { %>
+                                                    <p>No products found.</p>
+                                                <% } %>
+                                                
+<% }  %>              
+                                                
+                                            
+                                                
+                                                
 
                                                                         <!-- --------------------------------------mobile category--------------------------- -->
 
-                                                                        <% if (locals.productMobile &&
-                                                                            Array.isArray(locals.productMobile) &&
-                                                                            locals.productMobile.length> 0) { %>
-                                                                            <% const uniqueSubcategories=[...new
-                                                                                Set(locals.productMobile.map(product=>
-                                                                                product.subcategory.subcategory))] %>
-                                                                                <% if (uniqueSubcategories.length> 0) {
-                                                                                    %>
-                                                                                    <div class="filter-item">
-                                                                                        <% uniqueSubcategories.forEach((subcategory,
-                                                                                            index)=> { %>
-                                                                                            <div
-                                                                                                class="custom-control custom-checkbox">
-                                                                                                <input type="checkbox"
-                                                                                                    class="custom-control-input"
-                                                                                                    id=<%="cat-" +
-                                                                                                    (index + 1) %>>
-                                                                                                <label
-                                                                                                    class="custom-control-label"
-                                                                                                    for=<%="cat-" +
-                                                                                                    (index + 1) %>><%=
-                                                                                                        subcategory %>
-                                                                                                </label>
-                                                                                                <!-- Add logic here to display the count for each subcategory if needed -->
-                                                                                            </div>
-                                                                                            <!-- End .custom-checkbox -->
-                                                                                            <% }) %>
-                                                                                    </div><!-- End .filter-item -->
-                                                                                    <% } else { %>
-                                                                                        <p>No products found.</p>
-                                                                                        <% } %>
-                                                                                            <% }%>
+                                                                      
 
+                                                                 <% if (locals.productMobile) { %>
 
-
-                                                                                                <!-- --------------------------------------mobile category--------------------------- -->
-
-                                                                                                <% if
-                                                                                                    (locals.productMobile
-                                                                                                    &&
-                                                                                                    Array.isArray(locals.productMobile)
-                                                                                                    &&
-                                                                                                    locals.productMobile.length>
-                                                                                                    0) { %>
-                                                                                                    <% const
-                                                                                                        uniqueSubcategories=[...new
-                                                                                                        Set(locals.productMobile.map(product=>
-                                                                                                        product.subcategory.subcategory))]
-                                                                                                        %>
-                                                                                                        <% if
-                                                                                                            (uniqueSubcategories.length>
-                                                                                                            0) { %>
-                                                                                                            <div
-                                                                                                                class="filter-item">
-                                                                                                                <% uniqueSubcategories.forEach((subcategory,
-                                                                                                                    index)=>
-                                                                                                                    { %>
-                                                                                                                    <div
-                                                                                                                        class="custom-control custom-checkbox">
-                                                                                                                        <input
-                                                                                                                            type="checkbox"
-                                                                                                                            class="custom-control-input"
-                                                                                                                            id=<%="cat-"
-                                                                                                                            +
-                                                                                                                            (index
-                                                                                                                            +
-                                                                                                                            1)
-                                                                                                                            %>>
-                                                                                                                        <label
-                                                                                                                            class="custom-control-label"
-                                                                                                                            for=<%="cat-"
-                                                                                                                            +
-                                                                                                                            (index
-                                                                                                                            +
-                                                                                                                            1)
-                                                                                                                            %>>
-                                                                                                                            <%= subcategory
-                                                                                                                                %>
-                                                                                                                        </label>
-                                                                                                                        <!-- Add logic here to display the count for each subcategory if needed -->
-                                                                                                                    </div>
-                                                                                                                    <!-- End .custom-checkbox -->
-                                                                                                                    <% })
-                                                                                                                        %>
-                                                                                                            </div>
-                                                                                                            <!-- End .filter-item -->
-                                                                                                            <% } else {
-                                                                                                                %>
-                                                                                                                <p>No
-                                                                                                                    products
-                                                                                                                    found.
-                                                                                                                </p>
+                                                                                                <% if (locals.uniqueSubcategories && locals.uniqueSubcategories.length > 0) { %>
+                                                                                                    <div class="filter-item">
+                                                                                                        <% locals.uniqueSubcategories.forEach((subcategory, index) => { %>
+                                                                                                            <div class="custom-control custom-checkbox">
+                                                                                                                <% if (querydata.includes(subcategory)) { %>
+                                                                                                                    <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %> checked>
+                                                                                                                <% } else { %>
+                                                                                                                    <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %>>
                                                                                                                 <% } %>
-                                                                                                                    <%
-                                                                                                                        }%>
-
+                                                                                                                <label class="custom-control-label" for=<%= "category-" + (index + 1) %>>
+                                                                                                                    <%= subcategory %>
+                                                                                                                </label>
+                                                                                                            </div><!-- End .custom-checkbox -->
+                                                                                                        <% }) %>
+                                                                                                    </div><!-- End .filter-item -->
+                                                                                                <% } else { %>
+                                                                                                    <p>No products found.</p>
+                                                                                                <% } %>
+                                                                                                
+                                                <% }  %>       
+                                                                                              
 
 
 
                                                                                                                         <!-- --------------------------------------laptop category--------------------------- -->
 
-                                                                                                                        <% if
-                                                                                                                            (locals.productLaptop
-                                                                                                                            &&
-                                                                                                                            Array.isArray(locals.productLaptop)
-                                                                                                                            &&
-                                                                                                                            locals.productLaptop.length>
-                                                                                                                            0)
-                                                                                                                            {
-                                                                                                                            %>
-                                                                                                                            <% const
-                                                                                                                                uniqueSubcategories=[...new
-                                                                                                                                Set(locals.productLaptop.map(product=>
-                                                                                                                                product.subcategory.subcategory))]
-                                                                                                                                %>
-                                                                                                                                <% if
-                                                                                                                                    (uniqueSubcategories.length>
-                                                                                                                                    0)
-                                                                                                                                    {
-                                                                                                                                    %>
-                                                                                                                                    <div
-                                                                                                                                        class="filter-item">
-                                                                                                                                        <% uniqueSubcategories.forEach((subcategory,
-                                                                                                                                            index)=>
-                                                                                                                                            {
-                                                                                                                                            %>
-                                                                                                                                            <div
-                                                                                                                                                class="custom-control custom-checkbox">
-                                                                                                                                                <input
-                                                                                                                                                    type="checkbox"
-                                                                                                                                                    class="custom-control-input"
-                                                                                                                                                    id=<%="cat-"
-                                                                                                                                                    +
-                                                                                                                                                    (index
-                                                                                                                                                    +
-                                                                                                                                                    1)
-                                                                                                                                                    %>>
-                                                                                                                                                <label
-                                                                                                                                                    class="custom-control-label"
-                                                                                                                                                    for=<%="cat-"
-                                                                                                                                                    +
-                                                                                                                                                    (index
-                                                                                                                                                    +
-                                                                                                                                                    1)
-                                                                                                                                                    %>>
-                                                                                                                                                    <%= subcategory
-                                                                                                                                                        %>
-                                                                                                                                                </label>
-                                                                                                                                                <!-- Add logic here to display the count for each subcategory if needed -->
-                                                                                                                                            </div>
-                                                                                                                                            <!-- End .custom-checkbox -->
-                                                                                                                                            <% })
-                                                                                                                                                %>
-                                                                                                                                    </div>
-                                                                                                                                    <!-- End .filter-item -->
-                                                                                                                                    <% } else
-                                                                                                                                        {
-                                                                                                                                        %>
-                                                                                                                                        <p>No
-                                                                                                                                            products
-                                                                                                                                            found.
-                                                                                                                                        </p>
-                                                                                                                                        <% }
-                                                                                                                                            %>
-                                                                                                                                            <%
-                                                                                                                                                }%>
+                                                                                
 
+                                                              
+                                                                                  
+<% if (locals.productLaptop) { %>
 
-                                                                                                                                                <!-- --------------------------------------tablet category--------------------------- -->
+    <% if (locals.uniqueSubcategories && locals.uniqueSubcategories.length > 0) { %>
+        <div class="filter-item">
+            <% locals.uniqueSubcategories.forEach((subcategory, index) => { %>
+                <div class="custom-control custom-checkbox">
+                    <% if (querydata.includes(subcategory)) { %>
+                        <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %> checked>
+                    <% } else { %>
+                        <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %>>
+                    <% } %>
+                    <label class="custom-control-label" for=<%= "category-" + (index + 1) %>>
+                        <%= subcategory %>
+                    </label>
+                </div><!-- End .custom-checkbox -->
+            <% }) %>
+        </div><!-- End .filter-item -->
+    <% } else { %>
+        <p>No products found.</p>
+    <% } %>
+                    <% }  %> 
+                    
+                    
 
-                                                                                                                                                <% if
-                                                                                                                                                    (locals.productTablets
-                                                                                                                                                    &&
-                                                                                                                                                    Array.isArray(locals.productTablets)
-                                                                                                                                                    &&
-                                                                                                                                                    locals.productTablets.length>
-                                                                                                                                                    0)
-                                                                                                                                                    {
-                                                                                                                                                    %>
-                                                                                                                                                    <% const
-                                                                                                                                                        uniqueSubcategories=[...new
-                                                                                                                                                        Set(locals.productTablets.map(product=>
-                                                                                                                                                        product.subcategory.subcategory))]
-                                                                                                                                                        %>
-                                                                                                                                                        <% if
-                                                                                                                                                            (uniqueSubcategories.length>
-                                                                                                                                                            0)
-                                                                                                                                                            {
-                                                                                                                                                            %>
-                                                                                                                                                            <div
-                                                                                                                                                                class="filter-item">
-                                                                                                                                                                <% uniqueSubcategories.forEach((subcategory,
-                                                                                                                                                                    index)=>
-                                                                                                                                                                    {
-                                                                                                                                                                    %>
-                                                                                                                                                                    <div
-                                                                                                                                                                        class="custom-control custom-checkbox">
-                                                                                                                                                                        <input
-                                                                                                                                                                            type="checkbox"
-                                                                                                                                                                            class="custom-control-input"
-                                                                                                                                                                            id=<%="cat-"
-                                                                                                                                                                            +
-                                                                                                                                                                            (index
-                                                                                                                                                                            +
-                                                                                                                                                                            1)
-                                                                                                                                                                            %>>
-                                                                                                                                                                        <label
-                                                                                                                                                                            class="custom-control-label"
-                                                                                                                                                                            for=<%="cat-"
-                                                                                                                                                                            +
-                                                                                                                                                                            (index
-                                                                                                                                                                            +
-                                                                                                                                                                            1)
-                                                                                                                                                                            %>>
-                                                                                                                                                                            <%= subcategory
-                                                                                                                                                                                %>
-                                                                                                                                                                        </label>
-                                                                                                                                                                        <!-- Add logic here to display the count for each subcategory if needed -->
-                                                                                                                                                                    </div>
-                                                                                                                                                                    <!-- End .custom-checkbox -->
-                                                                                                                                                                    <% })
-                                                                                                                                                                        %>
-                                                                                                                                                            </div>
-                                                                                                                                                            <!-- End .filter-item -->
-                                                                                                                                                            <% } else
-                                                                                                                                                                {
-                                                                                                                                                                %>
-                                                                                                                                                                <p>No
-                                                                                                                                                                    products
-                                                                                                                                                                    found.
-                                                                                                                                                                </p>
-                                                                                                                                                                <% }
-                                                                                                                                                                    %>
-                                                                                                                                                                    <%
-                                                                                                                                                                        }%>
+                    <% if (locals.productTablets) { %>
+
+                        <% if (locals.uniqueSubcategories && locals.uniqueSubcategories.length > 0) { %>
+                            <div class="filter-item">
+                                <% locals.uniqueSubcategories.forEach((subcategory, index) => { %>
+                                    <div class="custom-control custom-checkbox">
+                                        <% if (querydata.includes(subcategory)) { %>
+                                            <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %> checked>
+                                        <% } else { %>
+                                            <input type="checkbox" class="custom-control-input" id=<%= "category-" + (index + 1) %>>
+                                        <% } %>
+                                        <label class="custom-control-label" for=<%= "category-" + (index + 1) %>>
+                                            <%= subcategory %>
+                                        </label>
+                                    </div><!-- End .custom-checkbox -->
+                                <% }) %>
+                            </div><!-- End .filter-item -->
+                        <% } else { %>
+                            <p>No products found.</p>
+                        <% } %>
+                        
+                    <% }  %>                                  
 
 
 
@@ -1790,185 +2053,116 @@
 
                                             <!-- ----------------------------------------all product color----------------------------------------- -->
 
-                                            <% if (locals.allProducts && Array.isArray(locals.allProducts) &&
-                                                locals.allProducts.length> 0) { %>
-                                                <% const uniqueColors=[...new Set(locals.allProducts.map(product=>
-                                                    product.color))] %>
-                                                    <% if (uniqueColors.length> 0) { %>
-                                                        <div class="filter-item">
-                                                            <% uniqueColors.forEach((color, index)=> { %>
-                                                                <div class="custom-control custom-checkbox">
-                                                                    <input type="checkbox" class="custom-control-input"
-                                                                        id=<%="color-" + (index + 1) %>>
-                                                                    <label class="custom-control-label" for=<%="color-"
-                                                                        + (index + 1) %>><%= color %> </label>
-                                                                    <!-- Add logic here to display the count for each color if needed -->
-                                                                </div><!-- End .custom-checkbox -->
-                                                                <% }) %>
-                                                        </div><!-- End .filter-item -->
-                                                        <% } else { %>
-                                                            <p>No products found.</p>
+                                         
+                                            <% if (locals.allProducts) { %>
+
+
+                                            <% if (locals.uniqueColors && locals.uniqueColors.length > 0) { %>
+                                                <div class="filter-item">
+                                                    <% locals.uniqueColors.forEach((color, index) => { %>
+                                                        <div class="custom-control custom-checkbox">
+                                                            <% if (querydata.includes(color)) { %>
+                                                                <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %> checked>
+                                                            <% } else { %>
+                                                                <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %>>
                                                             <% } %>
-                                                                <% }%>
+                                                            <label class="custom-control-label" for=<%= "color-" + (index + 1) %>>
+                                                                <%= color %>
+                                                            </label>
+                                                        </div><!-- End .custom-checkbox -->
+                                                    <% }) %>
+                                                </div><!-- End .filter-item -->
+                                            <% } else { %>
+                                                <p>No products found.</p>
+                                            <% } %>
+                                        <%   } %>
+
+
+
 
                                                                     <!-- ----------------------------------------mobile color----------------------------------------- -->
 
-                                                                    <% if (locals.productMobile &&
-                                                                        Array.isArray(locals.productMobile) &&
-                                                                        locals.productMobile.length> 0) { %>
-                                                                        <% const uniqueColors=[...new
-                                                                            Set(locals.productMobile.map(product=>
-                                                                            product.color))] %>
-                                                                            <% if (uniqueColors.length> 0) { %>
-                                                                                <div class="filter-item">
-                                                                                    <% uniqueColors.forEach((color,
-                                                                                        index)=> { %>
-                                                                                        <div
-                                                                                            class="custom-control custom-checkbox">
-                                                                                            <input type="checkbox"
-                                                                                                class="custom-control-input"
-                                                                                                id=<%="color-" + (index
-                                                                                                + 1) %>>
-                                                                                            <label
-                                                                                                class="custom-control-label"
-                                                                                                for=<%="color-" + (index
-                                                                                                + 1) %>><%= color %>
-                                                                                            </label>
-                                                                                            <!-- Add logic here to display the count for each color if needed -->
-                                                                                        </div>
-                                                                                        <!-- End .custom-checkbox -->
-                                                                                        <% }) %>
-                                                                                </div><!-- End .filter-item -->
-                                                                                <% } else { %>
-                                                                                    <p>No products found.</p>
-                                                                                    <% } %>
-                                                                                        <% }%>
-
-                                                                                            <!-- ----------------------------------------laptop color----------------------------------------- -->
-
-                                                                                            <% if (locals.productLaptop
-                                                                                                &&
-                                                                                                Array.isArray(locals.productLaptop)
-                                                                                                &&
-                                                                                                locals.productLaptop.length>
-                                                                                                0) { %>
-                                                                                                <% const
-                                                                                                    uniqueColors=[...new
-                                                                                                    Set(locals.productLaptop.map(product=>
-                                                                                                    product.color))] %>
-                                                                                                    <% if
-                                                                                                        (uniqueColors.length>
-                                                                                                        0) { %>
-                                                                                                        <div
-                                                                                                            class="filter-item">
-                                                                                                            <% uniqueColors.forEach((color,
-                                                                                                                index)=>
-                                                                                                                { %>
-                                                                                                                <div
-                                                                                                                    class="custom-control custom-checkbox">
-                                                                                                                    <input
-                                                                                                                        type="checkbox"
-                                                                                                                        class="custom-control-input"
-                                                                                                                        id=<%="color-"
-                                                                                                                        +
-                                                                                                                        (index
-                                                                                                                        +
-                                                                                                                        1)
-                                                                                                                        %>>
-                                                                                                                    <label
-                                                                                                                        class="custom-control-label"
-                                                                                                                        for=<%="color-"
-                                                                                                                        +
-                                                                                                                        (index
-                                                                                                                        +
-                                                                                                                        1)
-                                                                                                                        %>>
-                                                                                                                        <%= color
-                                                                                                                            %>
-                                                                                                                    </label>
-                                                                                                                    <!-- Add logic here to display the count for each color if needed -->
-                                                                                                                </div>
-                                                                                                                <!-- End .custom-checkbox -->
-                                                                                                                <% }) %>
-                                                                                                        </div>
-                                                                                                        <!-- End .filter-item -->
-                                                                                                        <% } else { %>
-                                                                                                            <p>No
-                                                                                                                products
-                                                                                                                found.
-                                                                                                            </p>
-                                                                                                            <% } %>
-                                                                                                                <% }%>
 
 
 
-                                                                                                                    <!-- ----------------------------------------tablet color----------------------------------------- -->
 
-                                                                                                                    <% if
-                                                                                                                        (locals.productTablets
-                                                                                                                        &&
-                                                                                                                        Array.isArray(locals.productTablets)
-                                                                                                                        &&
-                                                                                                                        locals.productTablets.length>
-                                                                                                                        0)
-                                                                                                                        {
-                                                                                                                        %>
-                                                                                                                        <% const
-                                                                                                                            uniqueColors=[...new
-                                                                                                                            Set(locals.productTablets.map(product=>
-                                                                                                                            product.color))]
-                                                                                                                            %>
-                                                                                                                            <% if
-                                                                                                                                (uniqueColors.length>
-                                                                                                                                0)
-                                                                                                                                {
-                                                                                                                                %>
-                                                                                                                                <div
-                                                                                                                                    class="filter-item">
-                                                                                                                                    <% uniqueColors.forEach((color,
-                                                                                                                                        index)=>
-                                                                                                                                        {
-                                                                                                                                        %>
-                                                                                                                                        <div
-                                                                                                                                            class="custom-control custom-checkbox">
-                                                                                                                                            <input
-                                                                                                                                                type="checkbox"
-                                                                                                                                                class="custom-control-input"
-                                                                                                                                                id=<%="color-"
-                                                                                                                                                +
-                                                                                                                                                (index
-                                                                                                                                                +
-                                                                                                                                                1)
-                                                                                                                                                %>>
-                                                                                                                                            <label
-                                                                                                                                                class="custom-control-label"
-                                                                                                                                                for=<%="color-"
-                                                                                                                                                +
-                                                                                                                                                (index
-                                                                                                                                                +
-                                                                                                                                                1)
-                                                                                                                                                %>>
-                                                                                                                                                <%= color
-                                                                                                                                                    %>
-                                                                                                                                            </label>
-                                                                                                                                            <!-- Add logic here to display the count for each color if needed -->
-                                                                                                                                        </div>
-                                                                                                                                        <!-- End .custom-checkbox -->
-                                                                                                                                        <% })
-                                                                                                                                            %>
-                                                                                                                                </div>
-                                                                                                                                <!-- End .filter-item -->
-                                                                                                                                <% } else
-                                                                                                                                    {
-                                                                                                                                    %>
-                                                                                                                                    <p>No
-                                                                                                                                        products
-                                                                                                                                        found.
-                                                                                                                                    </p>
-                                                                                                                                    <% }
-                                                                                                                                        %>
-                                                                                                                                        <%
-                                                                                                                                            }%>
+                                                                    
+                                            <% if (locals.productMobile) { %>
+
+
+                                                <% if (locals.uniqueColors && locals.uniqueColors.length > 0) { %>
+                                                    <div class="filter-item">
+                                                        <% locals.uniqueColors.forEach((color, index) => { %>
+                                                            <div class="custom-control custom-checkbox">
+                                                                <% if (querydata.includes(color)) { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %> checked>
+                                                                <% } else { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %>>
+                                                                <% } %>
+                                                                <label class="custom-control-label" for=<%= "color-" + (index + 1) %>>
+                                                                    <%= color %>
+                                                                </label>
+                                                            </div><!-- End .custom-checkbox -->
+                                                        <% }) %>
+                                                    </div><!-- End .filter-item -->
+                                                <% } else { %>
+                                                    <p>No products found.</p>
+                                                <% } %>
+                                            <%   } %>
+    
+
+                                                                   
+
+
+
+
+                             
+                                            <% if (locals.productLaptop) { %>
+
+
+                                                <% if (locals.uniqueColors && locals.uniqueColors.length > 0) { %>
+                                                    <div class="filter-item">
+                                                        <% locals.uniqueColors.forEach((color, index) => { %>
+                                                            <div class="custom-control custom-checkbox">
+                                                                <% if (querydata.includes(color)) { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %> checked>
+                                                                <% } else { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %>>
+                                                                <% } %>
+                                                                <label class="custom-control-label" for=<%= "color-" + (index + 1) %>>
+                                                                    <%= color %>
+                                                                </label>
+                                                            </div><!-- End .custom-checkbox -->
+                                                        <% }) %>
+                                                    </div><!-- End .filter-item -->
+                                                <% } else { %>
+                                                    <p>No products found.</p>
+                                                <% } %>
+                                            <%   } %>
+
+         <!-- ----------------------------------------tablet color----------------------------------------- -->                                                                                                            
+                                            <% if (locals.productTablets) { %>
+
+
+                                                <% if (locals.uniqueColors && locals.uniqueColors.length > 0) { %>
+                                                    <div class="filter-item">
+                                                        <% locals.uniqueColors.forEach((color, index) => { %>
+                                                            <div class="custom-control custom-checkbox">
+                                                                <% if (querydata.includes(color)) { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %> checked>
+                                                                <% } else { %>
+                                                                    <input type="checkbox" class="custom-control-input" id=<%= "color-" + (index + 1) %>>
+                                                                <% } %>
+                                                                <label class="custom-control-label" for=<%= "color-" + (index + 1) %>>
+                                                                    <%= color %>
+                                                                </label>
+                                                            </div><!-- End .custom-checkbox -->
+                                                        <% }) %>
+                                                    </div><!-- End .filter-item -->
+                                                <% } else { %>
+                                                    <p>No products found.</p>
+                                                <% } %>
+                                            <%   } %>
 
 
                                         </div><!-- End .widget-body -->
@@ -1990,192 +2184,108 @@
 
                                                 <!-- ----------------------------------Brand allproduct------------------------------------------------ -->
 
-                                                <% if (locals.allProducts && Array.isArray(locals.allProducts) &&
-                                                    locals.allProducts.length> 0) { %>
-                                                    <% const uniqueBrands=[...new Set(locals.allProducts.map(product=>
-                                                        product.brandName))] %>
-                                                        <% if (uniqueBrands.length> 0) { %>
-                                                            <div class="filter-item">
-                                                                <% uniqueBrands.forEach((brand, index)=> { %>
-                                                                    <div class="custom-control custom-checkbox">
-                                                                        <input type="checkbox"
-                                                                            class="custom-control-input" id=<%="brand-"
-                                                                            + (index + 1) %>>
-                                                                        <label class="custom-control-label"
-                                                                            for=<%="brand-" + (index + 1) %>><%= brand
-                                                                                %> </label>
-                                                                        <!-- Add logic here to display the count for each brand if needed -->
-                                                                    </div><!-- End .custom-checkbox -->
-                                                                    <% }) %>
-                                                            </div><!-- End .filter-item -->
+                                              
+
+
+                                                <% if (locals.allProducts) { %>
+                                                
+                                            <% if (locals.uniqueBrands && locals.uniqueBrands.length > 0) { %>
+                                                <div class="filter-item">
+                                                    <% locals.uniqueBrands.forEach((brands, index) => { %>
+                                                        <div class="custom-control custom-checkbox">
+                                                            <% if (querydata.includes(brands)) { %>
+                                                                <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %> checked>
                                                             <% } else { %>
-                                                                <p>No products found.</p>
-                                                                <% } %>
-                                                                    <% }%>
+                                                                <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %>>
+                                                            <% } %>
+                                                            <label class="custom-control-label" for=<%= "brand-" + (index + 1) %>>
+                                                                <%=brands %>
+                                                            </label>
+                                                        </div><!-- End .custom-checkbox -->
+                                                    <% }) %>
+                                                </div><!-- End .filter-item -->
+                                            <% } else { %>
+                                                <p>No products found.</p>
+                                            <% } %>
+                                               <% }%>
 
                                                                         <!-- ----------------------------------Brand mobiles------------------------------------------------ -->
 
-                                                                        <% if (locals.productMobile &&
-                                                                            Array.isArray(locals.productMobile) &&
-                                                                            locals.productMobile.length> 0) { %>
-                                                                            <% const uniqueBrands=[...new
-                                                                                Set(locals.productMobile.map(product=>
-                                                                                product.brandName))] %>
-                                                                                <% if (uniqueBrands.length> 0) { %>
-                                                                                    <div class="filter-item">
-                                                                                        <% uniqueBrands.forEach((brand,
-                                                                                            index)=> { %>
-                                                                                            <div
-                                                                                                class="custom-control custom-checkbox">
-                                                                                                <input type="checkbox"
-                                                                                                    class="custom-control-input"
-                                                                                                    id=<%="brand-" +
-                                                                                                    (index + 1) %>>
-                                                                                                <label
-                                                                                                    class="custom-control-label"
-                                                                                                    for=<%="brand-" +
-                                                                                                    (index + 1) %>><%=
-                                                                                                        brand %>
-                                                                                                </label>
-                                                                                                <!-- Add logic here to display the count for each brand if needed -->
-                                                                                            </div>
-                                                                                            <!-- End .custom-checkbox -->
-                                                                                            <% }) %>
-                                                                                    </div><!-- End .filter-item -->
-                                                                                    <% } else { %>
-                                                                                        <p>No products found.</p>
-                                                                                        <% } %>
-                                                                                            <% }%>
+                                                                       
 
-                                                                                                <!-- ----------------------------------Brand laptops------------------------------------------------ -->
 
-                                                                                                <% if
-                                                                                                    (locals.productLaptop
-                                                                                                    &&
-                                                                                                    Array.isArray(locals.productLaptop)
-                                                                                                    &&
-                                                                                                    locals.productLaptop.length>
-                                                                                                    0) { %>
-                                                                                                    <% const
-                                                                                                        uniqueBrands=[...new
-                                                                                                        Set(locals.productLaptop.map(product=>
-                                                                                                        product.brandName))]
-                                                                                                        %>
-                                                                                                        <% if
-                                                                                                            (uniqueBrands.length>
-                                                                                                            0) { %>
-                                                                                                            <div
-                                                                                                                class="filter-item">
-                                                                                                                <% uniqueBrands.forEach((brand,
-                                                                                                                    index)=>
-                                                                                                                    { %>
-                                                                                                                    <div
-                                                                                                                        class="custom-control custom-checkbox">
-                                                                                                                        <input
-                                                                                                                            type="checkbox"
-                                                                                                                            class="custom-control-input"
-                                                                                                                            id=<%="brand-"
-                                                                                                                            +
-                                                                                                                            (index
-                                                                                                                            +
-                                                                                                                            1)
-                                                                                                                            %>>
-                                                                                                                        <label
-                                                                                                                            class="custom-control-label"
-                                                                                                                            for=<%="brand-"
-                                                                                                                            +
-                                                                                                                            (index
-                                                                                                                            +
-                                                                                                                            1)
-                                                                                                                            %>>
-                                                                                                                            <%= brand
-                                                                                                                                %>
-                                                                                                                        </label>
-                                                                                                                        <!-- Add logic here to display the count for each brand if needed -->
-                                                                                                                    </div>
-                                                                                                                    <!-- End .custom-checkbox -->
-                                                                                                                    <% })
-                                                                                                                        %>
-                                                                                                            </div>
-                                                                                                            <!-- End .filter-item -->
-                                                                                                            <% } else {
-                                                                                                                %>
-                                                                                                                <p>No
-                                                                                                                    products
-                                                                                                                    found.
-                                                                                                                </p>
+
+                                                                                            <% if (locals.productMobile ) { %>
+                                                
+                                                                                                <% if (locals.uniqueBrands && locals.uniqueBrands.length > 0) { %>
+                                                                                                    <div class="filter-item">
+                                                                                                        <% locals.uniqueBrands.forEach((brands, index) => { %>
+                                                                                                            <div class="custom-control custom-checkbox">
+                                                                                                                <% if (querydata.includes(brands)) { %>
+                                                                                                                    <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %> checked>
+                                                                                                                <% } else { %>
+                                                                                                                    <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %>>
                                                                                                                 <% } %>
-                                                                                                                    <%
-                                                                                                                        }%>
+                                                                                                                <label class="custom-control-label" for=<%= "brand-" + (index + 1) %>>
+                                                                                                                    <%=brands %>
+                                                                                                                </label>
+                                                                                                            </div><!-- End .custom-checkbox -->
+                                                                                                        <% }) %>
+                                                                                                    </div><!-- End .filter-item -->
+                                                                                                <% } else { %>
+                                                                                                    <p>No products found.</p>
+                                                                                                <% } %>
+                                                                                                   <% }%>
 
+
+                                                                                                                     <% if (locals.productLaptop ) { %>
+                                                
+                                                                                                                            <% if (locals.uniqueBrands && locals.uniqueBrands.length > 0) { %>
+                                                                                                                                <div class="filter-item">
+                                                                                                                                    <% locals.uniqueBrands.forEach((brands, index) => { %>
+                                                                                                                                        <div class="custom-control custom-checkbox">
+                                                                                                                                            <% if (querydata.includes(brands)) { %>
+                                                                                                                                                <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %> checked>
+                                                                                                                                            <% } else { %>
+                                                                                                                                                <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %>>
+                                                                                                                                            <% } %>
+                                                                                                                                            <label class="custom-control-label" for=<%= "brand-" + (index + 1) %>>
+                                                                                                                                                <%=brands %>
+                                                                                                                                            </label>
+                                                                                                                                        </div><!-- End .custom-checkbox -->
+                                                                                                                                    <% }) %>
+                                                                                                                                </div><!-- End .filter-item -->
+                                                                                                                            <% } else { %>
+                                                                                                                                <p>No products found.</p>
+                                                                                                                            <% } %>
+                                                                                                                               <% }%>
 
                                                                                                                         <!-- ----------------------------------Brand Tablets------------------------------------------------ -->
 
-                                                                                                                        <% if
-                                                                                                                            (locals.productTablets
-                                                                                                                            &&
-                                                                                                                            Array.isArray(locals.productTablets)
-                                                                                                                            &&
-                                                                                                                            locals.productTablets.length>
-                                                                                                                            0)
-                                                                                                                            {
-                                                                                                                            %>
-                                                                                                                            <% const
-                                                                                                                                uniqueBrands=[...new
-                                                                                                                                Set(locals.productTablets.map(product=>
-                                                                                                                                product.brandName))]
-                                                                                                                                %>
-                                                                                                                                <% if
-                                                                                                                                    (uniqueBrands.length>
-                                                                                                                                    0)
-                                                                                                                                    {
-                                                                                                                                    %>
-                                                                                                                                    <div
-                                                                                                                                        class="filter-item">
-                                                                                                                                        <% uniqueBrands.forEach((brand,
-                                                                                                                                            index)=>
-                                                                                                                                            {
-                                                                                                                                            %>
-                                                                                                                                            <div
-                                                                                                                                                class="custom-control custom-checkbox">
-                                                                                                                                                <input
-                                                                                                                                                    type="checkbox"
-                                                                                                                                                    class="custom-control-input"
-                                                                                                                                                    id=<%="brand-"
-                                                                                                                                                    +
-                                                                                                                                                    (index
-                                                                                                                                                    +
-                                                                                                                                                    1)
-                                                                                                                                                    %>>
-                                                                                                                                                <label
-                                                                                                                                                    class="custom-control-label"
-                                                                                                                                                    for=<%="brand-"
-                                                                                                                                                    +
-                                                                                                                                                    (index
-                                                                                                                                                    +
-                                                                                                                                                    1)
-                                                                                                                                                    %>>
-                                                                                                                                                    <%= brand
-                                                                                                                                                        %>
-                                                                                                                                                </label>
-                                                                                                                                                <!-- Add logic here to display the count for each brand if needed -->
-                                                                                                                                            </div>
-                                                                                                                                            <!-- End .custom-checkbox -->
-                                                                                                                                            <% })
-                                                                                                                                                %>
-                                                                                                                                    </div>
-                                                                                                                                    <!-- End .filter-item -->
-                                                                                                                                    <% } else
-                                                                                                                                        {
-                                                                                                                                        %>
-                                                                                                                                        <p>No
-                                                                                                                                            products
-                                                                                                                                            found.
-                                                                                                                                        </p>
-                                                                                                                                        <% }
-                                                                                                                                            %>
-                                                                                                                                            <%
-                                                                                                                                                }%>
+                                                                                        
+
+                                                                               
+    <% if (locals.productTablets) { %>
+                                                
+        <% if (locals.uniqueBrands && locals.uniqueBrands.length > 0) { %>
+            <div class="filter-item">
+                <% locals.uniqueBrands.forEach((brands, index) => { %>
+                    <div class="custom-control custom-checkbox">
+                        <% if (querydata.includes(brands)) { %>
+                            <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %> checked>
+                        <% } else { %>
+                            <input type="checkbox" class="custom-control-input" id=<%= "brand-" + (index + 1) %>>
+                        <% } %>
+                        <label class="custom-control-label" for=<%= "brand-" + (index + 1) %>>
+                            <%=brands %>
+                        </label>
+                    </div><!-- End .custom-checkbox -->
+                <% }) %>
+            </div><!-- End .filter-item -->
+        <% } else { %>
+            <p>No products found.</p>
+        <% } %>
+           <% }%>                                                                
 
                                             </div><!-- End .filter-items -->
                                         </div><!-- End .widget-body -->
@@ -2204,7 +2314,55 @@
                                     </div><!-- End .collapse -->
                                 </div><!-- End .widget -->
                             </div><!-- End .sidebar sidebar-shop -->
+
                         </aside><!-- End .col-lg-3 -->
+                        <script>document.getElementById("collectSelectedDataButton").addEventListener("click", function() {
+                            var selectedCategories = [];
+                            var selectedColors = [];
+                            var selectedBrands = [];
+                        
+                            var categoryCheckboxes = document.querySelectorAll('.custom-control-input[type="checkbox"][id^="category-"]:checked');
+                            categoryCheckboxes.forEach(function(checkbox) {
+                                var label = checkbox.parentElement.querySelector('.custom-control-label');
+                                selectedCategories.push(label.textContent.trim());
+                            });
+                        
+                            var colorCheckboxes = document.querySelectorAll('.custom-control-input[type="checkbox"][id^="color-"]:checked');
+                            colorCheckboxes.forEach(function(checkbox) {
+                                var label = checkbox.parentElement.querySelector('.custom-control-label');
+                                selectedColors.push(label.textContent.trim());
+                            });
+                        
+                            var brandCheckboxes = document.querySelectorAll('.custom-control-input[type="checkbox"][id^="brand-"]:checked');
+                            brandCheckboxes.forEach(function(checkbox) {
+                                var label = checkbox.parentElement.querySelector('.custom-control-label');
+                                selectedBrands.push(label.textContent.trim());
+                            });
+                        
+                            // Get the current URL
+                            var currentUrl = window.location.href;
+                        
+                            // Parse the existing query parameters
+                            var url = new URL(currentUrl);
+                            var params = new URLSearchParams(url.search);
+                        
+                            // Update the query parameters with the selected values
+                            params.set("categories", selectedCategories.join(","));
+                            params.set("colors", selectedColors.join(","));
+                            params.set("brands", selectedBrands.join(","));
+                        
+                            // Construct the new URL with updated query parameters
+                            var newUrl = currentUrl.split("?")[0] + "?" + params.toString();
+                        
+                            // Redirect to the new URL
+                            window.location.href = newUrl;
+                        });
+                        
+
+                        </script>
+                        
+                        
+                        
                     </div><!-- End .row -->
                 </div><!-- End .container -->
             </div><!-- End .page-content -->
@@ -2665,7 +2823,7 @@
 </div>
 </div> -->
 
- 
+
     <!-- Plugins JS File -->
     <script>
         document.getElementById('signOutBtn').addEventListener('click', function () {
