@@ -132,44 +132,69 @@
                             <img src="/user/assets\images\logo nest.png" alt="Urban Nest" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
+
+
                     <div class="header-center">
-                        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form id="searchForm" method="get">
-                                <div class="header-search-wrapper search-wrapper-wide">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <input type="search" class="form-control" name="q" id="q"
-                                        placeholder="Search product ..." required>
-                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                    </div>
-                    <script>
-                        document.getElementById('searchForm').addEventListener('submit', function(event) {
-                            event.preventDefault(); // Prevent the form from submitting normally
-                    
-                            // Get the search input value
-                            var searchValue = document.getElementById('q').value;
-                    
-                            // Get the current URL
-                            var currentUrl = window.location.href;
-                    
-                            // Check if the search query parameter already exists in the URL
-                            var searchParam = 'q=';
-                            if (currentUrl.includes(searchParam)) {
-                                // If it exists, replace its value with the new search value
-                                var regex = new RegExp('(' + searchParam + '.*?)(&|$)');
-                                var newUrl = currentUrl.replace(regex, searchParam + encodeURIComponent(searchValue) + '$2');
-                            } else {
-                                // If it doesn't exist, add it as a new query parameter
-                                var newUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + searchParam + encodeURIComponent(searchValue);
-                            }
-                    
-                            // Redirect to the new URL
-                            window.location.href = newUrl;
-                        });
-                    </script>
+    <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+        <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+        <form id="searchForm" method="get">
+            <div class="header-search-wrapper search-wrapper-wide">
+                <label for="q" class="sr-only">Search</label>
+                <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." >
+                <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
+            </div><!-- End .header-search-wrapper -->
+        </form>
+    </div><!-- End .header-search -->
+</div>
+
+
+<script>
+    // Function to extract search query parameter from the URL
+    function getSearchQuery() {
+        var searchParams = new URLSearchParams(window.location.search);
+        return searchParams.get('q');
+    }
+
+    // Set the value of the search input field if search query is present in the URL
+    var searchInput = document.getElementById('q');
+    var searchQuery = getSearchQuery();
+    if (searchQuery) {
+        searchInput.value = decodeURIComponent(searchQuery);
+    }
+
+    // Function to toggle visibility of search box
+    function toggleSearchBox() {
+        var searchBox = document.querySelector('.header-search-wrapper');
+        searchBox.classList.toggle('search-box-visible');
+    }
+
+    // Add event listener to handle form submission
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        // Get the search input value
+        var searchValue = searchInput.value.trim();
+
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Construct the new URL with the search query parameter
+        var newUrl = currentUrl.split('?')[0]; // Remove existing query parameters
+        newUrl += '?q=' + encodeURIComponent(searchValue); // Add search query parameter
+
+        // Redirect to the new URL
+        window.location.href = newUrl;
+    });
+
+    // Add event listener to handle click on close icon
+    document.querySelector('.search-toggle').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default behavior of the link
+
+        // Toggle visibility of search box
+        toggleSearchBox();
+    });
+</script>
+
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
@@ -1335,7 +1360,7 @@
                                                                                     <!-- ---------------------------------------------------------tablets-------------------------------------------------------------------------- -->
 
                                                                                     <% if (locals.productTablets) { %>
-                                                                                        <% if(productLaptop.length > 0 )   { %>
+                                                                                        <% if(productTablets.length > 0 )   { %>
                                                                                         <% productTablets.forEach((n)=>
                                                                                             { %>
 
@@ -1895,9 +1920,11 @@
                         <aside class="col-lg-3 order-lg-first">
                             <div class="sidebar sidebar-shop">
                                 <div class="widget widget-clean">
-                                    <label>Filters:</label><button id="collectSelectedDataButton">Collect Selected Data</button>
-                                    <a href="#" class="sidebar-filter-clear">Clean All</a>
+                                    <label>Filters: &nbsp&nbsp </label>
+                                    <button id="collectSelectedDataButton" class="btn btn-primary btn-sm">Apply Filter</button>
                                 </div><!-- End .widget widget-clean -->
+                                
+                                
 
                                 <div class="widget widget-collapsible">
                                     <h3 class="widget-title">
