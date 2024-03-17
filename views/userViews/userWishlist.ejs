@@ -254,84 +254,103 @@
                                 </ul>
                             </aside><!-- End .col-lg-3 -->
 
-                            <div class="col-md-8 col-lg-9">
-                                <div class="tab-content">
-                                    <div class="col-lg-8">
-                                        <% if(locals.productDetails && locals.productDetails.length> 0) { %>
-                                            <% productDetails.forEach((product, index)=> { %>
-                                                <div class="card card-dashboard">
-                                                    <div class="card-body">
-                                                        <div>
-                                                            <div>
-                                                                <div class="product-details d-flex align-items-center">
-                                                                    <!-- Product image -->
-                                                                    <% if (product.productImage.length> 0) { %>
-                                                                        <figure class="product-media mr-5"
-                                                                            style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
-                                                                            <% if (product.productImage[0].resizedFile)
-                                                                                { %>
-                                                                                <img src="/uploads/<%= product.productImage[0].resizedFile %>"
-                                                                                    alt="Product image"
-                                                                                    style="width: 80px; height: 80px;">
-                                                                                <% } else { %>
-                                                                                    <div
-                                                                                        style="width: 50px; height: 50px; background-color: white;">
-                                                                                    </div>
-                                                                                    <% } %>
-                                                                        </figure>
-                                                                        <% } %>
-
-                                                                            <!-- Product info -->
-                                                                            <div class="product-info">
-                                                                                <!-- Product name -->
-                                                                                <strong
-                                                                                    style="font-size: 17px; margin-bottom: 3px;">
-                                                                                    <%= product.productName %>
-                                                                                </strong>
-
-                                                                                <!-- Other product details -->
-                                                                                <p
-                                                                                    style="font-size: 14px; margin-bottom: 5px;">
-                                                                                    Brand: <%= product.brandName %>
-                                                                                </p>
-                                                                                <p
-                                                                                    style="font-size: 14px; margin-bottom: 5px;">
-                                                                                    Color: <%= product.color %>
-                                                                                </p>
-                                                                                <p
-                                                                                    style="font-size: 14px; margin-bottom: 5px;">
-                                                                                    Price: <%= product.price %>
-                                                                                </p>
-
-                                                                                <!-- Buttons with spacing -->
-                                                                                <!-- Buttons with spacing -->
-                                                                                <!-- Buttons with spacing -->
-                                                                                <div
-                                                                                    class="d-flex justify-content-between">
-                                                                                    <button type="button"
-                                                                                        class="btn btn-success mr-2"
-                                                                                        onclick="viewProduct('<%= product._id %>')">View
-                                                                                        Product</button>
-                                                                                    <button type="button"
-                                                                                        class="btn btn-danger"
-                                                                                        onclick="removeFromWishlist('<%= product._id %>')">Remove
-                                                                                        from Wishlist</button>
-                                                                                </div>
-
-
-                                                                            </div>
-                                                                            <hr style="border-top: 1px solid #d1d1d1;">
-                                                                </div>
+                            <div class="col-lg-8">
+                                <% if(locals.productDetails && locals.productDetails.length > 0) {   %>
+                                    <% productDetails.forEach((product, index) => { %>
+                                        <div class="card card-dashboard">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div class="product-details">
+                                                        <div class="d-flex align-items-center">
+                                                            <!-- Product image -->
+                                                            <% if (product.productImage.length > 0) { %>
+                                                                <figure class="product-media mr-5" style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
+                                                                    <% if (product.productImage[0].resizedFile) { %>
+                                                                        <img src="/uploads/<%= product.productImage[0].resizedFile %>" alt="Product image" style="width: 80px; height: 80px;">
+                                                                    <% } else { %>
+                                                                        <div style="width: 50px; height: 50px; background-color: white;"></div>
+                                                                    <% } %>
+                                                                </figure>
+                                                            <% } %>
+                            
+                                                            <!-- Product info -->
+                                                            <div class="product-info">
+                                                                <!-- Product name -->
+                                                                <strong style="font-size: 17px; margin-bottom: 3px;"><%= product.productName %></strong>
+                            
+                                                                <!-- Other product details -->
+                                                                <p style="font-size: 14px; margin-bottom: 5px;">Brand: <%= product.brandName %></p>
+                                                                <p style="font-size: 14px; margin-bottom: 5px;">Color: <%= product.color %></p>
+                                                                <p style="font-size: 14px; margin-bottom: 5px;">Price: <%= product.price %></p>
                                                             </div>
                                                         </div>
                                                     </div>
+                            
+                                                    <!-- Add to Cart button -->
+                                                    <% if (cartPresent.includes(product._id.toString())) { %>
+                                                        <button type="button" class="btn btn-primary mr-2" onclick="goToCart()">Go to Cart</button>
+                                                    <% } else { %>
+                                                        <button type="button" class="btn btn-success mr-2" onclick="addToCart('<%= product._id %>')">Add to Cart</button>
+                                                    <% } %>
+                                                    
+                                                    <!-- View Product and Remove from Wishlist buttons -->
+                                                    <div>
+                                                        <button type="button" class="btn btn-success" onclick="viewProduct('<%= product._id %>')">View Product</button>
+                                                        <button type="button" class="btn btn-danger ml-2" onclick="removeFromWishlist('<%= product._id %>')">Remove from Wishlist</button>
+                                                    </div>
                                                 </div>
-                                                <% }) %>
-                                                    <% }else{ %>
-                                                        <h2>No products in wish list</h2>
-                                                  <%  } %>
-                                    </div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                <% } else { %>
+                                    <h2>No products in wish list</h2>
+                                <% } %>
+                            </div>
 
+
+                            <script>
+                                function goToCart() {
+                                    window.location.href = "/cart";
+                                }
+
+
+                              
+                                    function addToCart(productId) {
+                                                                // AJAX request
+
+                                                                $.ajax({
+                                                                    type: 'POST',
+                                                                    url: '/addToCartWishlist',
+                                                                    data: {
+                                                                        productId: productId,
+                  
+                                                                    },
+                                                                    success: function (response) {
+                                                                        window.location.reload();
+                                                                        // Handle success response if needed
+                                                                        // console.log(response);
+                                                                        // Update button text after successful add to cart
+                                                                        // $('#addToCartBtn span').text('Product Added to Cart');
+                                                                        // // Disable the button or perform other actions as needed
+                                                                        // $('#addToCartBtn').prop('disabled', true);
+
+                                                                    },
+                                                                    error: function (error) {
+                                                                        // Handle error if needed
+                                                                        console.error(error);
+                                                                    }
+                                                                });
+                                                            }
+
+                             
+
+
+                            </script>
+                            
+                            
+                            
+                                    
+                                    
 
 
 

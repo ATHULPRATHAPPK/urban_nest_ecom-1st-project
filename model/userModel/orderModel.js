@@ -80,10 +80,9 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         require: true
     },
-    orderStatus:{
-        default:false,
+    paymentStatus:{
         type: Boolean,
-        required: true
+        default: true
     },
     isAdminVerify:{
         default:true,
@@ -93,7 +92,8 @@ const orderSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-      }
+      },
+   
       
           
  

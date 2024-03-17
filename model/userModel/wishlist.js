@@ -18,6 +18,7 @@ const wishlistSchema = new mongoose.Schema({
            }
         }
     ], 
+   
 } )
 
 const wishlistModel = mongoose.model("wishlist",wishlistSchema)

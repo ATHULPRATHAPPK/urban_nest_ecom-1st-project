@@ -413,105 +413,96 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% if (userOrders && userOrders.length> 0) { %>
-                      <% let serialNo=1; %>
-                        <% userOrders.forEach((order, index)=> { %>
-                          <% order.product.forEach((product, productIndex)=> { %>
-                            <tr>
-                              <td>
-                                <%= serialNo++ %>
-                              </td>
-                              <td>
-                                <%= order.address.name %>
-                              </td>
-                              <td>
-                                <p style="font-size: 10px; margin: 0;"><%= order.address.building %>, <%= order.address.city %>, <%= order.address.district %></p>
-                                <p style="font-size: 10px; margin: 0;">pin: <%= order.address.pincode %></p>
-                                <p style="font-size: 10px; margin: 0;">Mob: <%= order.address.phone %></p>
-                            </td>
-                            
-                            
-
-                              <td>
-                                <%= product.name %>
-                              </td>
-                              <td>
-                                <%= product.quantity %>
-                              </td>
-
-                              <td>
-                                <div class="dropdown">
-                                  <select class="form-select order-status-dropdown" data-order-id="<%= order._id %>"
-                                    data-product-id="<%= product._id %>">
-                                    <% if (product.adminStatus===1) { %>
-                                      <option value="1" selected>Placed</option>
-                                      <option value="2">Packed</option>
-                                      <option value="3">Shipped</option>
-                                      <option value="4">Delivered</option>
-                                      <option value="5">Cancelled</option>
-                                      <% } else if (product.adminStatus===2) { %>
-                                        <option value="2" selected>Packed</option>
-                                        <option value="3">Shipped</option>
-                                        <option value="4">Delivered</option>
-
-                                        <% } else if (product.adminStatus===3) { %>
-                                          <option value="3" selected>Shipped</option>
-                                          <option value="4">Delivered</option>
-
-                                          <% } else if (product.adminStatus===4) { %>
-                                                 
-                                            
-                                        <% if (product.returnStatus== 3) { %>
-                                          <option style="color: crimson;">  Product Returned</option>
-
-                                      <%  }else{ %>
-
-                                            <option value="4" selected>Delivered</option>
-                                      <%  } %>
-                                            <% } else if (product.adminStatus===5) { %>
-                                              <option value="5" selected>Cancelled</option>
-                                              <% } %>
-                                  </select>
-                                </div>
-                              </td>
-
-                              <td style="display: flex; word-wrap: break-word;">
-                                <%= product.returnText %>
-                            </td>
-                            
-                            
-
-                            <td>
-                              <% if (product.returnStatus == 0) { %>
-                                  <strong>no request</strong>
-                              <% } else if (product.returnStatus == 1) { %>
-                                  <div class="dropdown">
-                                      <select class="form-select return-status-dropdown"
-                                          data-order-id="<%= order._id %>" data-product-id="<%= product._id %>">
-                                          <option value="" disabled selected>Select an option</option>
-                                          <option value="2">Cancel request</option>
-                                          <option value="3">Approve request</option>
-                                      </select>
-                                  </div>
-                              <% } else if (product.returnStatus == 2) { %>
-                                  <strong style="color: crimson;">request rejected</strong>
-                              <% } else if (product.returnStatus == 3) { %>
-                                  <strong style="color: green;">request Approved</strong>
-                              <% } else { %>
-                                  <strong>no request</strong>
-                              <% } %>
-                          </td>
-                          
-                            </tr>
-                            <% }) %>
-                              <% }) %>
-                                <% } else { %>
-                                  <tr>
-                                    <td colspan="6">No orders found</td>
-                                  </tr>
-                                  <% } %>
-                  </tbody>
-                </table>
+                    <% if (userOrders && userOrders.length > 0) { %>
+                        <% let serialNo = 1; %>
+                        <% userOrders.forEach((order, index) => { %>
+                            <% order.product.forEach((product, productIndex) => { %>
+                                <% if (product.adminStatus !== 6) { %> <!-- Exclude products with adminStatus 6 -->
+                                    <tr>
+                                        <td>
+                                            <%= serialNo++ %>
+                                        </td>
+                                        <td>
+                                            <%= order.address.name %>
+                                        </td>
+                                        <td>
+                                            <p style="font-size: 10px; margin: 0;"><%= order.address.building %>, <%= order.address.city %>, <%= order.address.district %></p>
+                                            <p style="font-size: 10px; margin: 0;">pin: <%= order.address.pincode %></p>
+                                            <p style="font-size: 10px; margin: 0;">Mob: <%= order.address.phone %></p>
+                                        </td>
+                
+                                        <td>
+                                            <%= product.name %>
+                                        </td>
+                                        <td>
+                                            <%= product.quantity %>
+                                        </td>
+                
+                                        <td>
+                                            <div class="dropdown">
+                                                <select class="form-select order-status-dropdown" data-order-id="<%= order._id %>"
+                                                    data-product-id="<%= product._id %>">
+                                                    <% if (product.adminStatus===1) { %>
+                                                        <option value="1" selected>Placed</option>
+                                                        <option value="2">Packed</option>
+                                                        <option value="3">Shipped</option>
+                                                        <option value="4">Delivered</option>
+                                                        <option value="5">Cancelled</option>
+                                                    <% } else if (product.adminStatus===2) { %>
+                                                        <option value="2" selected>Packed</option>
+                                                        <option value="3">Shipped</option>
+                                                        <option value="4">Delivered</option>
+                                                    <% } else if (product.adminStatus===3) { %>
+                                                        <option value="3" selected>Shipped</option>
+                                                        <option value="4">Delivered</option>
+                                                    <% } else if (product.adminStatus===4) { %>
+                                                        <% if (product.returnStatus === 3) { %>
+                                                            <option style="color: crimson;">Product Returned</option>
+                                                        <% } else { %>
+                                                            <option value="4" selected>Delivered</option>
+                                                        <% } %>
+                                                    <% } else if (product.adminStatus===5) { %>
+                                                        <option value="5" selected>Cancelled</option>
+                                                    <% } %>
+                                                </select>
+                                            </div>
+                                        </td>
+                
+                                        <td style="display: flex; word-wrap: break-word;">
+                                            <%= product.returnText %>
+                                        </td>
+                
+                                        <td>
+                                            <% if (product.returnStatus == 0) { %>
+                                                <strong>no request</strong>
+                                            <% } else if (product.returnStatus == 1) { %>
+                                                <div class="dropdown">
+                                                    <select class="form-select return-status-dropdown"
+                                                        data-order-id="<%= order._id %>" data-product-id="<%= product._id %>">
+                                                        <option value="" disabled selected>Select an option</option>
+                                                        <option value="2">Cancel request</option>
+                                                        <option value="3">Approve request</option>
+                                                    </select>
+                                                </div>
+                                            <% } else if (product.returnStatus == 2) { %>
+                                                <strong style="color: crimson;">request rejected</strong>
+                                            <% } else if (product.returnStatus == 3) { %>
+                                                <strong style="color: green;">request Approved</strong>
+                                            <% } else { %>
+                                                <strong>no request</strong>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% } %> <!-- End of product.adminStatus !== 6 condition -->
+                            <% }); %>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6">No orders found</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+                
               </div>
 
               <!--------for order status selecting--------------------------------  -->

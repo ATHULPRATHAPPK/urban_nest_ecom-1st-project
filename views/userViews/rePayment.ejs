@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+    }
+    .container {
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #rzp-button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    #rzp-button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<body>
+    <% if(locals.failedOredr) { %>
+        <div class="container">
+            <h1>Payment</h1>
+            <button id="rzp-button">Continue Online Payment</button>
+        </div>
+    <% } %>
+
+    <script>
+        const subTotal = parseFloat('<%= locals.failedOredr.subTotal %>').toFixed(2) * 100;
+        const addressId = '<%= locals.failedOredr.address %>';
+        const name = '<%= locals.failedOredr.address.name %>';
+        const email = '<%= locals.failedOredr.userId.email %>';
+const failedOrderId = '<%= locals.failedOredr._id %>'
+        var rzp = new Razorpay({
+            key: 'rzp_test_hdRlvOizJD5EhB',
+            amount: subTotal,
+            currency: 'INR',
+            name: 'Urban Nest',
+            description: 'Purchase Description',
+            image: 'logo.png',
+            handler: function (response) {
+                const data = { subtotal: subTotal / 100, addressId, response,failedOrderId};
+
+                fetch('/processRePayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Payment processed successfully');
+                        window.location.href = '/orderConfirm';
+                    } else {
+                        console.error('Failed to process payment');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing payment:', error);
+                });
+            },
+            prefill: {
+                name: name,
+                email: email,
+                contact: '9999999999'
+            },
+            notes: {
+                address: 'Razorpay Corporate Office'
+            },
+            theme: {
+                color: '#3399cc'
+            }
+        });
+
+        document.getElementById('rzp-button').addEventListener('click', function () {
+            rzp.open();
+        });
+
+        // Event listener for payment failure
+        rzp.on('payment.failed', function (response) {
+            console.log("Payment failed:", response.error);
+            faildPayment();
+        });
+
+        function faildPayment() {
+        console.log("calling payment function");
+        
+        // Prepare the data to be sent in the fetch request body
+        const data = {
+           
+        
+       subTotal :'<%= locals.failedOredr.subTotal %>',
+       addressId :'<%= locals.failedOredr.address %>',
+        name : '<%= locals.failedOredr.address.name %>',
+         email : '<%= locals.failedOredr.userId.email %>',
+        };
+        console.log('Payment failed:', data);
+        // Send a fetch request to the server
+        fetch('/failedRazorRePayment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Fetch request sent successfully');
+                // Redirect to the failed payment page
+                window.location.href = '/paymentFailed';
+            } else {
+                console.error('Failed to send fetch request');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending fetch request:', error);
+        });
+    }
+        
+    </script>
+</body>
+</html>

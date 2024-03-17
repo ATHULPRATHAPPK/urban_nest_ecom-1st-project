@@ -269,105 +269,94 @@
                                                             <div>
                                                                 <h5 style="font-size: 14px;">Products</h5>
                                                                 <% order.product.forEach((product, productIndex)=> { %>
-                                                                    <div
-                                                                        class="product-details d-flex align-items-center">
+                                                                    <div class="product-details d-flex align-items-center">
                                                                         <!-- Product image -->
-                                                                        <% if (product.productImage.length> 0) { %>
+                                                                        <% if (product.productImage.length > 0) { %>
                                                                             <figure class="product-media mr-3"
                                                                                 style="position: relative; display: block; background-color: #d7d7d700; margin-bottom: 0; overflow: hidden;">
-                                                                                <% if
-                                                                                    (product.productImage[0].resizedFile)
-                                                                                    { %>
+                                                                                <% if (product.productImage[0].resizedFile) { %>
                                                                                     <img src="/uploads/<%= product.productImage[0].resizedFile %>"
-                                                                                        alt="Product image"
-                                                                                        style="width: 50px; height: 50px;">
-                                                                                    <% } else { %>
-                                                                                        <div
-                                                                                            style="width: 50px; height: 50px; background-color: white;">
-                                                                                        </div>
-                                                                                        <% } %>
+                                                                                        alt="Product image" style="width: 50px; height: 50px;">
+                                                                                <% } else { %>
+                                                                                    <div style="width: 50px; height: 50px; background-color: white;"></div>
+                                                                                <% } %>
                                                                             </figure>
-                                                                            <% } %>
-
-                                                                                <!-- Product info -->
-                                                                                <div class="product-info">
-                                                                                    <!-- Product name -->
-                                                                                    <p
-                                                                                        style="font-size: 14px; margin-bottom: 5px;">
-                                                                                        <%= product.name %>
-                                                                                    </p>
-
-                                                                                    <!-- Quantity and Total -->
-                                                                                    <p
-                                                                                        style="font-size: 14px; margin-bottom: 5px;">
-                                                                                        Quantity: <%= product.quantity
-                                                                                            %>, Total: <%= product.total
-                                                                                                %>
-                                                                                    </p>
-
-                                                                                    <!-- Order Status -->
-                                                                                    <div>
-                                                                                        <p
-                                                                                            style="margin: 0; font-weight: bold;">
-                                                                                            Order Status</p>
-                                                                                        <% if(product.adminStatus===1 )
-                                                                                            { %>
-                                                                                            <p
-                                                                                                style="color: #076e0b; margin: 0;">
-                                                                                                Order Placed</p>
-                                                                                            <% } else
-                                                                                                if(product.adminStatus===2)
-                                                                                                { %>
-                                                                                                <p
-                                                                                                    style="color: #076e0b; margin: 0;">
-                                                                                                    Packed</p>
-                                                                                                <% }else
-                                                                                                    if(product.adminStatus===3)
-                                                                                                    { %>
-                                                                                                    <p
-                                                                                                        style="color: #076e0b; margin: 0;">
-                                                                                                        Shipped</p>
-                                                                                                    <% }else
-                                                                                                        if(product.adminStatus===4)
-                                                                                                        { %>
-                                                                                                        <p
-                                                                                                            style="color: #076e0b; margin: 0;">
-                                                                                                            Delivered
-                                                                                                        </p>
-                                                                                                        <% }else { %>
-                                                                                                            <p
-                                                                                                                style="color: #f00303 ; margin: 0;">
-                                                                                                                Cancelled
-                                                                                                            </p>
-                                                                                                            <% } %>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <!-- View Order Details button -->
-                                                                                <button type="button"
-                                                                                    class="btn btn-success ml-auto"
-                                                                                    onclick="viewOrderDetails('<%= product.productId %>',' <%= order._id %>')">View
-                                                                                    Order Details</button>
-
-                                                                    </div>
+                                                                        <% } %>
+                            
+                                                                        <!-- Product info -->
+                                                                        <div class="product-info">
+                                                                            <!-- Product name -->
+                                                                            <p style="font-size: 14px; margin-bottom: 5px;"><%= product.name %></p>
+                            
+                                                                            <!-- Quantity and Total -->
+                                                                            <p style="font-size: 14px; margin-bottom: 5px;">
+                                                                                Quantity: <%= product.quantity %>, Total: <%= product.total %>
+                                                                            </p>
+                            
+                                                                            <!-- Order Status -->
+                                                                            <div>
+                                                                                <p style="margin: 0; font-weight: bold;">Order Status</p>
+                                                                                <% if(product.adminStatus===1) { %>
+                                                                                    <p style="color: #076e0b; margin: 0;">Order Placed</p>
+                                                                                <% } else if(product.adminStatus===2) { %>
+                                                                                    <p style="color: #076e0b; margin: 0;">Packed</p>
+                                                                                <% } else if(product.adminStatus===3) { %>
+                                                                                    <p style="color: #076e0b; margin: 0;">Shipped</p>
+                                                                                <% } else if(product.adminStatus===4) { %>
+                                                                                    <p style="color: #076e0b; margin: 0;">Delivered</p>
+                                                                                <% } else if(product.adminStatus=== 5) { %>
+                                                                                    <p style="color: #f00303; margin: 0;">Cancelled</p>
+                                                                                <% }else if(product.adminStatus=== 6) { %>
+                                                                                    <p style="color: #f00303; margin: 0;"><strong>payment failed</strong></p> <% } %>
+                                                                            </div>
+                                                                        </div>
+                            
+                                                                        <!-- View Order Details button -->
+                                                                        <% if (order.paymentStatus) { %>
+                                                                            <button type="button" class="btn btn-success ml-auto" onclick="viewOrderDetails('<%= product.productId %>',' <%= order._id %>')">View Order Details</button>
+                                                                        <% } %>
+                                                                    </div> <!-- End .product-details -->
                                                                     <hr style="border-top: 1px solid #d1d1d1;">
-                                                                    <% }) %>
-                                                            </div>
-                                                            <!-- Render address details -->
-                                                            <div class="d-flex justify-content-end">
-                                                                <div class="mr-3">
-                                                                    <!-- Additional actions -->
-                                                                </div>
+                                                                <% }); %>
+                                                            </div> <!-- End .products -->
+                                                        </div>
+                                                        <!-- Render address details -->
+                                                        <div class="d-flex justify-content-end">
+                                                            <div class="mr-3">
+                                                                <!-- Retry Payment button -->
+                                                                <% if (!order.paymentStatus) { %>
+                                                                    <p style="font-weight: bold; color: #f00303; margin-top: 10px;">Payment Failed</p>
+                                                                    <!-- Form to submit the retry payment request -->
+                                                                    <form id="retryPaymentForm" method="POST" action="/retryPayment">
+                                                                        <!-- Hidden input field to store the order ID -->
+                                                                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                                                                        <!-- Button to submit the form -->
+                                                                        <button type="submit" class="btn btn-danger ml-auto">Retry Payment</button>
+                                                                    </form>
+                                                                <% } %>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
+                                                    </div> <!-- End .card-body -->
+                                                </div> <!-- End .card -->
                                                 <hr>
                                             <% } %>
                                         <% } %>
                                     </div>
+                                   
+<script>
+    // JavaScript function to submit the form
+    function retryPayment(orderId) {
+        // Get the form element by its ID
+        var form = document.getElementById('retryPaymentForm');
+        // Submit the form
+        form.submit();
+    }
+</script>
                                 </div>
                             </div>
+                            
+                            
+                            
                             
 
 

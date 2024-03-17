@@ -398,6 +398,7 @@
                                       <th>Action</th>
                                       <th>Edit</th>
                                       <th>Delete</th>
+                                      <th>Offer</th>
                                       
                                   </tr>
                               </thead>
@@ -443,7 +444,19 @@
                         <td>
                           <button style="width: 80px;" class="btn btn-gradient-danger btn-sm" type="button" onclick="showAlert('Delete Confirmation', 'Are you sure you want to delete this product?', 'error', 'Delete', function() { location.href='/admin/delete-product?id=<%= n._id %>' })">Delete <i class="mdi mdi-delete"></i></button>
                       </td>
-                                        
+
+                    <%  if(n.subcategory.offerPercentage > 0 ) { %>
+                      <td>
+                      offer applied<br>
+                      <button style="width: 80px;" class="btn btn-gradient-info btn-sm">delete</button> 
+
+                      </td>
+
+                  <%    }else { %>
+                      <td>
+                        <button style="width: 80px;" class="btn btn-gradient-success btn-sm">Apply</button>
+                      </td>
+                   <%  } %>                  
                                       </tr>
                                       <% }) %>
                                 

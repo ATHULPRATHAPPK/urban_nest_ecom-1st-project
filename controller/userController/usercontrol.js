@@ -2129,7 +2129,7 @@ const loadCart = async (req, res) => {
                                             // Save the updated cart document
                                             await cart.save();
 
-                                            console.log("Product quantity in cart updated to zero");
+                                            console.log("Product this is working");
                                         } else {
                                             console.log("Product not found in cart");
                                         }
@@ -2306,6 +2306,92 @@ const addToCart = async (req, res) => {
     const data = "ok"
     res.status(200).json(data)
 }
+
+
+//----------------------------------------------------------------------------------// 
+//============================add from wishlist======================================//
+//----------------------------------------------------------------------------------// 
+
+const addCartFromWishlist = async (req,res)=>{
+
+    console.log(req.body);
+
+if(req.session.userId){
+    const pId = req.body.productId
+    const userDetails = await userModel.findOne({ email: req.session.userId })
+    const userId = userDetails._id
+   const userCart = await cartModel.findOne({userId: userId})
+   console.log(userCart,"userCart");
+   productDetails = await productModel.find({ _id: pId }).populate("subcategory");
+   console.log(" productDetails",productDetails);
+if(userCart){
+    console.log("this if is working");
+    const price = productDetails[0].price
+    const offerPrice = productDetails[0].subcategory.offerPercentage
+    const newPrice =  price - (price * offerPrice / 100)
+    const roundedPrice = newPrice.toFixed(2)
+    const userCart = await cartModel.find({ userId: userId })
+    const subTotalValue = userCart[0].subTotal;
+    const newSubTotal = subTotalValue + newPrice 
+    const roundedSubTotal = newSubTotal.toFixed(2);
+    const roundedTotal = newPrice.toFixed(2)
+
+    const newProduct = {
+        productId: productDetails[0]._id,
+        name: productDetails[0].productName,
+        quantity:1,
+        price: roundedPrice,
+        productImage: productDetails[0].productImage,
+        total: roundedTotal,
+    }
+
+    await cartModel.updateOne(
+        { userId: userId  },
+        {
+            $push: { product: newProduct },
+            $set: { subTotal: roundedSubTotal }
+        }
+    );
+
+
+}else{
+
+
+console.log("no cart product is working..");
+const price = productDetails[0].price
+const offerPrice = productDetails[0].subcategory.offerPercentage
+const newPrice =  price - (price * offerPrice / 100)
+const roundedPrice = newPrice.toFixed(2)
+    const userCart = await cartModel({
+        userId: userId ,
+        product: [{
+            productId: productDetails[0]._id,
+            name: productDetails[0].productName,
+            quantity:1,
+            price: roundedPrice,
+            productImage: productDetails[0].productImage,
+            total: roundedPrice,
+
+
+        }],
+        subTotal: roundedPrice
+    })
+    await userCart.save()
+
+    
+}
+
+const data = "ok"
+res.status(200).json(data)
+
+}else{
+    res.redirect("/login")
+}
+
+}
+
+
+
 //----------------------------------------------------------------------------------// 
 //============================remove from cart======================================//
 //----------------------------------------------------------------------------------// 
@@ -2450,6 +2536,7 @@ const userOrders = async (req, res) => {
         const userId = userData._id
         const addressdetails = await addressModel.find({ userId: userId })
         const orderDetails = await orderModel.find({ userId: userId });
+        console.log("orderDetails",orderDetails);
         res.render("userOrders", { message, addressdetails, orderDetails });
     }
     else {
@@ -2566,7 +2653,6 @@ const deleteAddress = async (req, res) => {
 
 const loadCheckout = async (req, res) => {
 
-
     if (req.session.userId) {
 
         const userData = await userModel.findOne({ email: req.session.userId })
@@ -2588,6 +2674,8 @@ const loadCheckout = async (req, res) => {
 
         const userCart = await cartModel.findOne({ userId: userId })
 
+        
+        if(userCart.product.length > 0 ){
         if (error === 'address_not_selected') {
 
             res.render('checkout', { userAddress, message, userCart, error: 'can not continue without selecting an address' });
@@ -2603,6 +2691,10 @@ const loadCheckout = async (req, res) => {
             console.log(walletBalance, "walletBalance");
             res.render("checkout", { userAddress, userCart, message, walletBalance })
         }
+
+    }else{
+res.redirect("/cart")
+    }
     }
     else {
         res.redirect("/login")
@@ -3017,7 +3109,59 @@ const paymentCompleted = async (req, res) => {
 };
 
 
+//----------------------------------------------------------------------------------// 
+//========================online retryPayment============================================//
+//----------------------------------------------------------------------------------// 
+const retryPayment =  async (req, res) => {
+    try {
+        const orderId = req.body.orderId;
+        console.log(orderId, "orderId");
+     failedOredr = await orderModel.findOne({_id:orderId})
+console.log(" failedOredr", failedOredr);
 
+
+
+res.render("rePayment", {failedOredr})
+    } catch (error) {
+        // Handle any errors that occurred during the execution of the function
+        console.error('An error occurred:', error);
+        
+    }
+};
+
+//----------------------------------------------------------------------------------// 
+//==========================payment  completed============================================//
+//----------------------------------------------------------------------------------// 
+const retryPaymentCompleted = async (req,res)=>{
+
+    //here upate the order payment status trueadmin status
+console.log("retryPayment completed");
+    console.log(req.body);
+    console.log(req.body.failedOrderId);
+    const orderId = req.body.failedOrderId
+    const order = await orderModel.findById(orderId);
+    order.product.forEach(product => {
+        product.adminStatus = 1;
+    });
+    order.paymentStatus = true;
+    await order.save();
+
+    res.status(200).json();
+}
+
+
+const rePaymentFailed = (req,res)=>{
+ 
+    if (req.session.userId) {
+      
+        res.status(200).json({ success: true, message: 'Failed payment handled successfully.' });
+
+    }else{
+
+        res.redirect("/login")
+
+    } 
+}
 //----------------------------------------------------------------------------------// 
 //==========================cancel order============================================//
 //----------------------------------------------------------------------------------// 
@@ -3199,19 +3343,22 @@ const userWishlist = async (req, res) => {
         const userData = await userModel.findOne({ email: req.session.userId });
         const userId = userData._id;
 
-
-
         const message = userData
         const userWishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId");
-        console.log("user wishlist", userWishlist);
+  
         if (userWishlist) {
             let productDetails = [];
             userWishlist.product.forEach(product => {
                 productDetails.push(product.productId); // Pushing the productId object directly
             });
-
-            console.log("product details", productDetails);
-            res.render("userWishlist", { productDetails, message });
+let cartProduct = await cartModel.findOne({userId:userId})
+console.log("cartProduct",cartProduct);
+let cartPresent = [];
+if (cartProduct && cartProduct.product) {
+    cartPresent = cartProduct.product.map(product => product.productId);
+}
+console.log("cartPresent",cartPresent);
+              res.render("userWishlist", { productDetails,cartPresent, message });
         } else {
             res.render("userWishlist", { message });
         }
@@ -3543,12 +3690,48 @@ const changePassword = async (req, res) => {
 }
 
 
-const paymentfailed = (req, res) => {
+const paymentfailed = async (req, res) => {
 
     try {
         // Extract payment and order information from the request body
+console.log("payment failed..",req.body);
+ const addressId =   req.body.addressId    
 
-        console.log(req.body);
+
+
+
+const userData = await userModel.findOne({ email: req.session.userId })
+const userId = userData._id
+const message = userData
+
+const userCart = await cartModel.findOne({ userId: userId })
+const userAddress = await addressModel.findOne({ userId: userId })
+const selectedAddress = userAddress.address.find(n => n._id.toString() === addressId.toString());
+console.log("selectedAddress",selectedAddress);
+console.log(userCart,"userCart");
+
+const orderDetails = orderModel({
+    userId: userId,
+    address: selectedAddress,
+
+    product: userCart.product.map(product => ({
+        productId: product.productId,
+        name: product.name,
+        quantity: product.quantity,
+        price: product.price,
+        total: product.total,
+        adminStatus:6,
+        paymentType: "Online Payment",
+        productImage: product.productImage
+    })),
+    subTotal: userCart.subTotal,
+    paymentStatus:false
+});
+await orderDetails.save();
+await cartModel.deleteOne({ userId: userId });
+
+
+
 
 
         res.status(200).json({ success: true, message: 'Failed payment handled successfully.' });
@@ -3560,9 +3743,22 @@ const paymentfailed = (req, res) => {
 
 }
 
-const failedPage = (req, res) => {
+
+const failedPage = async (req, res) => {
+
+
+
     const data = "payment not completed"
-    res.render("orderConfirm", { data })
+    if (req.session.userId) {
+      
+        res.render("orderConfirm", { data })
+
+    }else{
+
+        res.redirect("/login")
+
+    }
+   
 }
 
 module.exports = {
@@ -3583,6 +3779,7 @@ module.exports = {
     loadTablets,
     loadAllProducts,
     addToCart,
+    addCartFromWishlist,
     loadCart,
     cartDelete,
     updateQuantity,
@@ -3600,7 +3797,10 @@ module.exports = {
     OrderComplete,
     paymentCompleted,
     paymentfailed,
+    rePaymentFailed,
     failedPage,
+    retryPayment,
+    retryPaymentCompleted,
     // cancelOrder,
     loadOrderStatus,
     orderStatus,
@@ -3611,5 +3811,6 @@ module.exports = {
     addUserCoupon,
     loadWallet,
     userCoupon,
-    loadInvoice
+    loadInvoice,
+   
 }
