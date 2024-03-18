@@ -2803,6 +2803,7 @@ const loadOrder = async (req, res) => {
                                 name: product.name,
                                 quantity: product.quantity,
                                 price: product.price,
+                                discount:product.discount,
                                 total: product.total,
                                 paymentType: "COD",
                                 productImage: product.productImage
@@ -2840,6 +2841,8 @@ const loadOrder = async (req, res) => {
                     // After processing all cart products, create the order
                     const userAddress = await addressModel.findOne({ userId: userId });
                     if (userAddress) {
+                        console.log("this.....");
+                        console.log("userCart",userCart);
                         const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
                         const orderDetails = orderModel({
                             userId: userId,
@@ -2851,6 +2854,7 @@ const loadOrder = async (req, res) => {
                                 quantity: product.quantity,
                                 price: product.price,
                                 total: product.total,
+                                discount: product.discount,
                                 paymentType: "COD",
 
                                 productImage: product.productImage
@@ -2916,6 +2920,7 @@ const loadOrder = async (req, res) => {
                                 quantity: product.quantity,
                                 price: product.price,
                                 total: product.total,
+                                discount: product.discount,
                                 paymentType: 'Online Payment',
                                 productImage: product.productImage
                             })),
@@ -2991,6 +2996,7 @@ const loadOrder = async (req, res) => {
                                 quantity: product.quantity,
                                 price: product.price,
                                 total: product.total,
+                                discount:product.discount,
                                 paymentType: 'Online Payment',
 
                                 productImage: product.productImage
@@ -3092,6 +3098,7 @@ const paymentCompleted = async (req, res) => {
                     price: product.price,
                     total: product.total,
                     paymentType: "ONLINE",
+                    discount:product.discount,
                     productImage: product.productImage
                 })),
                 subTotal: subtotal

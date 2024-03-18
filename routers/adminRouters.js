@@ -80,10 +80,12 @@ adminRouter.post("/adminReturnStatus",adminMiddleware.isLogin,controllers.update
 adminRouter.get("/coupon",adminMiddleware.isLogin,controllers.loadCoupon)
 adminRouter.post("/addCoupon",adminMiddleware.isLogin,controllers.addCoupon)
 adminRouter.post("/deleteCoupon",adminMiddleware.isLogin,controllers.deleteCoupon)
+
 adminRouter.get("/SalesDash",adminMiddleware.isLogin,controllers.loadSalesDash)
-adminRouter.put("/generateReport",adminMiddleware.isLogin,controllers.generateSalesReport)
-adminRouter.post('/generateMonthlyReport',adminMiddleware.isLogin,controllers.generateMonthlyReport)
-adminRouter.post('/generateWeeklyReport',adminMiddleware.isLogin,controllers.generateWeeklyReport)
+
+adminRouter.post('/generateMonthlyReport',adminMiddleware.isLogin,controllers.generateMonthlysalesReport)
+adminRouter.post('/generateWeeklyReport',adminMiddleware.isLogin,controllers.generateWeeklysalesReport)
+adminRouter.post("/salesReportPage",adminMiddleware.isLogin,controllers.salesRePortDate)
 
 adminRouter.post("/applyOffer",adminMiddleware.isLogin,controllers.applyOffer)
 adminRouter.post("/editOffer",adminMiddleware.isLogin,controllers.editOffer)
@@ -95,4 +97,7 @@ adminRouter.get("/offers",adminMiddleware.isLogin,controllers.OffersDash)
 adminRouter.post("/applyProductOffer",adminMiddleware.isLogin,controllers.createOffer)
 
 adminRouter.post("/adminApply-product-offer",adminMiddleware.isLogin,controllers.addOfferToProduct)
+
+
+
 module.exports = adminRouter

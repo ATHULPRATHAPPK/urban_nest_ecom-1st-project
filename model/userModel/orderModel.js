@@ -56,6 +56,12 @@ const orderSchema = new mongoose.Schema({
                 type: String,
                
             },
+            discount : {
+       
+                type: Number,
+                default: 0
+               
+            },
            
             productImage: [
                 {

@@ -385,124 +385,187 @@
           </div>
         </div> -->
         <!--  ------------------------------------------------->
-        <% const currentDateParts = currentDate.split('/'); %>
-        <div class="container">
-            <div class="col-lg-12 mt-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">Product Management</h4>
-                        <div class="table-responsive">
-                            <div class="card mt-5">
-                                <div class="card-body">
-                                    <h4 class="card-title">Offer Details</h4>
-                                    <table class="table mt-4">
-                                        <thead>
-                                            <tr>
-                                                <th>S.No.</th>
-                                                <th>Offer Name</th>
-                                                <th>Percentage</th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <% if (offerDetails.length > 0) { %>
-                                                <% offerDetails.forEach((offer, index) => { %>
-                                                    <tr>
-                                                        <td><%= index + 1 %></td>
-                                                        <td><%= offer.offerName %></td>
-                                                        <td><%= offer.percentage %></td>
-                                                        <td><%= offer.startDate %></td>
-                                                        <td><%= offer.endDate %></td>
-                                                        <!-- Apply Offer button -->
-                                                        <td>
-                                                            <% const endDateParts = offer.endDate.split('/'); %>
-                                                            <% const endDateObj = new Date(endDateParts[2], endDateParts[1] - 1, endDateParts[0]); %>
-                                                            <% if (endDateObj >= new Date(currentDateParts[2], currentDateParts[1] - 1, currentDateParts[0])) { %>
-                                                                <button style="width: 80px;" class="btn btn-gradient-success btn-sm" onclick="showSweetAlert(<%= JSON.stringify(offer) %>)">Apply</button>
+        <div class="page-wrapper">
+          <div class="container-fluid">
+              
+              
+              <!-- sales table -->
+              <div class="row">
+                  <div class="col-12">
+                      <div class="card">
+                          
+                        <div class="card-body">
+                          <div id="printableTable">
+                              <h4 class="card-title">Sales Report</h4>
 
-                                                            <% } else { %>
-                                                                <strong style="color: red;">Expired</strong>
-                                                            <% } %>
-                                                        </td>
-                                                    </tr>
-                                                <% }) %>
-                                            <% } else { %>
-                                                <tr>
-                                                    <td colspan="6">No offers present</td>
-                                                </tr>
-                                            <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <button style="width: 80px;" class="btn btn-gradient-success btn-sm" type="button" onclick="showAlert('Offer Details', getTableHTML(), 'info', 'Confirm', function() { console.log('Confirmed') })">Show Table</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            function showAlert(title, tableContent, icon, confirmButtonText, confirmAction) {
-                Swal.fire({
-                    title: title,
-                    html: tableContent, // Pass the table content as HTML
-                    icon: icon,
-                    showCancelButton: true,
-                    confirmButtonText: confirmButtonText,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // If the user clicks the Confirm button, perform the specified action
-                        confirmAction();
-                    }
-                });
-            }
-        
-            function showSweetAlert(offerData) {
-                const offers = JSON.parse(offerData);
-                if (Array.isArray(offers)) {
-                    let tableContent = '<table class="table"><thead><tr><th>Offer Name</th><th>Percentage</th><th>Start Date</th><th>End Date</th><th>Action</th></tr></thead><tbody>';
-        
-                    offers.forEach(offer => {
-                        tableContent += `
-                            <tr>
-                                <td>${offer.offerName}</td>
-                                <td>${offer.percentage}</td>
-                                <td>${offer.startDate}</td>
-                                <td>${offer.endDate}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info">Select</button>
-                                </td>
-                            </tr>`;
-                    });
-        
-                    tableContent += '</tbody></table>';
-        
-                    showAlert('Offer Details', tableContent, 'info', 'Confirm', function () {
-                        console.log('Confirmed');
-                    });
-                } else {
-                    console.error('Invalid offer data format:', offerData);
-                }
-            }
-        </script>
-        
+                   <% if (locals.orders.length > 0)   {    %>    
+                              <div class="table-responsive">
+                                  <table class="table table-bordered table-responsive-lg">
+                                      <thead>
+                                          <tr>
+                                              <th>Customer</th>
+                                              <th>Order ID</th>
+                                              <th>Order Date</th>
+                                              <th>Product</th>
+                                              <th>Price</th>
+                                              <th>Discount</th>
+                                              <th>Quantity</th>
+                                              <th>Subtotal</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          <% let totalDiscount = 0; %>
+                                          <% let totalSubtotal = 0; %>
+                                          <% orders.forEach(order => { %>
+                                              <% order.product.forEach(product => { %>
+                                                  <tr>
+                                                      <td><%= order.address.name %> </td>
+                                                      <!-- Extracting last 5 characters of product _id -->
+                                                      <td><%= String(product._id).substring(String(product._id).length - 5) %></td>
+                                                      <td><%= order.date.toDateString() %></td>
+                                                      <td><%= product.name %></td>
+                                                      <td><%= product.price %></td>
+                                                      <td><%= product.discount !== undefined ? product.discount : 0 %></td>
 
+                                                      <td><%= product.quantity %></td>
+                                                      <td><%= product.total %></td>
+                                                  </tr>
+                                                  <% totalDiscount += product.discount !== undefined ? product.discount : 0; %>
+                                                
+                                              <% totalSubtotal += product.total; %>
+                                              <% }) %>
+                                          <% }) %>
+                                          <!-- Total row -->
+                                          <tr>
+                                              <td colspan="4"></td>
+                                              <td>Total discount :</td>
+                                              <td>       <strong><%= totalDiscount %>  </strong></td>
+                                              <td>Total Subtotal :</td> 
+                                              <td>        <strong><%= totalSubtotal %> </strong></td>
+                                          </tr>
+                                      </tbody>
+                                  </table>
+                              </div>
+                        <%    }else { %>
+
+                              <p>no data found</p>
+                           <% } %>
+                          </div>
+                      </div>
+                      
+                      </div>
+                  </div>
+              </div>
+          </div>
         
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- Include SweetAlert2 library -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Include Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-    <script src="../../admin/assets/vendors/js/vendor.bundle.base.js"></script>
+          <div  id="hide" class="text-center pt-5 pb-5">
+            <% if (locals.orders.length > 0)   {    %>   
+              <button onclick="downloadReport()" class="btn-warning" >Download pdf</button>
+              <button id="downloadButton" class="btn-primary">Excel Download</button>
+              <button class="btn-danger"><a href="/adminhome">Back</a></button>
+         <%   } else { %>
+              <button class="btn-danger"><a href="/adminhome">Back</a></button>
+      <%   } %>
+          </div>
+      </div>
+      
+      <style>
+      @media print {
+          body * {
+              display: none;
+          }
+          #printableTable, #printableTable * {
+              display: block !important;
+          }
+          #printableTable {
+              position: absolute;
+              left: 0;
+              top: 0;
+          }
+      }
+      
+      </style>
+      
+      <script>
+          // let hide = document.getElementById('hide')
+          // function downloadReport(){
+          //     hideDownloadButton()
+          //     window.print()
+          //     showDownloadButton()
+          // }
+          function downloadReport() {
+              let printableElement = document.getElementById('printableTable');
+              let originalContents = document.body.innerHTML;
+              document.body.innerHTML = printableElement.innerHTML;
+              window.print();
+              document.body.innerHTML = originalContents;
+          }
+          // function  hideDownloadButton(){
+          //     hide.style.display = 'none'
+          // }
+          // function showDownloadButton(){
+          //     hide.style.display = 'inline-block'
+          // }
+      </script>
+      
+      <script>
+          document.getElementById('downloadButton').addEventListener('click', function () {
+              const data = generateExcelData();
+              const excelBuffer = generateExcelFile(data);
+              downloadExcelFile(excelBuffer, 'SalesReport');
+          });
+      
+          function generateExcelData() {
+              const table = document.querySelector('.table');
+              const rows = table.querySelectorAll('tbody tr');
+              const data = [['Index', 'Order Id', 'User', 'Price x Quantity', 'Total', 'Date', 'Payment Mode', 'Status']];
+      
+              rows.forEach(row => {
+                  const rowData = [];
+                  row.querySelectorAll('td').forEach((cell, index) => {
+                      if (index !== 2) { // Skip the image column
+                          rowData.push(cell.textContent.trim());
+                      }
+                  });
+                  data.push(rowData);
+              });
+      
+              return data;
+          }
+      
+          function generateExcelFile(data) {
+              const ws = XLSX.utils.aoa_to_sheet(data);
+              const wb = XLSX.utils.book_new();
+              XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
+              const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+              return excelBuffer;
+          }
+      
+          function downloadExcelFile(buffer, fileName) {
+              const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = fileName + '.xlsx';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+          }
+      </script>
+      
+      
+      <!-- xlsx library -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+      
+      <!--Table plugins -->
+      <script src="/admin/assets/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+      <script src="/admin/dist/js/pages/datatable/datatable-basic.init.js"></script>
+      
+      <!-- jQuery -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      
+      <!-- Bootstrap Datepicker JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page -->
     <!-- End plugin js for this page -->

@@ -1436,178 +1436,13 @@ const loadSalesDash = (req, res) => {
 
 
 
-const generateSalesReport = async (req, res) => {
-    try {
-        const startDate = req.body["start-date"];
-        const endDate = req.body["end-date"];
-        console.log(startDate);
-        // Validate dates
-        // if (!isValidDate(startDate) || !isValidDate(endDate)) {
-        //     return res.status(400).json({ error: "Invalid date format" });
-        // }
-
-        // Convert dates to JavaScript Date objects with time included
-        const startDateTime = new Date(`${startDate}T00:00:00.000Z`);
-        const endDateTime = new Date(`${endDate}T23:59:59.999Z`);
-
-        // Use aggregation to fetch orders within the specified date range
-        const orders = await orderModel.aggregate([
-            {
-                $match: {
-                    date: { $gte: startDateTime, $lte: endDateTime },
-                },
-            },
-            // Add more aggregation stages if needed
-        ]);
-
-        const updatedOrders = orders.map((order) => {
-            order.product.forEach((product) => { // Change 'Products' to 'product'
-                product._id = generateRandomString(5); // You can adjust the length as needed
-            });
-            return order;
-        });
-
-
-        console.log(" updatedOrders", updatedOrders);
-        console.log(" updatedOrders", startDate);
-        console.log("endDate", endDate);
-        return res.status(200).json({
-            orders: updatedOrders,
-            startDate: startDate,
-            endDate: endDate,
-        });
-    } catch (error) {
-        console.error("Error generating sales report:", error);
-        return res.status(500).json({ error: "Failed to generate sales report" });
-    }
-};
-
-// Example function for generating random string
-function generateRandomString(length) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
 
 
 //----------------------------------------------------------------------------------// 
 //====================   sales montthly report======================================//
 //----------------------------------------------------------------------------------// 
 
-const generateMonthlyReport = async (req, res) => {
 
-    try {
-        const currentDate = new Date();
-        const startDateTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // First day of current month
-        const endDateTime = new Date(); // Current date
-
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adding 1 because month is zero-based
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const startDate = `${year}-${month}-01`; // First day of the current month
-        const endDate = `${year}-${month}-${day}`; // Current date
-
-        console.log("Start Date:", startDate);
-        console.log("End Date:", endDate);
-
-
-
-        console.log("Start Date:", startDateTime);
-        console.log("End Date:", endDateTime);
-
-        const orders = await orderModel.aggregate([
-            {
-                $match: {
-                    date: { $gte: startDateTime, $lte: endDateTime },
-                },
-            },
-            // Add more aggregation stages if needed
-        ]);
-
-        const updatedOrders = orders.map((order) => {
-            order.product.forEach((product) => { // Change 'Products' to 'product'
-                product._id = generateRandomString(5); // You can adjust the length as needed
-            });
-            return order;
-        });
-
-
-        return res.status(200).json({
-            orders: updatedOrders,
-            startDate: startDate,
-            endDate: endDate,
-        });
-
-    } catch (error) {
-        console.error("Error generating sales report:", error);
-        return res.status(500).json({ error: "Failed to generate sales report" });
-    }
-
-}
-
-
-
-const generateWeeklyReport = async (req, res) => {
-
-    try {
-        // Get the current date
-        const currentDate = new Date();
-         console.log("reached the serv");
-        // Calculate the start of the week (Sunday)
-        const startDateTime = new Date(currentDate);
-        startDateTime.setDate(currentDate.getDate() - currentDate.getDay()); // Subtract current day of the week (0 is Sunday)
-        
-        // Calculate the end of the week (Saturday)
-        const endDateTime = new Date(currentDate);
-        endDateTime.setDate(startDateTime.getDate() + 6); // Add 6 to get to Saturday
-        
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adding 1 because month is zero-based
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const startDate = `${year}-${month}-${String(startDateTime.getDate()).padStart(2, '0')}`; // Start of the week
-        const endDate = `${year}-${month}-${String(endDateTime.getDate()).padStart(2, '0')}`; // End of the week
-        
-        console.log("Start Date:", startDate);
-        console.log("End Date:", endDate);
-        
-
-
-
-        console.log("Start Date:", startDateTime);
-        console.log("End Date:", endDateTime);
-
-        const orders = await orderModel.aggregate([
-            {
-                $match: {
-                    date: { $gte: startDateTime, $lte: endDateTime },
-                },
-            },
-            // Add more aggregation stages if needed
-        ]);
-
-        const updatedOrders = orders.map((order) => {
-            order.product.forEach((product) => { // Change 'Products' to 'product'
-                product._id = generateRandomString(5); // You can adjust the length as needed
-            });
-            return order;
-        });
-
-
-        return res.status(200).json({
-            orders: updatedOrders,
-            startDate: startDate,
-            endDate: endDate,
-        });
-
-    } catch (error) {
-        console.error("Error generating sales report:", error);
-        return res.status(500).json({ error: "Failed to generate sales report" });
-    }
-
-}
 
 
 
@@ -1797,6 +1632,100 @@ const addOfferToProduct = async  (req,res)=>{
     const data = "ok";
     res.status(200).json(data);
 }
+
+
+
+
+
+//----------------------------------------------------------------------------------// 
+//====================   sales report======================================//
+//----------------------------------------------------------------------------------// 
+
+const salesRePortDate = async (req,res)=>{
+
+
+const startDate = req.body["start-date"];
+const endDate = req.body["end-date"];
+
+ // Convert dates to JavaScript Date objects with time included
+ const startDateTime = new Date(`${startDate}T00:00:00.000Z`);
+ const endDateTime = new Date(`${endDate}T23:59:59.999Z`);
+ const orders = await orderModel.aggregate([
+    {
+        $match: {
+            date: { $gte: startDateTime, $lte: endDateTime },
+        },
+    },
+    // Add more aggregation stages if needed
+]);
+
+
+
+res.render("salesReportPage",{orders})
+
+}
+
+
+
+
+//----------------------------------------------------------------------------------// 
+//====================   sales montthly report======================================//
+//----------------------------------------------------------------------------------// 
+const generateMonthlysalesReport = async(req,res)=>{
+
+ const selectedMonth = req.body.selectedMonth
+    const  totalOrders = await orderModel.find()
+    const orders = totalOrders.filter(order => {
+        // Extract month from the order's date
+        const orderMonth = new Date(order.date).getMonth() + 1; // Month is zero-based, so adding 1
+    
+        // Check if the order's month matches the selected month
+        return orderMonth === parseInt(selectedMonth);
+    });
+
+    console.log(orders,"order");
+    res.render("salesReportPage",{orders})
+}
+
+
+
+
+//----------------------------------------------------------------------------------// 
+//====================   sales weeekly report======================================//
+//----------------------------------------------------------------------------------// 
+const generateWeeklysalesReport = async (req,res)=>{
+    try {
+
+        const currentDate = new Date();
+        const startDateTime = new Date(currentDate);
+        startDateTime.setDate(currentDate.getDate() - currentDate.getDay());
+        const endDateTime = new Date(currentDate);
+        endDateTime.setDate(startDateTime.getDate() + 6);
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Adding 1 because month is zero-based
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const startDate = `${year}-${month}-${String(startDateTime.getDate()).padStart(2, '0')}`; // Start of the week
+        const endDate = `${year}-${month}-${String(endDateTime.getDate()).padStart(2, '0')}`; // End of the week
+        
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+
+        const orders = await orderModel.aggregate([
+            {
+                $match: {
+                    date: { $gte: startDateTime, $lte: endDateTime },
+                },
+            },
+            // Add more aggregation stages if needed
+        ]);
+
+        res.render("salesReportPage",{orders})
+
+    } catch (error) {
+        console.error("Error generating sales report:", error);
+        return res.status(500).json({ error: "Failed to generate sales report" });
+    }
+}
 module.exports = {
     adminlogin,
     admindash,
@@ -1831,9 +1760,6 @@ module.exports = {
     addCoupon,
     deleteCoupon,
     loadSalesDash,
-    generateSalesReport,
-    generateMonthlyReport,
-    generateWeeklyReport,
     applyOffer,
     editOffer,
     offerDelete,
@@ -1841,6 +1767,9 @@ module.exports = {
     OffersDash,
     createOffer,
     offerApplyPage,
-    addOfferToProduct
+    addOfferToProduct,
+    salesRePortDate,
+    generateMonthlysalesReport,
+    generateWeeklysalesReport
 
 }

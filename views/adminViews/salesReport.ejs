@@ -383,47 +383,114 @@
             </div>
           </div>
         </div> -->
-      <!--  ------------------------------------------------->
+      <!--  --------------------------------------------------------------------------------------------->
       <div class="container">
         <div class="col-lg-12 mt-3">
           <div class="card">
             <div class="card-body">
-                <div class="container mt-5">
-                    <h2 class="mb-4">Sales Report</h2>
+              <div class="container mt-5">
+                <h2 class="mb-4">Sales Report</h2>
+            
+                <form id="generateReportForm" class="row" action="/salesReportPage" method="post">
+                    <div class="form-group col-md-4">
+                        <label for="start-date">Start Date:</label>
+                        <input type="date" class="form-control" id="start-date" name="start-date" required>
+                    </div>
                 
-                    <form id="generateReportForm" class="row" onsubmit="return validateAndSubmitForm()">
-                        <div class="form-group col-md-4">
-                            <label for="start-date">Start Date:</label>
-                            <input type="date" class="form-control" id="start-date" name="start-date" required>
-                        </div>
-                    
-                        <div class="form-group col-md-4">
-                            <label for="end-date">End Date:</label>
-                            <input type="date" class="form-control" id="end-date" name="end-date" required>
-                        </div>
-                    
-                        <div class="form-group col-md-4 d-flex flex-column mt-auto">
-                            <button type="submit" id="generateReportBtn" class="btn btn-primary btn-block">Generate Report</button>
-                        </div>
-                    </form>
-                    
+                    <div class="form-group col-md-4">
+                        <label for="end-date">End Date:</label>
+                        <input type="date" class="form-control" id="end-date" name="end-date" required>
+                    </div>
                 
-                    <br>
-                    <div id="flash-message" style="width: 70%;" class="col-md-12 mt-3"></div>
-                </div>
+                    <div class="form-group col-md-4 d-flex flex-column mt-auto">
+                        <button type="submit" class="btn btn-primary btn-block">Generate Report</button>
+                    </div>
+                </form>
+                
+                <br>
+                <div id="flash-message" style="width: 70%;" class="col-md-12 mt-3"></div>
+            </div>
+        
+            <!-- JavaScript to handle form submission -->
 
-             
+
+            <script>
+                $(document).ready(function() {
+                    // Submit form when "Generate Report" button is clicked
+                    $('#generateReportForm').submit(function(event) {
+                        event.preventDefault(); // Prevent default form submission
+                        
+                        // Fetch form data
+                        const formData = $(this).serialize();
+                        
+                        // Submit form data to the specified route
+                        $.post('/salesReportPage', formData, function(response) {
+                            // Handle response here if needed
+                            console.log('Form submitted successfully');
+                        }).fail(function(error) {
+                            console.error('Error submitting form:', error);
+                        });
+                    });
+                });
+            </script>
+
+         
+
+
     <hr>
     <h3 class="mb-4">Monthly Sales Report</h3>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="monthSelect">Select Month:</label>
+            <select class="form-control" id="monthSelect">
+              <option value="01">January</option>
+              <option value="02">February</option>
+              <option value="03">March</option>
+              <option value="04">April</option>
+              <option value="05">May</option>
+              <option value="06">June</option>
+              <option value="07">July</option>
+              <option value="08">August</option>
+              <option value="09">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+        </div>
+    </div>
     <div class="form-group col-md-4 d-flex flex-column mt-auto">
         <button type="button" id="generateMonthly" class="btn btn-primary btn-block">Generate Report</button>
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const generateMonthlyBtn = document.getElementById('generateMonthly');
+          generateMonthlyBtn.addEventListener('click', function() {
+              const monthSelect = document.getElementById('monthSelect');
+              const selectedMonth = monthSelect.value;
+              const form = document.createElement('form');
+              form.setAttribute('method', 'post');
+              form.setAttribute('action', '/generateMonthlyReport');
+              const input = document.createElement('input');
+              input.setAttribute('type', 'hidden');
+              input.setAttribute('name', 'selectedMonth');
+              input.setAttribute('value', selectedMonth);
+              form.appendChild(input);
+              document.body.appendChild(form);
+              form.submit();
+          });
+      });
+  </script>
+
+
     <br>
     <hr>
     <h3 class="mb-4">Weekly Sales Report</h3>
-    <div class="form-group col-md-4 d-flex flex-column mt-auto">
-        <button type="button" id="generateWeekly" class="btn btn-primary btn-block">Generate Report</button>
-    </div>
+    <form action="/generateWeeklyReport" method="POST">
+     
+        <div class="form-group col-md-4 d-flex flex-column mt-auto">
+            <button type="submit" class="btn btn-primary btn-block">Generate Report</button>
+        </div>
     <hr>
     
 
@@ -505,447 +572,7 @@
 
 
 
-<script>
-    let ordersDataDownload;
 
-    // Event listener for the "Generate Monthly Sales Report" button
-    document.getElementById('generateMonthly').addEventListener('click', function() {
-        // Show SweetAlert confirmation dialog
-        Swal.fire({
-            icon: 'question',
-            title: 'Generate Monthly Sales Report',
-            text: 'Do you want to generate the monthly sales report?',
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
-        }).then((result) => {
-            // If user confirms, send fetch request to backend
-            if (result.isConfirmed) {
-                fetch('/generateMonthlyReport', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    // You can include any data you need to send to the backend here
-                    body: JSON.stringify({})
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Handle response data if needed
-                    ordersDataDownload = data;
-                    console.log("productItem",   data);
-                    displayReportTable1(data.orders);
-                    document.getElementById('reportMonthly').style.display = 'block';
-                    // Optionally show success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Monthly sales report generated successfully',
-                        confirmButtonText: 'OK'
-                    });
-                })
-                .catch(error => {
-                    console.error('Error generating monthly sales report:', error);
-                    // Optionally show error message
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while generating the monthly sales report',
-                        confirmButtonText: 'OK'
-                    });
-                });
-            }
-        });
-    });
-    document.getElementById('downloadReportBtn1').addEventListener('click', async () => {
-        // Download the report as an Excel file
-        const content = document.getElementById('reportContentMonthlyTable').innerHTML;
-        downloadExcel(ordersDataDownload);
-    });
-    // Function to display the report table
-    function displayReportTable1(updatedOrders) {
-        console.log('Data received: updatedOrders',updatedOrders);
-
-        const tableBody = document.getElementById('reportContentMonthlyTable');
-        const totalOrdersElement = document.getElementById('totalOrders1');
-        const totalAmountElement = document.getElementById('totalAmount1');
-
-        tableBody.innerHTML = ''; // Clear previous content
-        let totalOrders = 0;
-        let totalAmount = 0;
-
-        updatedOrders.forEach(order => {
-            const { address, date, product, subTotal } = order;
-          
-            product.forEach(productItem => {
-                const { _id, name, quantity, total } = productItem;
-
-                const row = `<tr>
-                                <td>${_id}</td>
-                                <td>${name}</td>
-                                <td>${new Date(date).toLocaleDateString()}</td>
-                                <td>${quantity}</td>
-                                <td>${total}</td>
-                                <!-- <td>${address.city}, ${address.state}, ${address.pincode}</td> -->
-                                <!-- Add more columns if needed -->
-                            </tr>`;
-                tableBody.innerHTML += row;
-                totalOrders++;
-                totalAmount += total;
-            });
-        });
-
-        totalOrdersElement.textContent = totalOrders;
-        totalAmountElement.textContent = totalAmount.toFixed(2); // Assuming total is a decimal value
-    }
-
-    // Function to download the Excel file
-    function downloadExcel(data) {
-        try {
-            const { orders, startDate, endDate } = data;
-
-            const ws = XLSX.utils.json_to_sheet(orders);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'SalesReport');
-
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = `sales_report_${startDate}_to_${endDate}.xlsx`;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error downloading Excel:', error);
-        }
-    }
-
-    // Event listener for the "Generate Report" button (assuming you have one with id 'generateReportBtn')
-    document.getElementById('generateMonthly').addEventListener('click', async () => {
-        console.log('Generate Report button clicked');
-        // You can add functionality for generating reports here
-    });
-
-    // Event listener for the "Download Report" button (assuming you have one with id 'downloadReportBtn')
-    document.getElementById('downloadReportBtn1').addEventListener('click', async () => {
-        console.log('Download Report button clicked');
-        // You can add functionality for downloading reports here
-    });
-
-
-
-    let ordersDataDownload1;
-
-    document.getElementById('generateReportBtn').addEventListener('click', async () => {
-        const userStartDate = document.getElementById('start-date').value;
-        const userEndDate = document.getElementById('end-date').value;
-    
-        try {
-            const response = await fetch('/generateReport', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 'start-date': userStartDate, 'end-date': userEndDate })
-            });
-    
-            console.log(response);
-    
-            if (response.ok) {
-                const data = await response.json();
-                const { orders, startDate, endDate } = data;
-                ordersDataDownload1 = data;
-    
-                // Display the report content as a table
-                displayReportTable(orders);
-    
-                // Show the report preview
-                document.getElementById('reportPreview').style.display = 'block';
-            } else {
-                // Handle error responses here
-                console.error('Error:', response.status, response.statusText);
-            }
-        } catch (error) {
-            // Handle network or parsing errors
-            console.error('Error:', error.message);
-        }
-    });
-    
-    // Programmatically handle form submission
-    document.getElementById('generateReportForm').addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent the default form submission
-        validateAndSubmitForm();
-    });
-    
-    function validateAndSubmitForm() {
-        if (validateDates()) {
-            // If validation passes, trigger the click event on the button
-            document.getElementById('generateReportBtn').click();
-        }
-    }
-    
-    function validateDates() {
-        var startDate = document.getElementById('start-date').value;
-        var endDate = document.getElementById('end-date').value;
-        var flashMessageContainer = document.getElementById('flash-message');
-    
-        // Clear previous flash messages
-        flashMessageContainer.innerHTML = '';
-    
-        if (startDate && endDate) {
-            if (startDate > endDate) {
-                // Create a div element for the flash message
-                var flashMessage = document.createElement('div');
-                flashMessage.className = 'alert alert-danger';
-                flashMessage.textContent = 'Invalid date input: Start Date should not be after End Date';
-    
-                // Append the flash message to the container
-                flashMessageContainer.appendChild(flashMessage);
-    
-                return false; // Prevent form submission
-            }
-        }
-    
-        return true; // Allow form submission
-    }
-    
-
-    document.getElementById('downloadReportBtn').addEventListener('click', async () => {
-        // Download the report as an Excel file
-        const content = document.getElementById('reportContentTableBody').innerHTML;
-        downloadExcel(ordersDataDownload);
-    });
-    function displayReportTable(updatedOrders) {
-    console.log('Data received: updatedOrders');
-
-    const tableBody = document.getElementById('reportContentTableBody');
-    const totalOrdersElement = document.getElementById('totalOrders');
-    const totalAmountElement = document.getElementById('totalAmount');
-
-    tableBody.innerHTML = ''; // Clear previous content
-    let totalOrders = 0;
-    let totalAmount = 0;
-
-    updatedOrders.forEach(order => {
-        const { address, date, product, subTotal } = order;
-
-        product.forEach(productItem => {
-            const { _id, name, quantity, total } = productItem;
-
-            const row = `<tr>
-                            <td>${_id}</td>
-                            <td>${name}</td>
-                            <td>${new Date(date).toLocaleDateString()}</td>
-                            <td>${quantity}</td>
-                            <td>${total}</td>
-                            <!-- <td>${address.city}, ${address.state}, ${address.pincode}</td> -->
-                            <!-- Add more columns if needed -->
-                        </tr>`;
-            tableBody.innerHTML += row;
-            totalOrders++;
-            totalAmount += total;
-        });
-    });
-
-    totalOrdersElement.textContent = totalOrders;
-    totalAmountElement.textContent = totalAmount.toFixed(2); // Assuming total is a decimal value
-}
-
-
-
-    function downloadExcel(data) {
-        try {
-            const { orders, startDate, endDate } = data;
-           
-
-    
-            const ws = XLSX.utils.json_to_sheet(orders);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'SalesReport');
-    
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = `sales_report_${startDate}_to_${endDate}.xlsx`;
-    
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error downloading Excel:', error);
-        }
-    }
-    document.getElementById('generateReportBtn').addEventListener('click', async () => {
-        console.log('Generate Report button clicked');
-        // ... rest of your code
-    });
-    
-    document.getElementById('downloadReportBtn').addEventListener('click', async () => {
-        console.log('Download Report button clicked');
-        // ... rest of your code
-    });
-    
-
-    
-
-
-//weekly
-
-let ordersDataDownload2;
-
-// Event listener for the "Generate Monthly Sales Report" button
-document.getElementById('generateWeekly').addEventListener('click', function() {
-    console.log("called this");
-    // Show SweetAlert confirmation dialog
-    Swal.fire({
-        icon: 'question',
-        title: 'Generate Monthly Sales Report',
-        text: 'Do you want to generate the monthly sales report?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No'
-    }).then((result) => {
-        // If user confirms, send fetch request to backend
-        if (result.isConfirmed) {
-            fetch('/generateWeeklyReport', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                // You can include any data you need to send to the backend here
-                body: JSON.stringify({})
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Handle response data if needed
-                ordersDataDownload2 = data;
-                console.log("productItem",   data);
-                displayReportTable2(data.orders);
-                document.getElementById('reportWeekly').style.display = 'block';
-                // Optionally show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'weekly sales report generated successfully',
-                    confirmButtonText: 'OK'
-                });
-            })
-            .catch(error => {
-                console.error('Error generating monthly sales report:', error);
-                // Optionally show error message
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while generating the monthly sales report',
-                    confirmButtonText: 'OK'
-                });
-            });
-        }
-    });
-});
-document.getElementById('downloadReportBtn2').addEventListener('click', async () => {
-    // Download the report as an Excel file
-    const content = document.getElementById('reportContentWeeklyTable').innerHTML;
-    downloadExcel(ordersDataDownload2);
-});
-// Function to display the report table
-function displayReportTable2(updatedOrders) {
-    console.log('Data received: updatedOrders',updatedOrders);
-
-    const tableBody = document.getElementById('reportContentWeeklyTable');
-    const totalOrdersElement = document.getElementById('totalOrders2');
-    const totalAmountElement = document.getElementById('totalAmount2');
-
-    tableBody.innerHTML = ''; // Clear previous content
-    let totalOrders = 0;
-    let totalAmount = 0;
-
-    updatedOrders.forEach(order => {
-        const { address, date, product, subTotal } = order;
-      
-        product.forEach(productItem => {
-            const { _id, name, quantity, total } = productItem;
-
-            const row = `<tr>
-                            <td>${_id}</td>
-                            <td>${name}</td>
-                            <td>${new Date(date).toLocaleDateString()}</td>
-                            <td>${quantity}</td>
-                            <td>${total}</td>
-                            <!-- <td>${address.city}, ${address.state}, ${address.pincode}</td> -->
-                            <!-- Add more columns if needed -->
-                        </tr>`;
-            tableBody.innerHTML += row;
-            totalOrders++;
-            totalAmount += total;
-        });
-    });
-
-    totalOrdersElement.textContent = totalOrders;
-    totalAmountElement.textContent = totalAmount.toFixed(2); // Assuming total is a decimal value
-}
-
-// Function to download the Excel file
-function downloadExcel(data) {
-    try {
-        const { orders, startDate, endDate } = data;
-
-        const ws = XLSX.utils.json_to_sheet(orders);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'SalesReport');
-
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `sales_report_${startDate}_to_${endDate}.xlsx`;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (error) {
-        console.error('Error downloading Excel:', error);
-    }
-}
-
-// Event listener for the "Generate Report" button (assuming you have one with id 'generateReportBtn')
-document.getElementById('generateWeekly').addEventListener('click', async () => {
-    console.log('Generate Report button clicked 2');
-    // You can add functionality for generating reports here
-});
-
-// Event listener for the "Download Report" button (assuming you have one with id 'downloadReportBtn')
-document.getElementById('downloadReportBtn2').addEventListener('click', async () => {
-    console.log('Download Report button clicked');
-    // You can add functionality for downloading reports here
-});
-
-
-
-
-
-
-
-
-    
-    
-</script>
 
 
 
