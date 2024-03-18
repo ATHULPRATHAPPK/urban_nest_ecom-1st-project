@@ -281,10 +281,46 @@ const admindash = async (req, res) => {
     }
 
 
+    const allOrdersplaced = await orderModel.find();
+
+    const allProducts = allOrdersplaced.flatMap(order => order.product);
+    
+    // Count the occurrences of each product
+    const productCountMap = allProducts.reduce((acc, product) => {
+        const productId = product.productId; // Assuming 'productId' is the property containing the product ID
+        acc[productId] = (acc[productId] || 0) + 1;
+        return acc;
+    }, {});
+    
+    // Sort the product count map by count in descending order
+    const sortedProducts = Object.entries(productCountMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5); // Get top 5 products
+    
+    // Convert the sorted products to an object
+    const topProductsObject = {};
+    sortedProducts.forEach(([productId, count]) => {
+        topProductsObject[productId] = count;
+    });
+
+    const topProductsDetails = [];
+
+    // Fetch product details for each top productId and include the count
+    for (const productId in topProductsObject) {
+        try {
+            const productDetail = await productModel.findById(productId);
+            if (productDetail) {
+                const count = topProductsObject[productId];
+                topProductsDetails.push({ productDetail, count });
+            }
+        } catch (error) {
+            console.error('Error fetching product details:', error);
+        }
+    }
 
 
 
-    res.render("adminHome", { overallSales, totalOrders, pendingToShipCount, pendingToDeliverCount, totalRetuns, totalOrdersCount, cancelled, dataForGraph });
+    res.render("adminHome", { overallSales, totalOrders, pendingToShipCount, pendingToDeliverCount, totalRetuns, totalOrdersCount, cancelled, dataForGraph ,topProductsDetails});
 }
 
 
@@ -541,10 +577,45 @@ const adminload = async (req, res) => {
             }
 
 
+            const allOrdersplaced = await orderModel.find();
+
+            const allProducts = allOrdersplaced.flatMap(order => order.product);
+            
+            // Count the occurrences of each product
+            const productCountMap = allProducts.reduce((acc, product) => {
+                const productId = product.productId; // Assuming 'productId' is the property containing the product ID
+                acc[productId] = (acc[productId] || 0) + 1;
+                return acc;
+            }, {});
+            
+            // Sort the product count map by count in descending order
+            const sortedProducts = Object.entries(productCountMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5); // Get top 5 products
+            
+            // Convert the sorted products to an object
+            const topProductsObject = {};
+            sortedProducts.forEach(([productId, count]) => {
+                topProductsObject[productId] = count;
+            });
+        
+            const topProductsDetails = [];
+        
+            // Fetch product details for each top productId and include the count
+            for (const productId in topProductsObject) {
+                try {
+                    const productDetail = await productModel.findById(productId);
+                    if (productDetail) {
+                        const count = topProductsObject[productId];
+                        topProductsDetails.push({ productDetail, count });
+                    }
+                } catch (error) {
+                    console.error('Error fetching product details:', error);
+                }
+            }
 
 
-
-            res.render("adminHome", { overallSales, totalOrders, pendingToShipCount, pendingToDeliverCount, totalRetuns, totalOrdersCount, cancelled, dataForGraph });
+            res.render("adminHome", { overallSales, totalOrders, pendingToShipCount, pendingToDeliverCount, totalRetuns, totalOrdersCount, cancelled, dataForGraph,topProductsDetails });
         } else {
             res.render("login", { message: "email and password are incorrect" });
         }
@@ -1428,8 +1499,12 @@ const deleteCoupon = async (req, res) => {
 //====================   sales report===============================================//
 //----------------------------------------------------------------------------------// 
 
-const loadSalesDash = (req, res) => {
+const loadSalesDash = async (req, res) => {
 
+
+
+    
+    
 
     res.render("salesReport")
 }
@@ -1682,6 +1757,7 @@ const generateMonthlysalesReport = async(req,res)=>{
         // Check if the order's month matches the selected month
         return orderMonth === parseInt(selectedMonth);
     });
+
 
     console.log(orders,"order");
     res.render("salesReportPage",{orders})

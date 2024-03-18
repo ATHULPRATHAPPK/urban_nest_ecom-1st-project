@@ -490,8 +490,50 @@
         }
     </script>
 </div>
-
-        
+<br>
+<br>
+<br><br>
+<% if (locals.topProductsDetails) { %>
+<div>
+<table class="table table-responsive">
+  <h3> Top 5 Sold products</h3>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Brand</th>
+      <th>Price</th>
+      <th>Current offers</th>
+      <th>Offer Price</th>
+      <th>Image</th>
+      <th>Stock Available</th>
+      <th>Total Sold Count</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% topProductsDetails.forEach(product => { %>
+      <tr>
+        <td><%= product.productDetail.productName %></td>
+        <td><%= product.productDetail.brandName %></td>
+        <td>$ <%= product.productDetail.price %></td>
+        <td><%= product.productDetail.offer %> % offer</td>
+        <td>
+          <% 
+            const discountedPrice = product.productDetail.price - (product.productDetail.price * product.productDetail.offer / 100);
+            %>
+         $ <%= discountedPrice %>
+        </td>
+        <td><img src="/uploads/<%= product.productDetail.productImage[0].resizedFile  %>" alt="Product Image" style="max-width: 100px;"></td>
+        <td><%= product.productDetail.quantity %></td>
+        <td> <strong style="color: green;"> <%= product.count %></strong></td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+</div>  
+<% }else{ %>
+  <h3> Top 5 Sold products</h3>
+  <p>no data found</p>
+ <% } %> 
 </div>
 
           
