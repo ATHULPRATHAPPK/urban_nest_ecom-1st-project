@@ -269,13 +269,6 @@
                 <span class="menu-title">Sales Report</span>
                 <i class="mdi mdi-chart-bar menu-icon"></i>
               </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href=" /offers">
-                  <span class="menu-title">offers</span>
-                  <i class="mdi mdi-chart-bar menu-icon"></i>
-                </a>
-                </li>
           </ul>
         </nav>
         
@@ -386,165 +379,180 @@
         </div> -->
         <!--  ------------------------------------------------->
         <div class="container">
-          <div class="col-lg-12 mt-3">
-              <div class="card">
-                  <div class="card-body">
-                      <h4 class="card-title">Product Management</h4>
-      
-                      <div class="table-responsive">
-                          <table class="table table-bordered table-striped">
-                              <thead class="thead-dark">
-                                  <tr>
-                                      <th>Serial No</th>
-                                      <th>Product Name</th>
-                                      <th>Category</th>
-                                      <th>Subcategory</th>
-                                      <th>images</th>
-                                      <th>Qty</th>
-                                      <th>Status</th>
-                                      <th>Action</th>
-                                      <th>Edit</th>
-                                      <th>Delete</th>
-                                      <th>Offer</th>
-                                      
-                                  </tr>
-                              </thead>
-                              <tbody>
-                                <% let i=1%>
-                                <% ProductTable.forEach((n)=> { %>
-                                      <tr>
-                         
-                                        <td><%= i++ %></td>
-                                        <td><%= n.productName %></td>
-                                        <td><%= n.subcategory.category %></td>
-                                        <td><%= n.subcategory.subcategory %></td>
-                                       
-                                        
-                                        <td>
-                                        <% for(let j=0 ; j < n.productImage.length ; j++) { %>
-                                     
-                                        <img src="/uploads/<%= n.productImage[j].resizedFile %>" alt="">
-                       
-                                      <% } %>
-                             </td>
-                             <td><%= n.quantity %></td>
-                             <% if(n.is_listed == true) { %>
-                              <td><p class="text-primary">Listed</p></td>
-                           <%  }
-                           else{%>
-                            <td><p class="text-danger">Unlisted</p></td>
-                          <% }                             
-                            %>
-
-                            <% if (n.is_listed == true) { %>
-                              <td>
-                                <button style="width: 80px;" class="btn btn-gradient-danger btn-sm" type="button" onclick="showAlert('Unlist Confirmation', 'Are you sure you want to unlist this product?', 'warning', 'Unlist', function() { location.href='/admin/unlist-product?id=<%= n._id %>' })">Unlist</button>
-                            </td>
-                                                        <% } else { %>
-                                                          <td>
-                                                            <button style="width: 80px;" class="btn btn-gradient-warning btn-sm" type="button" onclick="showAlert('List Confirmation', 'Are you sure you want to list this product?', 'success', 'List', function() { location.href='/admin/list-product?id=<%= n._id %>' })">List</button>  
-                                                        </td>
-                          <% } %>        
-                          <td>
-                            <button style="width: 80px;" class="btn btn-gradient-primary btn-sm" type="button" onclick="showAlert('Edit Confirmation', 'Are you sure you want to edit this product?', 'info', 'Edit', function() { location.href='/admin/edit-product?id=<%= n._id %>' })">Edit <i class="mdi mdi-grease-pencil"></i></button>
-                        </td>             
-                        <td>
-                          <button style="width: 80px;" class="btn btn-gradient-danger btn-sm" type="button" onclick="showAlert('Delete Confirmation', 'Are you sure you want to delete this product?', 'error', 'Delete', function() { location.href='/admin/delete-product?id=<%= n._id %>' })">Delete <i class="mdi mdi-delete"></i></button>
-                      </td>
-
-                    <%  if(n.offer > 0 ) { %>
-                      <td>
-                     Applied offer &nbsp&nbsp   <%= n.offer %> %<br>
-                      <button style="width: 80px;" class="btn btn-gradient-info btn-sm" onclick="deleteOffer('<%= n._id %>')">delete</button> 
-
-                      </td>
-
-                  <%    }else { %>
-                    <td>
-                      <button type="button" class="btn btn-success" style="width: 150px;" data-toggle="modal" data-target="#offerModal<%= n._id %>">Apply Offer</button>
-                  </td>
-                   <%  } %>                  
-                                      </tr>
-
-                                      <div class="modal fade" id="offerModal<%=n._id %>" tabindex="-1" role="dialog" aria-labelledby="offerModalLabel<%=n._id %>" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="offerModalLabel<%=n._id %>">Select Offer</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h5>Select an offer:</h5>
-                                                    <% offerDetails.forEach((offer)=>{ %>
-                                                        <div>
-                                                            <input type="radio" id="offer<%=offer?._id %>" name="selectedOffer<%=n._id %>" value="<%=offer?._id %>">
-                                                            <label for="offer<%=offer?._id %>"><%=offer?.offerName%> - Start Date: <%=offer?.startDate%>, End Date: <%=offer?.endDate%></label>
-                                                        </div>
-                                                    <% }) %>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-primary" onclick="applySelectedOffer('<%=n._id %>')">Apply</button>
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-
-
-                                      <% }) %>
-                                
-                            
-                                  
-                              </tbody>
-                          </table>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          <div  class="d-flex mt-2">
-             <a href="/addproduct" class="btn btn-primary">
-              Add Product  </a> 
+            <div class="col-lg-12 mt-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Offer Management</h4>
+                        <div class="container mt-5">
+                            <h2 class="mb-4">Apply Offer</h2>
+                            <form id="applyOfferForm" class="row" onsubmit="return validateAndSubmitForm()">
+                                <div class="form-group col-md-6">
+                                    <label for="offer-name">Offer Name:</label>
+                                    <input type="text" class="form-control" id="offer-name" name="offer-name" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="offer-percentage">Offer Percentage:</label>
+                                    <input type="number" class="form-control" id="offer-percentage" name="offer-percentage" min="0" max="100" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="start-date">Offer Start Date:</label>
+                                    <input type="date" class="form-control" id="start-date" name="start-date" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="end-date">Offer End Date:</label>
+                                    <input type="date" class="form-control" id="end-date" name="end-date" required>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <button type="submit" id="applyOfferBtn" class="btn btn-primary btn-sm">Apply Offer</button>
+                                </div>
+                            </form>
+                            <div id="flash-message" style="width: 70%;" class="col-md-12 mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <% const currentDateParts = currentDate.split('/'); %>
+                <% const currentDateObj = new Date(currentDateParts[2], currentDateParts[1] - 1, currentDateParts[0]); %>
+                
+                <div class="card mt-5">
+                    <div class="card-body">
+                        <h4 class="card-title">Offer Details</h4>
+                        <table class="table mt-4">
+                            <thead>
+                                <tr>
+                                    <th>S.No.</th>
+                                    <th>Offer Name</th>
+                                    <th>Percentage</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (offerDetails.length > 0) { %>
+                                    <% offerDetails.forEach((offer, index) => { %>
+                                        <tr>
+                                            <td><%= index + 1 %></td>
+                                            <td><%= offer.offerName %></td>
+                                            <td><%= offer.percentage %></td>
+                                            <td><%= offer.startDate %></td>
+                                            <td><%= offer.endDate %></td>
+                                            <!-- Status based on current date and end date -->
+                                            <td>
+                                                <% const endDateParts = offer.endDate.split('/'); %>
+                                                <% const endDateObj = new Date(endDateParts[2], endDateParts[1] - 1, endDateParts[0]); %>
+                                                <% if (endDateObj < currentDateObj) { %>
+                                                 <strong style="color: red;">Expired</strong>   
+                                                <% } else { %>
+                                                <strong style="color: green;">Active</strong>    
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6">No offers present</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
             </div>
+        </div>
+        
+
+         
 
 
-        </div>   
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+      <script>
+          // Function to show SweetAlert error message
+          const showErrorAlert = (message) => {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Validation Error',
+                  text: message,
+              });
+          };
       
-
-        <script>
-          function applySelectedOffer(productId) {
-              console.log("calling.... function..");
-              var selectedOfferId = document.querySelector('input[name="selectedOffer' + productId + '"]:checked').value;
+          // Function to validate and submit the form
+          const validateAndSubmitForm = () => {
+              // Retrieve form inputs
+              const offerName = document.getElementById('offer-name').value.trim();
+              const offerPercentage = parseFloat(document.getElementById('offer-percentage').value);
+              const startDate = new Date(document.getElementById('start-date').value);
+              const endDate = new Date(document.getElementById('end-date').value);
       
-              fetch('/adminApply-product-offer', {
+              // Check if offer name is empty or whitespace
+              if (!offerName) {
+                  showErrorAlert('Please enter a valid offer name.');
+                  return false;
+              }
+      
+              // Check if percentage is a number between 0 and 100
+              if (isNaN(offerPercentage) || offerPercentage <= 0 || offerPercentage >= 100) {
+                  showErrorAlert('Please enter a valid percentage (between 0 and 100).');
+                  return false;
+              }
+      
+              // Check if start date is before end date
+              if (startDate >= endDate) {
+                  showErrorAlert('End date must be after start date.');
+                  return false;
+              }
+      
+              // If all validations pass, prepare data and send fetch request
+              const formData = {
+                  offerName,
+                  offerPercentage,
+                  startDate: startDate.toISOString(), // Convert date to ISO string
+                  endDate: endDate.toISOString(), // Convert date to ISO string
+              };
+      
+              // Send fetch request to /applyProductOffer
+              fetch('/applyProductOffer', {
                   method: 'POST',
                   headers: {
-                      'Content-Type': 'application/json'
+                      'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({
-                      productId: productId,
-                      selectedOfferId: selectedOfferId
-                  })
+                  body: JSON.stringify(formData),
               })
-              .then(function(response) {
+              .then(response => {
                   if (!response.ok) {
                       throw new Error('Network response was not ok');
                   }
                   return response.json();
               })
-              .then(function(data) {
-                  console.log(data);
-                  window.location.reload();
+              .then(data => {
+                  // Handle success response
+                  console.log('Apply offer successful:', data);
+                  // Show success message or perform other actions as needed
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Offer Applied Successfully',
+                      text: 'The offer has been successfully applied.',
+                  });
               })
-              .catch(function(error) {
-                  console.error('There was a problem with your fetch operation:', error);
+              .catch(error => {
+                  // Handle fetch error
+                  console.error('Error applying offer:', error);
+                  // Show error message or perform other actions as needed
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'An error occurred while applying the offer. Please try again later.',
+                  });
               });
-          }
+      
+              // Prevent default form submission
+              return false;
+          };
       </script>
       
 
+      
 
         <script>
          function deleteOffer(productId) {

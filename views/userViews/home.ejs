@@ -622,19 +622,23 @@
                                         <a href="/user-product?id=<%= n._id %>"><%= n.subcategory.subcategory %></a>
                                     </div><!-- End .product-cat -->
                                     <h3 class="product-title"><a href="/user-product?id=<%= n._id %>"><%= n.productName %></a></h3><!-- End .product-title -->
+                                   
+
                                     <div class="product-price">
+                                        <% if (n.offer> 0) { %>
+                                            $ <strike style="color: lightslategrey;">
+                                                <%= n.price %>
+                                            </strike>&nbsp;&nbsp;
+                                            <% discountedPrice=n.price - (n.price *
+                                                n.offer / 100) %>
+                                                $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <span style="color: black; font-size: smaller;">
+                                                        <%= n.offer %> % offer
+                                                    </span>
+                                                    <% } else { %>
+                                                        $    <%= n.price %>
+                                                            <% } %>
 
-
-                                        <% if (n.subcategory.offerPercentage > 0) { %>
-                                            $ <strike style="color: lightslategrey;"><%= n.price %></strike>&nbsp;&nbsp;
-                                            <% discountedPrice = n.price - (n.price * n.subcategory.offerPercentage / 100) %>
-                                            $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <span style="color: black; font-size: smaller;"><%= n.subcategory.offerPercentage %> % offer</span>
-                                          <% } else { %>
-                                            <%= n.price %>
-                                          <% } %>
-                                       
-                                        
                                     </div><!-- End .product-price -->
                                     <div class="ratings-container">
                                         <div class="ratings">
@@ -899,7 +903,7 @@
                                     <li><a href="product-category-fullwidth.html"><span>Product Category Fullwidth<span class="tip tip-new">New</span></span></a></li>
                                     <li><a href="cart.html">Cart</a></li>
                                     <li><a href="checkout.html">Checkout</a></li>
-                                    <li><a href="wishlist.html">Wishlist</a></li>
+                                    <li><a href="/userWishlist">Wishlist</a></li>
                                     <li><a href="#">Lookbook</a></li>
                                 </ul>
                             </li>

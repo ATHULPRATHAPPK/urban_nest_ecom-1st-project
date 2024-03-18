@@ -219,7 +219,7 @@
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
-                            <a href="wishlist.html" title="Wishlist">
+                            <a href="/userWishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
                                     <!-- <span class="wishlist-count badge">3</span> -->
@@ -894,15 +894,15 @@
                                                                 <%= n.productName %>
                                                             </a></h3><!-- End .product-title -->
                                                         <div class="product-price">
-                                                            <% if (n.subcategory.offerPercentage> 0) { %>
+                                                            <% if (n.offer> 0) { %>
                                                                 $ <strike style="color: lightslategrey;">
                                                                     <%= n.price %>
                                                                 </strike>&nbsp;&nbsp;
                                                                 <% discountedPrice=n.price - (n.price *
-                                                                    n.subcategory.offerPercentage / 100) %>
+                                                                    n.offer / 100) %>
                                                                     $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <span style="color: black; font-size: smaller;">
-                                                                            <%= n.subcategory.offerPercentage %> % offer
+                                                                            <%= n.offer %> % offer
                                                                         </span>
                                                                         <% } else { %>
                                                                             $    <%= n.price %>
@@ -1086,27 +1086,22 @@
                                                                                 href="product.html">
                                                                                 <%= n.productName %>
                                                                             </a></h3><!-- End .product-title -->
-                                                                        <div class="product-price">
-                                                                            <% if (n.subcategory.offerPercentage> 0) {
-                                                                                %>
-                                                                                $ <strike
-                                                                                    style="color: lightslategrey;">
-                                                                                    <%= n.price %>
-                                                                                </strike>&nbsp;&nbsp;
-                                                                                <% discountedPrice=n.price - (n.price *
-                                                                                    n.subcategory.offerPercentage / 100)
-                                                                                    %>
-                                                                                    $ <%= discountedPrice %>
-                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                        <span
-                                                                                            style="color: black; font-size: smaller;">
-                                                                                            <%= n.subcategory.offerPercentage
-                                                                                                %> % offer
-                                                                                        </span>
-                                                                                        <% } else { %>
-                                                                                            $   <%= n.price %>
-                                                                                                <% } %>
-                                                                        </div><!-- End .product-price -->
+                                                                            <div class="product-price">
+                                                                                <% if (n.offer> 0) { %>
+                                                                                    $ <strike style="color: lightslategrey;">
+                                                                                        <%= n.price %>
+                                                                                    </strike>&nbsp;&nbsp;
+                                                                                    <% discountedPrice=n.price - (n.price *
+                                                                                        n.offer / 100) %>
+                                                                                        $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                            <span style="color: black; font-size: smaller;">
+                                                                                                <%= n.offer %> % offer
+                                                                                            </span>
+                                                                                            <% } else { %>
+                                                                                                $    <%= n.price %>
+                                                                                                    <% } %>
+                    
+                                                                            </div><!-- End .product-price -->
                                                                         <div class="ratings-container">
                                                                             <div class="ratings">
                                                                                 <div class="ratings-val"
@@ -1291,32 +1286,21 @@
                                                                                             </a></h3>
                                                                                         <!-- End .product-title -->
                                                                                         <div class="product-price">
-                                                                                            <% if
-                                                                                                (n.subcategory.offerPercentage>
-                                                                                                0) { %>
-                                                                                                $ <strike
-                                                                                                    style="color: lightslategrey;">
+                                                                                            <% if (n.offer> 0) { %>
+                                                                                                $ <strike style="color: lightslategrey;">
                                                                                                     <%= n.price %>
                                                                                                 </strike>&nbsp;&nbsp;
-                                                                                                <% discountedPrice=n.price
-                                                                                                    - (n.price *
-                                                                                                    n.subcategory.offerPercentage
-                                                                                                    / 100) %>
-                                                                                                    $ <%=
-                                                                                                        discountedPrice
-                                                                                                        %>
-                                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                                        <span
-                                                                                                            style="color: black; font-size: smaller;">
-                                                                                                            <%= n.subcategory.offerPercentage
-                                                                                                                %> %
-                                                                                                                offer
+                                                                                                <% discountedPrice=n.price - (n.price *
+                                                                                                    n.offer / 100) %>
+                                                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                        <span style="color: black; font-size: smaller;">
+                                                                                                            <%= n.offer %> % offer
                                                                                                         </span>
                                                                                                         <% } else { %>
-                                                                                                            $   <%= n.price
-                                                                                                                %>
+                                                                                                            $    <%= n.price %>
                                                                                                                 <% } %>
-                                                                                        </div>
+                                
+                                                                                        </div><!-- End .product-price -->
                                                                                         <!-- End .product-price -->
                                                                                         <div class="ratings-container">
                                                                                             <div class="ratings">
@@ -1531,45 +1515,22 @@
                                                                                                             </a>
                                                                                                         </h3>
                                                                                                         <!-- End .product-title -->
-                                                                                                        <div
-                                                                                                            class="product-price">
-                                                                                                            <% if
-                                                                                                                (n.subcategory.offerPercentage>
-                                                                                                                0) { %>
-                                                                                                                $
-                                                                                                                <strike
-                                                                                                                    style="color: lightslategrey;">
-                                                                                                                    <%= n.price
-                                                                                                                        %>
+                                                                                                        <div class="product-price">
+                                                                                                            <% if (n.offer> 0) { %>
+                                                                                                                $ <strike style="color: lightslategrey;">
+                                                                                                                    <%= n.price %>
                                                                                                                 </strike>&nbsp;&nbsp;
-                                                                                                                <% discountedPrice=n.price
-                                                                                                                    -
-                                                                                                                    (n.price
-                                                                                                                    *
-                                                                                                                    n.subcategory.offerPercentage
-                                                                                                                    /
-                                                                                                                    100)
-                                                                                                                    %>
-                                                                                                                    $
-                                                                                                                    <%= discountedPrice
-                                                                                                                        %>
-                                                                                                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                                                                                                        <span
-                                                                                                                            style="color: black; font-size: smaller;">
-                                                                                                                            <%= n.subcategory.offerPercentage
-                                                                                                                                %>
-                                                                                                                                %
-                                                                                                                                offer
+                                                                                                                <% discountedPrice=n.price - (n.price *
+                                                                                                                    n.offer / 100) %>
+                                                                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                                        <span style="color: black; font-size: smaller;">
+                                                                                                                            <%= n.offer %> % offer
                                                                                                                         </span>
-                                                                                                                        <% } else
-                                                                                                                            {
-                                                                                                                            %>
-                                                                                                                            $     <%= n.price
-                                                                                                                                %>
-                                                                                                                                <% }
-                                                                                                                                    %>
-                                                                                                        </div>
-                                                                                                        <!-- End .product-price -->
+                                                                                                                        <% } else { %>
+                                                                                                                            $    <%= n.price %>
+                                                                                                                                <% } %>
+                                                
+                                                                                                        </div><!-- End .product-price -->
                                                                                                         <div
                                                                                                             class="ratings-container">
                                                                                                             <div
@@ -2320,25 +2281,8 @@
                                 </div><!-- End .widget -->
 
                                 <div class="widget widget-collapsible">
-                                    <h3 class="widget-title">
-                                        <a data-toggle="collapse" href="#widget-5" role="button" aria-expanded="true"
-                                            aria-controls="widget-5">
-                                            Price
-                                        </a>
-                                    </h3><!-- End .widget-title -->
-
-                                    <div class="collapse show" id="widget-5">
-                                        <div class="widget-body">
-                                            <div class="filter-price">
-                                                <div class="filter-price-text">
-                                                    Price Range:
-                                                    <span id="filter-price-range"></span>
-                                                </div><!-- End .filter-price-text -->
-
-                                                <div id="price-slider"></div><!-- End #price-slider -->
-                                            </div><!-- End .filter-price -->
-                                        </div><!-- End .widget-body -->
-                                    </div><!-- End .collapse -->
+                                    
+                                   
                                 </div><!-- End .widget -->
                             </div><!-- End .sidebar sidebar-shop -->
 

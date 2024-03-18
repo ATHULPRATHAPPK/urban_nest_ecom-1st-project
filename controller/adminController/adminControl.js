@@ -14,6 +14,7 @@ const categoryModel = require("../../model/adminModels/categoryModel")
 const orderModel = require("../../model/userModel/orderModel")
 const couponModel = require("../../model/adminModels/couponSchema")
 const walletModel = require("../../model/userModel/wallet")
+const offerModel = require("../../model/adminModels/offerModel")
 const { log } = require("console")
 const bodyparser = require("body-parser")
 const productModel = require("../../model/adminModels/productModel")
@@ -636,13 +637,36 @@ const userdelete = async (req, res) => {
 
 const loadProductManage = async (req, res) => {
     try {
-        const ProductTable = await productModel.find({ is_deleted: true }).populate("subcategory")
-        res.render("productManagment", { ProductTable })
-    }
-    catch (error) {
+        const ProductTable = await productModel.find({ is_deleted: true }).populate("subcategory");
+        let offerDetails = await offerModel.find();
+
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+
+        // Get the current date and format it
+        const currentDate = formatDate(new Date().toISOString());
+        const currentDateObj = new Date(currentDate.split('/').reverse().join('/'));
+
+        // Filter offerDetails array to keep only offers with end dates greater than the current date
+        offerDetails = offerDetails.filter(offer => {
+            const endDateParts = offer.endDate.split('/');
+            const endDateObj = new Date(endDateParts[2], endDateParts[1] - 1, endDateParts[0]);
+            return endDateObj > currentDateObj;
+        });
+
+        res.render("productManagment", { ProductTable, offerDetails, currentDate });
+    } catch (error) {
         console.log(error);
+        res.status(500).send("Internal Server Error");
     }
-}
+};
+
+
 
 
 
@@ -1598,10 +1622,12 @@ const applyOffer = async (req, res) => {
     if (!isNaN(parsedPercentage) && parsedPercentage >= 0 && parsedPercentage <= 100) {
         try {
             // Convert categoryId to a valid ObjectId
-            
+            console.log("categoryId",categoryId);
 
             // If the parsed percentage is valid, update the category model
             await categoryModel.updateOne({ _id: categoryId }, { $set: { offerPercentage: parsedPercentage } });
+            await productModel.updateMany({ subcategory: categoryId}, { $set: { offer: parsedPercentage } });
+           
             return res.status(200).json({ message: 'Offer percentage updated successfully.' });
         } catch (error) {
             console.error('Error updating offer percentage:', error);
@@ -1643,15 +1669,134 @@ const offerDelete = async (req,res)=>{
     
         // If the parsed percentage is valid, update the category model
         await categoryModel.updateOne({ _id: categoryId }, { $set: { offerPercentage: 0 } });
+        await productModel.updateMany({ subcategory: categoryId}, { $set: { offer: 0 } });
         return res.status(200).json({ message: 'Offer percentage updated successfully.' });
     } catch (error) {
         console.error('Error updating offer percentage:', error);
         return res.status(500).json({ error: 'Internal server error.' });
     }
 }
+//delete product  offer--------------------
+const productOfferDelete = async (req,res)=>{
+    try {
+    const productId = req.body.productId
+    await productModel.updateOne({ _id: productId }, { $set: { offer: 0 } });
+    return res.status(200).json({ message: 'Offer percentage updated successfully.' });
+} catch (error) {
+    console.error('Error updating offer percentage:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+}
+}
+
+
+const OffersDash = async (req, res) => {
+    try {
+        // Function to format date from YYYY-MM-DD to DD/MM/YYYY
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+
+        // Fetch offer details from the database
+        const offerDetails = await offerModel.find();
+        
+        // Get the current date and format it
+        const currentDate = formatDate(new Date().toISOString());
+
+        console.log(currentDate);
+
+        // Render the 'offer' view with offer details and current date
+        res.render("offer", { offerDetails, currentDate });
+    } catch (error) {
+        // Handle errors
+        console.error('Error fetching offer details:', error);
+        return res.status(500).json({ error: 'Internal server error.' });
+    }
+};
 
 
 
+
+
+
+
+const createOffer = async (req, res) => {
+    console.log(req.body);
+    const { offerName, offerPercentage, startDate, endDate } = req.body;
+    console.log(offerName, offerPercentage, startDate, endDate);
+
+    // Function to format date from YYYY-MM-DD to DD/MM/YYYY
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    // Format the start date and end date
+    const formattedStartDate = formatDate(startDate);
+    const formattedEndDate = formatDate(endDate);
+
+    // Creating the offer document with formatted dates
+    const offer = await offerModel({
+        offerName: offerName,
+        percentage: offerPercentage,
+        startDate: formattedStartDate,
+        endDate: formattedEndDate
+    });
+
+    // Save the offer document
+    await offer.save();
+
+    const data = "ok";
+    res.status(200).json(data);
+};
+
+
+const offerApplyPage = async (req,res)=>{
+    
+    const productId = req.query.productId
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-based
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    // Fetch offer details from the database
+    const offerDetails = await offerModel.find();
+    
+    // Get the current date and format it
+    const currentDate = formatDate(new Date().toISOString());
+
+    console.log(currentDate);
+
+    res.render("offerAddingPage",{productId,offerDetails,currentDate})
+}
+
+
+//produc side offer applied
+const addOfferToProduct = async  (req,res)=>{
+  
+  
+    const { productId,selectedOfferId} = req.body
+
+   const offerApplied =  await offerModel.findOne({_id:selectedOfferId})
+
+
+   await productModel.updateOne( {_id: productId}, { $set: { offer: offerApplied.percentage  } });
+   
+
+   
+    
+    const data = "ok";
+    res.status(200).json(data);
+}
 module.exports = {
     adminlogin,
     admindash,
@@ -1691,6 +1836,11 @@ module.exports = {
     generateWeeklyReport,
     applyOffer,
     editOffer,
-    offerDelete
+    offerDelete,
+    productOfferDelete,
+    OffersDash,
+    createOffer,
+    offerApplyPage,
+    addOfferToProduct
 
 }

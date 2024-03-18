@@ -2204,7 +2204,7 @@ const addToCart = async (req, res) => {
                 // Find the product within the cartItem's product array
                 const matchingProduct = cartItem.product.find(product => product.productId === productId);
                 const totalForProduct = matchingProduct.total;
-                const offerPrice = productDetails[0].subcategory.offerPercentage
+                const offerPrice = productDetails[0].offer
                 const newPrice = priceInt - (priceInt * offerPrice / 100)
 
                 const totalSum = totalForProduct + newPrice * quatityInt
@@ -2236,11 +2236,12 @@ const addToCart = async (req, res) => {
             console.log("adding ne wproduct to the existing user cart");
             const priceInt = parseInt(productDetails[0].price, 10)
             const quatityInt = parseInt(pQuantity, 10)
-            const offerPrice = productDetails[0].subcategory.offerPercentage
-
+            const offerPrice = productDetails[0].offer
+               
             const newPrice = priceInt - (priceInt * offerPrice / 100)
             const roundedPrice = newPrice.toFixed(2)
-
+            const discount =  priceInt - newPrice
+            const totalDiscount = discount * quatityInt
 
 
             //---------------finding subtotal-----------------
@@ -2256,6 +2257,7 @@ const addToCart = async (req, res) => {
                 name: productDetails[0].productName,
                 quantity: pQuantity,
                 price: roundedPrice,
+                discount:totalDiscount,
                 productImage: productDetails[0].productImage,
                 total: roundedTotal,
             }
@@ -2277,13 +2279,13 @@ const addToCart = async (req, res) => {
         //-----------------cart data inserting
         console.log("creating new user cart");
         //-----------------SUBTOTAL-----------------------
-        const offerPrice = productDetails[0].subcategory.offerPercentage
+        const offerPrice = productDetails[0].offer
 
         const newPrice = priceInt - (priceInt * offerPrice / 100)
         const roundedPrice = newPrice.toFixed(2)
         const roundedTotal = (newPrice * quatityInt).toFixed(2)
-
-
+        const discount = priceInt - newPrice 
+        const totaldiscount = discount * quatityInt
         const subTotal = newPrice * quatityInt
         // inserting new user cart details---------    
         const userCart = await cartModel({
@@ -2293,6 +2295,7 @@ const addToCart = async (req, res) => {
                 name: productDetails[0].productName,
                 quantity: pQuantity,
                 price: roundedPrice,
+                discount:totaldiscount,
                 productImage: productDetails[0].productImage,
                 total: roundedTotal,
 
@@ -2466,10 +2469,14 @@ const updateQuantity = async (req, res) => {
 
                     const price = (product.price).toFixed(2);
                     const total = (newQuantity * price).toFixed(2);
+                    const offer = productDetaills[0].offer
+                    const newPrice = productDetaills[0].price - (productDetaills[0].price * offer/100)
+                    const discount = productDetaills[0].price  - newPrice
+                    const totalDiscount = discount * newQuantity
                     console.log("new total", total);
                     await cartModel.updateOne(
                         { userId: userId, "product.productId": productId },
-                        { $set: { "product.$.total": total } }
+                        { $set: { "product.$.total": total,"product.$.discount": totalDiscount } }
                     );
                     const userCart = await cartModel.find({ userId: userId })
                     if (userCart.length > 0) {

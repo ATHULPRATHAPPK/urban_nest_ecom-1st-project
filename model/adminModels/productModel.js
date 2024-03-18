@@ -70,7 +70,13 @@ const  mongoose = require("mongoose")
         type:Boolean,
         default:true,
         require:true
-    }
+    },
+   offer :{
+        type:Number,
+        default:0,
+       
+    },
+    
 
     
  })
