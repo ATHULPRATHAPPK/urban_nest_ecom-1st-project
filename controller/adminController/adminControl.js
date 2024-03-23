@@ -32,13 +32,16 @@ app.set(path.join(__dirname, "views", "adminViews"))
 //-----------------------------------------------adminlogin--------------
 
 const adminlogin = (req, res) => {
-
+    try {
     res.render("login")
+} catch (error) {
+    console.error(error);
+}
 }
 
 // ---------------------------------------------------admin home-----------
 const admindash = async (req, res) => {
-
+    try {
     const totalOnlineOrder = await orderModel.aggregate([
         {
             $match: {
@@ -321,6 +324,10 @@ const admindash = async (req, res) => {
 
 
     res.render("adminHome", { overallSales, totalOrders, pendingToShipCount, pendingToDeliverCount, totalRetuns, totalOrdersCount, cancelled, dataForGraph ,topProductsDetails});
+
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -629,7 +636,7 @@ const adminload = async (req, res) => {
 
 const deleteSession = (req, res) => {
 
-
+    try {
     req.session.destroy((err) => {
         if (err) {
             console.error('Error destroying session:', err);
@@ -641,6 +648,9 @@ const deleteSession = (req, res) => {
 
         }
     })
+} catch (error) {
+    console.error(error);
+}
 }
 
 //------------------------------------------admin dash usertable-----------------------------------------------  
@@ -1199,6 +1209,7 @@ const editInsertProduct = async (req, res) => {
 
 const deleteImage = async (req, res) => {
     const productId = req.query.id;
+    try {
     const imageIndex = req.query.imageIndex;
 
     const imageDocument = await productModel.findOne({ _id: productId });
@@ -1217,6 +1228,9 @@ const deleteImage = async (req, res) => {
 
         res.redirect(`/admin/edit-product?id=${productId}`);
     }
+} catch (error) {
+    console.error(error);
+}
 };
 
 
@@ -1225,7 +1239,7 @@ const deleteImage = async (req, res) => {
 
 
 const productDelete = async (req, res) => {
-
+    try {
     const deleteProduct = req.query.id
 
     await productModel.updateOne(
@@ -1233,24 +1247,29 @@ const productDelete = async (req, res) => {
         { $set: { is_deleted: false } }
     )
     res.redirect("/productManagment")
-
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------User Orders-----------------
 const loadOrders = async (req, res) => {
 
-
+    try {
     const userOrders = await orderModel.find().populate("userId")
 
 
 
     res.render("userOrders", { userOrders })
+} catch (error) {
+    console.error(error);
+}
 }
 
 
 //----------------------------------approve product-----------------
 const approveProduct = async (req, res) => {
-
+    try {
     const orderDetails = await orderModel.findOne({ _id: req.body.orderId })
 
 
@@ -1270,6 +1289,9 @@ const approveProduct = async (req, res) => {
 
 
     res.status(200).json({ message: "Order approved successfully" });
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1278,7 +1300,7 @@ const approveProduct = async (req, res) => {
 
 
 const cancelProduct = async (req, res) => {
-
+    try {
     const orderDetails = await orderModel.findOne({ _id: req.body.orderId })
 
 
@@ -1317,6 +1339,9 @@ const cancelProduct = async (req, res) => {
 
 
     res.status(200).json({ message: "Order cancelled successfully" });
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1325,7 +1350,7 @@ const cancelProduct = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const updateOrderStatus = async (req, res) => {
-
+    try {
     const { orderId, productId, status } = req.body
 
 
@@ -1343,6 +1368,9 @@ const updateOrderStatus = async (req, res) => {
 
 
     res.status(200).json({ message: "Order cancelled successfully" });
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1351,7 +1379,7 @@ const updateOrderStatus = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 const updateReturnStatus = async (req, res) => {
 
-
+    try {
     const { orderId, productId, status } = req.body
     console.log("orderId", orderId);
     console.log(productId, status);
@@ -1431,17 +1459,23 @@ const updateReturnStatus = async (req, res) => {
 
 
     res.status(200).json({ message: "Order cancelled successfully" });
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
 //==========================load coupon============================================//
 //----------------------------------------------------------------------------------// 
 const loadCoupon = async (req, res) => {
-
+    try {
     const couponDetails = await couponModel.find({})
     console.log("couponDetails", couponDetails);
 
     res.render("coupon", { couponDetails })
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1452,7 +1486,7 @@ const loadCoupon = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const addCoupon = async (req, res) => {
-
+    try {
     const { code, discountType, discountAmount, startDate, expirationDate, minOrderAmount } = req.body
 
 
@@ -1473,6 +1507,9 @@ const addCoupon = async (req, res) => {
 
 
     res.status(200).json({ message: "coupon update su..." });
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1485,7 +1522,7 @@ const addCoupon = async (req, res) => {
 
 const deleteCoupon = async (req, res) => {
 
-
+    try {
     const { couponId } = req.body
 
 
@@ -1493,6 +1530,9 @@ const deleteCoupon = async (req, res) => {
 
 
     res.status(200).json({ message: "coupon update su..." });
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -1500,13 +1540,11 @@ const deleteCoupon = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const loadSalesDash = async (req, res) => {
-
-
-
-    
-    
-
+    try {
     res.render("salesReport")
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1524,6 +1562,7 @@ const loadSalesDash = async (req, res) => {
 //appling offer--------------------
 
 const applyOffer = async (req, res) => {
+    try {
     const parsedPercentage = parseFloat(req.body.Percentage);
     const categoryId = req.body.CatId.trim(); // Remove extra spaces
 
@@ -1547,10 +1586,14 @@ const applyOffer = async (req, res) => {
         // If the parsed percentage is not valid, return an error response
         return res.status(400).json({ error: 'Invalid percentage value.' });
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //edit  offer--------------------
 const editOffer = async (req,res)=>{
+  
     const parsedPercentage = parseFloat(req.body.newPercentage);
     const categoryId = req.body.categoryId.trim(); // Remove extra spaces
 
@@ -1634,6 +1677,7 @@ const OffersDash = async (req, res) => {
 
 
 const createOffer = async (req, res) => {
+    try {
     console.log(req.body);
     const { offerName, offerPercentage, startDate, endDate } = req.body;
     console.log(offerName, offerPercentage, startDate, endDate);
@@ -1664,11 +1708,14 @@ const createOffer = async (req, res) => {
 
     const data = "ok";
     res.status(200).json(data);
+} catch (error) {
+    console.error(error);
+}
 };
 
 
 const offerApplyPage = async (req,res)=>{
-    
+    try {
     const productId = req.query.productId
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -1687,12 +1734,15 @@ const offerApplyPage = async (req,res)=>{
     console.log(currentDate);
 
     res.render("offerAddingPage",{productId,offerDetails,currentDate})
+} catch (error) {
+    console.error(error);
+}
 }
 
 
 //produc side offer applied
 const addOfferToProduct = async  (req,res)=>{
-  
+    try {
   
     const { productId,selectedOfferId} = req.body
 
@@ -1706,6 +1756,9 @@ const addOfferToProduct = async  (req,res)=>{
     
     const data = "ok";
     res.status(200).json(data);
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1717,7 +1770,7 @@ const addOfferToProduct = async  (req,res)=>{
 //----------------------------------------------------------------------------------// 
 
 const salesRePortDate = async (req,res)=>{
-
+    try {
 
 const startDate = req.body["start-date"];
 const endDate = req.body["end-date"];
@@ -1737,7 +1790,9 @@ const endDate = req.body["end-date"];
 
 
 res.render("salesReportPage",{orders})
-
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -1747,7 +1802,7 @@ res.render("salesReportPage",{orders})
 //====================   sales montthly report======================================//
 //----------------------------------------------------------------------------------// 
 const generateMonthlysalesReport = async(req,res)=>{
-
+    try {
  const selectedMonth = req.body.selectedMonth
     const  totalOrders = await orderModel.find()
     const orders = totalOrders.filter(order => {
@@ -1761,6 +1816,9 @@ const generateMonthlysalesReport = async(req,res)=>{
 
     console.log(orders,"order");
     res.render("salesReportPage",{orders})
+} catch (error) {
+    console.error(error);
+}
 }
 
 

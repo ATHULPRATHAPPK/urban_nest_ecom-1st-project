@@ -17,13 +17,14 @@ const productModel = require("../../model/adminModels/productModel")
 const wishlistModel = require("../../model/userModel/wishlist")
 const couponModel = require("../../model/adminModels/couponSchema")
 const walletModel = require("../../model/userModel/wallet")
-
+require('dotenv').config();
 const { log, Console } = require("console")
 const bodyParser = require("body-parser")
 const bodyparser = require("body-parser")
 const nodemailer = require("nodemailer")
 const mailgen = require("mailgen")
-
+const emailAddress = process.env.EMAIL_ADDRESS;
+const emailPassword = process.env.EMAIL_PASSWORD;
 
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(bodyparser.json())
@@ -31,39 +32,37 @@ app.use(bodyparser.json())
 app.set("view engine", "ejs")
 app.set(path.join(__dirname, "views", "userViews"))
 
-//----paypal config----------
-paypal.configure({
-    'mode': 'sandbox', //sandbox or live
-    'client_id': 'AW-cypdE3e713qSMccOo7HehvDyHu9YVyGIt66nTlNweiZMZf2i5zM5fXYfftZlsQFhqbUNmrZmn8kzX',
-    'client_secret': 'ELYw0V15FGaChBEJcnQqcjBCpvuO0JSPBQ9yV8v3yih0TqcEPnHSaPB13z9-KLN0uLXVmf61GbX44e5g'
-});
-//--------------------------
+
 
 //----------------------------home page load-------------------------------------------------------------
 
 const loadhome = async (req, res) => {
-    let sectionIndex = 0;
-    const allProducts = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
-    if (req.session.userId) {
-        const userData = await userModel.findOne({ email: req.session.userId })
-        const message = userData.name
-        const userId = userData._id
-        const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
-        if (wishlist) {
-            const wishlistProducts = wishlist.product;
-            const products = wishlistProducts.map(item => item.productId);
-            //to filter the productid for wish list
-            const productIds = products.map(product => product._id);
-            console.log("product ids", productIds);
-            console.log("mobile ids working..");
-            res.render("home", { allProducts, message, sectionIndex, productIds });
-        } else {
+    try {
+        let sectionIndex = 0;
+        const allProducts = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory")
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData.name
+            const userId = userData._id
+            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+            if (wishlist) {
+                const wishlistProducts = wishlist.product;
+                const products = wishlistProducts.map(item => item.productId);
+                //to filter the productid for wish list
+                const productIds = products.map(product => product._id);
+                console.log("product ids", productIds);
+                console.log("mobile ids working..");
+                res.render("home", { allProducts, message, sectionIndex, productIds });
+            } else {
 
-            res.render("home", { allProducts, message, sectionIndex });
+                res.render("home", { allProducts, message, sectionIndex });
+            }
         }
-    }
-    else {
-        res.render("home", { allProducts, sectionIndex })
+        else {
+            res.render("home", { allProducts, sectionIndex })
+        }
+    } catch (error) {
+        console.error(error);
     }
 
 }
@@ -74,14 +73,21 @@ const loadhome = async (req, res) => {
 
 
 const loadlogin = async (req, res) => {
-    res.render("userlogin")
+    try {
+        res.render("userlogin")
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 
 //-----------------------------------load register page -------------------------------------------------------------
 const loadRegister = (req, res) => {
-    res.render("userRegister")
-
+    try {
+        res.render("userRegister")
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 
@@ -133,8 +139,8 @@ const insertdata = async (req, res) => {
                 let config = {
                     service: "gmail",
                     auth: {
-                        user: "athulprathap216@gmail.com",     //email and password of sender
-                        pass: "hsse gmvs vpvo ghdd"
+                        user: emailAddress,     //email and password of sender
+                        pass: emailPassword
 
                     }
                 }
@@ -219,63 +225,71 @@ const insertdata = async (req, res) => {
 
 //----------------------------login otp verification-------------------------------------------------------------
 const otpVerify = async (req, res) => {
+    try {
+        let otp1 = req.body.digit1
+        let otp2 = req.body.digit2
+        let otp3 = req.body.digit3
+        let otp4 = req.body.digit4
 
-    let otp1 = req.body.digit1
-    let otp2 = req.body.digit2
-    let otp3 = req.body.digit3
-    let otp4 = req.body.digit4
+        let mainOtp = otp1 + otp2 + otp3 + otp4
+        const userid = req.body.email
+        console.log(userid);
 
-    let mainOtp = otp1 + otp2 + otp3 + otp4
-    const userid = req.body.email
-    console.log(userid);
-
-    const otpData = await otpModel.findOne({ userId: userid, otp: mainOtp })
+        const otpData = await otpModel.findOne({ userId: userid, otp: mainOtp })
 
 
 
-    console.log(typeof mainOtp);
-    console.log(mainOtp);
-    console.log(otpData)
-    if (otpData) {
-        await userModel.updateOne({ email: userid }, { $set: { is_verified: 1 } })
+        console.log(typeof mainOtp);
+        console.log(mainOtp);
+        console.log(otpData)
+        if (otpData) {
+            await userModel.updateOne({ email: userid }, { $set: { is_verified: 1 } })
 
-        res.render("userlogin", { completed: "Successfully Registered" })
+            res.render("userlogin", { completed: "Successfully Registered" })
+        }
+        else {
+            res.render("otpVerification", { data: userid })
+        }
     }
-    else {
-        res.render("otpVerification", { data: userid })
+    catch (error) {
+        console.log(error.message);
     }
-
-    //  ------------------------------------------------------loadhome page--------------------------------------------
 }
+//  ------------------------------------------------------loadhome page--------------------------------------------
+
 const loginload = async (req, res) => {
+    try {
+        const email1 = req.body.email
+        const password1 = req.body.password.toString()
 
-    const email1 = req.body.email
-    const password1 = req.body.password.toString()
 
+        const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
 
-    const userdata = await userModel.findOne({ email: email1, password: password1, status: 0, is_verified: 1, is_deleted: 0 })
+        if (userdata) {
+            const id = userdata._id
+            req.session.userId = email1
+            console.log(req.session.userId);
 
-    if (userdata) {
-        const id = userdata._id
-        req.session.userId = email1
-        console.log(req.session.userId);
+            let userWallet = await walletModel.findOne({ userId: id });
 
-        let userWallet = await walletModel.findOne({ userId: id });
+            // If the user doesn't have a wallet, create a new one
+            if (!userWallet) {
+                userWallet = new walletModel({
+                    userId: id,
+                    balance: 0,
+                    transactions: [] // You can initialize transactions array if needed
+                });
+                await userWallet.save();
+            }
 
-        // If the user doesn't have a wallet, create a new one
-        if (!userWallet) {
-            userWallet = new walletModel({
-                userId: id,
-                balance: 0,
-                transactions: [] // You can initialize transactions array if needed
-            });
-            await userWallet.save();
+            res.redirect("/")
+        }
+        else {
+            res.render("userlogin", { message: "email and password are incorrect" })
         }
 
-        res.redirect("/")
-    }
-    else {
-        res.render("userlogin", { message: "email and password are incorrect" })
+    } catch (error) {
+        console.log(error.message);
     }
 }
 
@@ -283,127 +297,136 @@ const loginload = async (req, res) => {
 //----------------------------logout user--------------
 
 const usereLogout = (req, res) => {
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Error destroying session:', err);
+                res.status(500).send('Internal Server Error');
+            } else {
+                console.log('Session destroyed successfully');
+                res.redirect('/');
 
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-            res.status(500).send('Internal Server Error');
-        } else {
-            console.log('Session destroyed successfully');
-            res.redirect('/');
 
-
-        }
-    })
+            }
+        })
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 //  ------------------------------------------------------forgot password-------------------------------------------
 const forgotpassword = (req, res) => {
-
-    res.render("forgotpassword")
+    try {
+        res.render("forgotpassword")
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 
 //------------------------------ forgotpassword otp sending and saving in database------------------------
 const otpForgotpass = async (req, res) => {
+    try {
+        let email1 = req.body.email
+        const userdata = await userModel.findOne({ email: email1 })
+        console.log(userdata);
+        if (userdata) {
+            // ---------------------------------------mail sending by node mailer-----------------
 
-    let email1 = req.body.email
-    const userdata = await userModel.findOne({ email: email1 })
-    console.log(userdata);
-    if (userdata) {
-        // ---------------------------------------mail sending by node mailer-----------------
-
-        function otpGenerator(length) {       //otp generating function
-            let otp = ""
-            for (let i = 0; i < length; i++) {
-                otp = otp + (Math.floor(Math.random() * 10).toString())
+            function otpGenerator(length) {       //otp generating function
+                let otp = ""
+                for (let i = 0; i < length; i++) {
+                    otp = otp + (Math.floor(Math.random() * 10).toString())
+                }
+                return otp
             }
-            return otp
+
+            let otp = otpGenerator(4)
+            console.log(`otp is ${otp}`);    //returning otp
+            //    const userMail = req.body.email
+            let config = {
+                service: "gmail",
+                auth: {
+                    user: "athulprathap216@gmail.com",     //email and password of sender
+                    pass: "hsse gmvs vpvo ghdd"
+
+                }
+            }
+            let transporter = nodemailer.createTransport(config)
+
+            let mailgenerator = new mailgen({
+                theme: "default",
+                product: {
+                    name: "Urban Nest",
+                    link: "https://http://localhost:3001/home"
+                }
+            })
+            let response = {
+                body: {
+                    name: req.body.name,
+                    intro: `urban nest verification code ${otp}`,
+                    outro: "thankyou"
+                }
+            }
+
+            let mail = mailgenerator.generate(response)
+
+            let message = {
+                from: "athulprathap216@gmail.com",
+                to: req.body.email,
+                subject: "otp verification",
+                html: mail
+
+            }
+
+            transporter.sendMail(message).then(() => {
+                //  return res.json({
+                //      msg: "mail sended"
+                //  })
+                console.log(`mail sended to the ${req.body.email}`);
+            }).catch((error) => {
+                console.log(error);
+            })
+
+
+
+
+            const insertotp = await new otpModel({
+
+                userId: req.body.email,
+                otp: otp,
+                expiresAt: Date.now()
+
+            })
+
+            await insertotp.save()
+
+            // --------------------------------------------------
+            let userid = req.body.email
+            res.render("otpVerification2", { data: userid })
+        }
+        else {
+            res.render("forgotpassword", { message: "User not  found" })
         }
 
-        let otp = otpGenerator(4)
-        console.log(`otp is ${otp}`);    //returning otp
-        //    const userMail = req.body.email
-        let config = {
-            service: "gmail",
-            auth: {
-                user: "athulprathap216@gmail.com",     //email and password of sender
-                pass: "hsse gmvs vpvo ghdd"
+        //---------------------delete otp---------------------------------after two minites--------
 
+        const deleteExpiredOtps = async () => {
+            try {
+                const currentTimestamp = new Date();
+                await otpModel.deleteMany({ expiresAt: { $lt: currentTimestamp } });
+                console.log('Expired OTPs deleted successfully.');
+            } catch (error) {
+                console.error('Error deleting expired OTPs:', error.message);
             }
-        }
-        let transporter = nodemailer.createTransport(config)
 
-        let mailgenerator = new mailgen({
-            theme: "default",
-            product: {
-                name: "Urban Nest",
-                link: "https://http://localhost:3001/home"
-            }
-        })
-        let response = {
-            body: {
-                name: req.body.name,
-                intro: `urban nest verification code ${otp}`,
-                outro: "thankyou"
-            }
-        }
+        };
 
-        let mail = mailgenerator.generate(response)
+        setTimeout(deleteExpiredOtps, 60 * 1000)
 
-        let message = {
-            from: "athulprathap216@gmail.com",
-            to: req.body.email,
-            subject: "otp verification",
-            html: mail
-
-        }
-
-        transporter.sendMail(message).then(() => {
-            //  return res.json({
-            //      msg: "mail sended"
-            //  })
-            console.log(`mail sended to the ${req.body.email}`);
-        }).catch((error) => {
-            console.log(error);
-        })
-
-
-
-
-        const insertotp = await new otpModel({
-
-            userId: req.body.email,
-            otp: otp,
-            expiresAt: Date.now()
-
-        })
-
-        await insertotp.save()
-
-        // --------------------------------------------------
-        let userid = req.body.email
-        res.render("otpVerification2", { data: userid })
+    } catch (error) {
+        console.log(error.message);
     }
-    else {
-        res.render("forgotpassword", { message: "User not  found" })
-    }
-
-    //---------------------delete otp---------------------------------after two minites--------
-
-    const deleteExpiredOtps = async () => {
-        try {
-            const currentTimestamp = new Date();
-            await otpModel.deleteMany({ expiresAt: { $lt: currentTimestamp } });
-            console.log('Expired OTPs deleted successfully.');
-        } catch (error) {
-            console.error('Error deleting expired OTPs:', error.message);
-        }
-
-    };
-
-    setTimeout(deleteExpiredOtps, 60 * 1000)
-
 }
 
 
@@ -411,23 +434,26 @@ const otpForgotpass = async (req, res) => {
 //------------------------ forgot password otp verification------------------
 const otpVerifyForgot = async (req, res) => {
 
+    try {
+        let otp1 = req.body.digit1
+        let otp2 = req.body.digit2
+        let otp3 = req.body.digit3
+        let otp4 = req.body.digit4
 
-    let otp1 = req.body.digit1
-    let otp2 = req.body.digit2
-    let otp3 = req.body.digit3
-    let otp4 = req.body.digit4
+        let mainOtp = otp1 + otp2 + otp3 + otp4
+        const userid = req.body.email
+        console.log(userid);
 
-    let mainOtp = otp1 + otp2 + otp3 + otp4
-    const userid = req.body.email
-    console.log(userid);
-
-    const otpData = await otpModel.findOne({ userId: userid, otp: mainOtp })
-    console.log(otpData)
-    if (otpData) {
-        res.render("passwordset", { data: userid })
-    }
-    else {
-        res.render("otpVerification2", { data: userid })
+        const otpData = await otpModel.findOne({ userId: userid, otp: mainOtp })
+        console.log(otpData)
+        if (otpData) {
+            res.render("passwordset", { data: userid })
+        }
+        else {
+            res.render("otpVerification2", { data: userid })
+        }
+    } catch (error) {
+        console.log(error.message);
     }
 
 }
@@ -435,43 +461,49 @@ const otpVerifyForgot = async (req, res) => {
 
 //------------------------ password reset otp --------------------------------------------
 const resetPassword = async (req, res) => {
+    try {
+        let password = req.body.password
+        let password1 = req.body.password1
+        let email = req.body.email
 
-    let password = req.body.password
-    let password1 = req.body.password1
-    let email = req.body.email
-
-    if (password === password1) {
-        await userModel.updateOne({ email: email }, { $set: { password: password } })
-        res.render("userlogin")
-    }
-    else {
-        res.render("passwordset", { message: "Password missmatch plz enter correcrtly" })
+        if (password === password1) {
+            await userModel.updateOne({ email: email }, { $set: { password: password } })
+            res.render("userlogin")
+        }
+        else {
+            res.render("passwordset", { message: "Password missmatch plz enter correcrtly" })
+        }
+    } catch (error) {
+        console.log(error.message);
     }
 }
 
 
 //-----------------------------load product idivid details---------------------------------------------------
 const loadProduct = async (req, res) => {
+    try {
+        const productId = req.query.id
+        const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
 
-    const productId = req.query.id
-    const productDetails = await productModel.findOne({ _id: productId }).populate("subcategory")
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData
+            const userId = userData._id
 
-    if (req.session.userId) {
-        const userData = await userModel.findOne({ email: req.session.userId })
-        const message = userData
-        const userId = userData._id
+            const productPresent = await cartModel.find({ userId: userId, "product.productId": productId })
+            if (productPresent.length > 0) {
+                res.render("productDetails", { productDetails, message, productPresent })
+            } else {
+                res.render("productDetails", { productDetails, message })
+            }
 
-        const productPresent = await cartModel.find({ userId: userId, "product.productId": productId })
-        if (productPresent.length > 0) {
-            res.render("productDetails", { productDetails, message, productPresent })
-        } else {
-            res.render("productDetails", { productDetails, message })
         }
+        else {
+            res.render("productDetails", { productDetails })
 
-    }
-    else {
-        res.render("productDetails", { productDetails })
-
+        }
+    } catch (error) {
+        console.log(error.message);
     }
 }
 
@@ -487,7 +519,7 @@ const loadLaptops = async (req, res) => {
         const sortBy = req.query.sortBy;
         const searchQuery = req.query.q;
 
-        console.log(req.query.q,"search");
+        console.log(req.query.q, "search");
         let querydata = [];
         querydata.push(
             req.query.categories || '', // If req.query.categories is undefined, use an empty string
@@ -498,30 +530,30 @@ const loadLaptops = async (req, res) => {
         let uniqueSubcategories = [];
         let uniqueColors = [];
         let uniqueBrands = [];
-        
+
         // Iterate over the productDetails array to collect unique values
         laptopProducts.forEach(product => {
             // Extract subcategory.subcategory, color, and brandName
             const subcategory = product.subcategory.subcategory;
             const color = product.color;
             const brand = product.brandName;
-        
+
             // Add unique subcategory to the array if not already present
             if (!uniqueSubcategories.includes(subcategory)) {
                 uniqueSubcategories.push(subcategory);
             }
-        
+
             // Add unique color to the array if not already present
             if (!uniqueColors.includes(color)) {
                 uniqueColors.push(color);
             }
-        
+
             // Add unique brand to the array if not already present
             if (!uniqueBrands.includes(brand)) {
                 uniqueBrands.push(brand);
             }
         });
-        
+
         // Now uniqueSubcategories, uniqueColors, and uniqueBrands contain the unique values
 
 
@@ -546,25 +578,25 @@ const loadLaptops = async (req, res) => {
             const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
             const selectedColors = req.query.colors ? req.query.colors.split(",") : [];
             const selectedBrands = req.query.brands ? req.query.brands.split(",") : [];
-            
+
             let filteredProducts = laptopProducts.filter(product => {
                 let match = true;
-            
+
                 // Check if the product matches the selected categories
                 if (selectedCategories.length > 0 && !selectedCategories.includes(product.subcategory.subcategory)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected colors
                 if (selectedColors.length > 0 && !selectedColors.includes(product.color)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected brands
                 if (selectedBrands.length > 0 && !selectedBrands.includes(product.brandName)) {
                     match = false;
                 }
-            
+
                 return match;
             });
 
@@ -575,19 +607,19 @@ const loadLaptops = async (req, res) => {
                     return (
                         regex.test(product.subcategory.subcategory) ||
                         regex.test(product.color) ||
-                        regex.test(product.brandName)||
+                        regex.test(product.brandName) ||
                         regex.test(product.productName)
                         // Add more fields if needed
                     );
                 });
             }
-           
+
             const currentPage = parseInt(req.query.page) || 1;
             console.log("ujhdgshfsiuvh page", currentPage);
             const productsPerPage = 9;
             const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
             console.log("totalPages", totalPages);
-    
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             const productsForPage = filteredProducts.slice(startIndex, endIndex);
@@ -602,14 +634,14 @@ const loadLaptops = async (req, res) => {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -620,21 +652,21 @@ const loadLaptops = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                       res.render("products", {productLaptop: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });    
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     } else {
-                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -645,226 +677,226 @@ const loadLaptops = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                    } else {   
-                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else {
                     if (wishlist) {
                         const wishlistProducts = wishlist.product;
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,querydata,uniqueSubcategories,uniqueColors, uniqueBrands});  
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, querydata, uniqueSubcategories, uniqueColors, uniqueBrands });
                     } else {
-    
-                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
+
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
                 }
-            } else { 
+            } else {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     //pagination in high to low
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", {productLaptop: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                } else if (sortBy === "Low-to-high") {   
+                    res.render("products", { productLaptop: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", { productLaptop: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+                    res.render("products", { productLaptop: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
                 else {
                     res.render("products", {
                         productLaptop: productsForPage, currentPage: currentPage,
-                        totalPages: totalPages, sectionIndex,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands,
+                        totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands,
                     });
                 }
-            } 
+            }
 
 
 
-}
-else{
+        }
+        else {
 
-    console.log("category  not prsent");
-    const currentPage = parseInt(req.query.page) || 1;
-    console.log("ujhdgshfsiuvh page", currentPage);
-    const productsPerPage = 9;
-    const totalPages = Math.ceil(laptopProducts.length / productsPerPage);
-    console.log("totalPages", totalPages);
+            console.log("category  not prsent");
+            const currentPage = parseInt(req.query.page) || 1;
+            console.log("ujhdgshfsiuvh page", currentPage);
+            const productsPerPage = 9;
+            const totalPages = Math.ceil(laptopProducts.length / productsPerPage);
+            console.log("totalPages", totalPages);
 
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = currentPage * productsPerPage;
-   let productsForPage = laptopProducts.slice(startIndex, endIndex);
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = currentPage * productsPerPage;
+            let productsForPage = laptopProducts.slice(startIndex, endIndex);
 
- 
-                    
+
+
+            if (searchQuery) {
+                const regex = new RegExp(searchQuery, "i");
+                productsForPage = productsForPage.filter(product => {
+                    return (
+                        regex.test(product.subcategory.subcategory) ||
+                        regex.test(product.color) ||
+                        regex.test(product.brandName) ||
+                        regex.test(product.productName)
+                        // Add more fields if needed
+                    );
+                });
+            }
+
+
+            if (req.session.userId) {
+                const userData = await userModel.findOne({ email: req.session.userId })
+                const message = userData
+                const userId = userData._id
+                const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+                if (sortBy === "High-to-low") {
+                    const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+
+
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    } else {
+
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    }
+
+                } else if (sortBy === "Low-to-high") {
+
+                    const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
 
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        console.log("product ids", productIds);
+                        console.log("mobile ids working..");
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    } else {
 
-        if (req.session.userId) {
-            const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData
-            const userId = userData._id
-            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
-            if (sortBy === "High-to-low") {
-                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                   
-                   
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: 1,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories });
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    }
+
                 } else {
 
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: 1,currentPage: currentPage, totalPages: totalPages,querydata,uniqueColors, uniqueBrands,uniqueSubcategories  });
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        console.log("product ids", productIds);
+
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    } else {
+
+                        res.render("products", { productLaptop: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
+                    }
                 }
+            }
+            else {
 
-            } else if (sortBy === "Low-to-high") {
+                if (sortBy === "High-to-low") {
 
-                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
+                    const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
 
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    console.log("product ids", productIds);
-                    console.log("mobile ids working..");
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds, sort: -1,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories});
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    res.render("products", { productLaptop: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands });
+
+                } else if (sortBy === "Low-to-high") {
+
+                    const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    res.render("products", { productLaptop: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
                 } else {
-
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex, sort: -1,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories });
-                }
-
-            } else {
-
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    console.log("product ids", productIds);
-
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex, productIds,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories });
-                } else {
-
-                    res.render("products", { productLaptop: productsForPage, message, sectionIndex ,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories});
+                    console.log("this else is working",);
+                    res.render("products", { productLaptop: productsForPage, sectionIndex, currentPage: currentPage, totalPages: totalPages, querydata, uniqueColors, uniqueBrands, uniqueSubcategories });
                 }
             }
         }
-        else {
-
-            if (sortBy === "High-to-low") {
-
-                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                res.render("products", { productLaptop: productsForPage, sectionIndex, sort: 1,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands});
-
-            } else if (sortBy === "Low-to-high") {
-
-                const sortedProduct = laptopProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                res.render("products", { productLaptop: productsForPage, sectionIndex, sort: -1 ,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories });
-            } else {
-console.log("this else is working",);
-                res.render("products", { productLaptop: productsForPage, sectionIndex ,currentPage: currentPage, totalPages: totalPages ,querydata,uniqueColors, uniqueBrands,uniqueSubcategories});
-            }
-        }
-         }
-              // Pass the filteredProducts to the view
+        // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -880,12 +912,12 @@ const loadMobiles = async (req, res) => {
         const mobileProducts = productDetails.filter((product) => {
             return product.subcategory.category === 'mobile';
         });
-        
+
         let sectionIndex = 0; // Define the section index here
         const sortBy = req.query.sortBy;
         const searchQuery = req.query.q;
 
-        console.log(req.query.q,"search");
+        console.log(req.query.q, "search");
         let querydata = [];
         querydata.push(
             req.query.categories || '', // If req.query.categories is undefined, use an empty string
@@ -896,31 +928,31 @@ const loadMobiles = async (req, res) => {
         let uniqueSubcategories = [];
         let uniqueColors = [];
         let uniqueBrands = [];
-        
+
         // Iterate over the productDetails array to collect unique values
         mobileProducts.forEach(product => {
             // Extract subcategory.subcategory, color, and brandName
             const subcategory = product.subcategory.subcategory;
             const color = product.color;
             const brand = product.brandName;
-        
+
             // Add unique subcategory to the array if not already present
             if (!uniqueSubcategories.includes(subcategory)) {
                 uniqueSubcategories.push(subcategory);
             }
-        
+
             // Add unique color to the array if not already present
             if (!uniqueColors.includes(color)) {
                 uniqueColors.push(color);
             }
-        
+
             // Add unique brand to the array if not already present
             if (!uniqueBrands.includes(brand)) {
                 uniqueBrands.push(brand);
             }
         });
-        
-       
+
+
 
 
         //paginatio
@@ -942,25 +974,25 @@ const loadMobiles = async (req, res) => {
             const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
             const selectedColors = req.query.colors ? req.query.colors.split(",") : [];
             const selectedBrands = req.query.brands ? req.query.brands.split(",") : [];
-            
+
             let filteredProducts = mobileProducts.filter(product => {
                 let match = true;
-            
+
                 // Check if the product matches the selected categories
                 if (selectedCategories.length > 0 && !selectedCategories.includes(product.subcategory.subcategory)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected colors
                 if (selectedColors.length > 0 && !selectedColors.includes(product.color)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected brands
                 if (selectedBrands.length > 0 && !selectedBrands.includes(product.brandName)) {
                     match = false;
                 }
-            
+
                 return match;
             });
 
@@ -972,20 +1004,20 @@ const loadMobiles = async (req, res) => {
                     return (
                         regex.test(product.subcategory.subcategory) ||
                         regex.test(product.color) ||
-                        regex.test(product.brandName)||
+                        regex.test(product.brandName) ||
                         regex.test(product.productName)
                         // Add more fields if needed
                     );
                 });
             }
 
-          
+
             const currentPage = parseInt(req.query.page) || 1;
             console.log("ujhdgshfsiuvh page", currentPage);
             const productsPerPage = 9;
             const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
             console.log("totalPages", totalPages);
-    
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             const productsForPage = filteredProducts.slice(startIndex, endIndex);
@@ -1000,14 +1032,14 @@ const loadMobiles = async (req, res) => {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1018,21 +1050,21 @@ const loadMobiles = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                       res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });    
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     } else {
-                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1043,224 +1075,224 @@ const loadMobiles = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                    } else {   
-                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else {
                     if (wishlist) {
                         const wishlistProducts = wishlist.product;
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,querydata,uniqueSubcategories,uniqueColors, uniqueBrands});  
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, querydata, uniqueSubcategories, uniqueColors, uniqueBrands });
                     } else {
-    
-                        res.render("products", { productMobile: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
+
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
                 }
-            } else { 
+            } else {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     //pagination in high to low
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", {productMobile: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                } else if (sortBy === "Low-to-high") {   
+                    res.render("products", { productMobile: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", { productMobile: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+                    res.render("products", { productMobile: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
                 else {
                     res.render("products", {
                         productMobile: productsForPage, currentPage: currentPage,
-                        totalPages: totalPages, sectionIndex,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands
+                        totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands
                     });
                 }
-            } 
+            }
 
 
 
-   }else {
-    console.log("category  not prsent");
-    const currentPage = parseInt(req.query.page) || 1;
-    console.log("ujhdgshfsiuvh page", currentPage);
-    const productsPerPage = 9;
-    const totalPages = Math.ceil(mobileProducts.length / productsPerPage);
-    console.log("totalPages", totalPages);
+        } else {
+            console.log("category  not prsent");
+            const currentPage = parseInt(req.query.page) || 1;
+            console.log("ujhdgshfsiuvh page", currentPage);
+            const productsPerPage = 9;
+            const totalPages = Math.ceil(mobileProducts.length / productsPerPage);
+            console.log("totalPages", totalPages);
 
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = currentPage * productsPerPage;
-    let productsForPage = mobileProducts.slice(startIndex, endIndex);
-    
-    if (searchQuery) {
-        const regex = new RegExp(searchQuery, "i");
-        productsForPage = productsForPage.filter(product => {
-            return (
-                regex.test(product.subcategory.subcategory) ||
-                regex.test(product.color) ||
-                regex.test(product.brandName)||
-                regex.test(product.productName)
-                // Add more fields if needed
-            );
-        });
-    }
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = currentPage * productsPerPage;
+            let productsForPage = mobileProducts.slice(startIndex, endIndex);
+
+            if (searchQuery) {
+                const regex = new RegExp(searchQuery, "i");
+                productsForPage = productsForPage.filter(product => {
+                    return (
+                        regex.test(product.subcategory.subcategory) ||
+                        regex.test(product.color) ||
+                        regex.test(product.brandName) ||
+                        regex.test(product.productName)
+                        // Add more fields if needed
+                    );
+                });
+            }
 
 
-        if (req.session.userId) {
-            let sectionIndex = 0;
-            const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData
-            const userId = userData._id
-            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
-            if (sortBy === "High-to-low") {
-                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
+            if (req.session.userId) {
+                let sectionIndex = 0;
+                const userData = await userModel.findOne({ email: req.session.userId })
+                const message = userData
+                const userId = userData._id
+                const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+                if (sortBy === "High-to-low") {
+                    const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
+                    }
+
+
+
+                } else if (sortBy === "Low-to-high") {
+                    const sortedProduct = mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
+
+
+
                 } else {
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
+
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productMobile: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
 
                 }
+            }
+            else {
 
 
 
-            } else if (sortBy === "Low-to-high") {
-                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
+                if (sortBy === "High-to-low") {
+
+                    const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+
+                    res.render("products", { productMobile: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
+                } else if (sortBy === "Low-to-high") {
+
+                    const sortedProduct = mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+
+                    res.render("products", { productMobile: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
                 } else {
 
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
+                    console.log("this else is workin");
+                    res.render("products", { productMobile: productsForPage, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
-
-
-
-            } else {
-
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
-                } else {
-                    res.render("products", { productMobile: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-                }
-
             }
         }
-        else {
-
-
-
-            if (sortBy === "High-to-low") {
-
-                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-
-                res.render("products", { productMobile: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-
-            } else if (sortBy === "Low-to-high") {
-
-                const sortedProduct = mobileProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-
-                res.render("products", { productMobile: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-
-            } else {
-
-console.log("this else is workin");
-                res.render("products", { productMobile: productsForPage, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-            }
-        }
-    }
         // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
@@ -1291,32 +1323,32 @@ const loadTablets = async (req, res) => {
         let uniqueSubcategories = [];
         let uniqueColors = [];
         let uniqueBrands = [];
-        
+
         // Iterate over the productDetails array to collect unique values
         tabletsProducts.forEach(product => {
             // Extract subcategory.subcategory, color, and brandName
             const subcategory = product.subcategory.subcategory;
             const color = product.color;
             const brand = product.brandName;
-        
+
             // Add unique subcategory to the array if not already present
             if (!uniqueSubcategories.includes(subcategory)) {
                 uniqueSubcategories.push(subcategory);
             }
-        
+
             // Add unique color to the array if not already present
             if (!uniqueColors.includes(color)) {
                 uniqueColors.push(color);
             }
-        
+
             // Add unique brand to the array if not already present
             if (!uniqueBrands.includes(brand)) {
                 uniqueBrands.push(brand);
             }
         });
-        
+
         // Now uniqueSubcategories, uniqueColors, and uniqueBrands contain the unique values
-    
+
         const currentPage = parseInt(req.query.page) || 1;
         console.log("ujhdgshfsiuvh page", currentPage);
         const productsPerPage = 9;
@@ -1327,7 +1359,7 @@ const loadTablets = async (req, res) => {
         const endIndex = currentPage * productsPerPage;
         const productsForPage = tabletsProducts.slice(startIndex, endIndex);
 
-        if (req.query.categories || req.query.colors || req.query.brands){
+        if (req.query.categories || req.query.colors || req.query.brands) {
 
 
             console.log("category present");
@@ -1336,29 +1368,29 @@ const loadTablets = async (req, res) => {
             const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
             const selectedColors = req.query.colors ? req.query.colors.split(",") : [];
             const selectedBrands = req.query.brands ? req.query.brands.split(",") : [];
-            
+
             let filteredProducts = tabletsProducts.filter(product => {
                 let match = true;
-            
+
                 // Check if the product matches the selected categories
                 if (selectedCategories.length > 0 && !selectedCategories.includes(product.subcategory.subcategory)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected colors
                 if (selectedColors.length > 0 && !selectedColors.includes(product.color)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected brands
                 if (selectedBrands.length > 0 && !selectedBrands.includes(product.brandName)) {
                     match = false;
                 }
-            
+
                 return match;
             });
 
-     
+
             if (searchQuery) {
                 // Filter the previously filtered products based on the search query
                 const regex = new RegExp(searchQuery, "i");
@@ -1366,7 +1398,7 @@ const loadTablets = async (req, res) => {
                     return (
                         regex.test(product.subcategory.subcategory) ||
                         regex.test(product.color) ||
-                        regex.test(product.brandName)||
+                        regex.test(product.brandName) ||
                         regex.test(product.productName)
                         // Add more fields if needed
                     );
@@ -1374,15 +1406,15 @@ const loadTablets = async (req, res) => {
             }
 
 
-            
-        
+
+
             console.log("Filtered Products:", filteredProducts);
             const currentPage = parseInt(req.query.page) || 1;
             console.log("ujhdgshfsiuvh page", currentPage);
             const productsPerPage = 9;
             const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
             console.log("totalPages", totalPages);
-    
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             const productsForPage = filteredProducts.slice(startIndex, endIndex);
@@ -1397,14 +1429,14 @@ const loadTablets = async (req, res) => {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1415,21 +1447,21 @@ const loadTablets = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                       res.render("products", { productTablets : productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });    
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     } else {
-                        res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1440,69 +1472,69 @@ const loadTablets = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                    } else {   
-                        res.render("products", {productTabletse: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productTabletse: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else {
                     if (wishlist) {
                         const wishlistProducts = wishlist.product;
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,querydata,uniqueSubcategories,uniqueColors, uniqueBrands});  
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, querydata, uniqueSubcategories, uniqueColors, uniqueBrands });
                     } else {
-    
-                        res.render("products", { productTablets: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
+
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
                 }
-            } else { 
+            } else {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     //pagination in high to low
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", {productTablets: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                } else if (sortBy === "Low-to-high") {   
+                    res.render("products", { productTablets: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", { productTablets: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+                    res.render("products", { productTablets: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
                 else {
                     res.render("products", {
                         productTablets: productsForPage, currentPage: currentPage,
-                        totalPages: totalPages, sectionIndex,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands
+                        totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands
                     });
                 }
-            } 
+            }
 
 
-        }else{
+        } else {
 
             console.log("category  not prsent");
             const currentPage = parseInt(req.query.page) || 1;
@@ -1510,139 +1542,139 @@ const loadTablets = async (req, res) => {
             const productsPerPage = 9;
             const totalPages = Math.ceil(tabletsProducts.length / productsPerPage);
             console.log("totalPages", totalPages);
-        
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             let productsForPage = tabletsProducts.slice(startIndex, endIndex);
-            
+
             if (searchQuery) {
                 const regex = new RegExp(searchQuery, "i");
                 productsForPage = productsForPage.filter(product => {
                     return (
                         regex.test(product.subcategory.subcategory) ||
                         regex.test(product.color) ||
-                        regex.test(product.brandName)||
+                        regex.test(product.brandName) ||
                         regex.test(product.productName)
                         // Add more fields if needed
                     );
                 });
             }
-        
-      
-        if (req.session.userId) {
-            const userData = await userModel.findOne({ email: req.session.userId })
-            const message = userData
-            const userId = userData._id
-            const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
-            if (sortBy === "High-to-low") {
-                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
 
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: 1 ,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
+
+            if (req.session.userId) {
+                const userData = await userModel.findOne({ email: req.session.userId })
+                const message = userData
+                const userId = userData._id
+                const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
+                if (sortBy === "High-to-low") {
+                    const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
+
+                } else if (sortBy === "Low-to-high") {
+
+                    const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
+
                 } else {
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: 1,currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-                }
 
-            } else if (sortBy === "Low-to-high") {
-
-                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, sort: -1,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-                } else {
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex, sort: -1,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
-                }
-
-            } else {
-
-                if (wishlist) {
-                    const wishlistProducts = wishlist.product;
-                    const products = wishlistProducts.map(item => item.productId);
-                    //to filter the productid
-                    const productIds = products.map(product => product._id);
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
-                } else {
-                    res.render("products", { productTablets: productsForPage, message, sectionIndex,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
+                    if (wishlist) {
+                        const wishlistProducts = wishlist.product;
+                        const products = wishlistProducts.map(item => item.productId);
+                        //to filter the productid
+                        const productIds = products.map(product => product._id);
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { productTablets: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 }
             }
-        }
-        else {
+            else {
 
-            if (sortBy === "High-to-low") {
-                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
+                if (sortBy === "High-to-low") {
+                    const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    res.render("products", { productTablets: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else if (sortBy === "Low-to-high") {
+                    const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    let productsForPage = sortedProduct.slice(startIndex, endIndex);
+
+                    if (searchQuery) {
+                        const regex = new RegExp(searchQuery, "i");
+                        productsForPage = productsForPage.filter(product => {
+                            return (
+                                regex.test(product.subcategory.subcategory) ||
+                                regex.test(product.color) ||
+                                regex.test(product.brandName) ||
+                                regex.test(product.productName)
+                                // Add more fields if needed
+                            );
+                        });
+                    }
+                    res.render("products", { productTablets: sortedProduct, productsForPage, sort: -1, currentPage: currentPage, totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else {
+                    res.render("products", { productTablets: productsForPage, currentPage: currentPage, totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
-                res.render("products", { productTablets:productsForPage, sectionIndex, sort: 1,currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands });
-            } else if (sortBy === "Low-to-high") {
-                const sortedProduct = tabletsProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-                let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
-                if (searchQuery) {
-                    const regex = new RegExp(searchQuery, "i");
-                    productsForPage = productsForPage.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-                res.render("products", { productTablets: sortedProduct,  productsForPage , sort: -1 ,currentPage: currentPage, totalPages: totalPages,sectionIndex ,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
-            } else {
-                res.render("products", { productTablets: productsForPage,currentPage: currentPage, totalPages: totalPages, sectionIndex,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
             }
-        }
-         }     // Pass the filteredProducts to the view
+        }     // Pass the filteredProducts to the view
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -1656,13 +1688,13 @@ const loadAllProducts = async (req, res) => {
     try {
         const productDetails = await productModel.find({ is_listed: true, is_deleted: true }).populate("subcategory");
         // console.log("productDetails",productDetails);
-        
+
         let sectionIndex = 0; // Define the section index here
         const sortBy = req.query.sortBy;
         const searchQuery = req.query.q;
 
-        console.log(req.query.q,"search");
-      
+        console.log(req.query.q, "search");
+
         let querydata = [];
         querydata.push(
             req.query.categories || '', // If req.query.categories is undefined, use an empty string
@@ -1674,31 +1706,31 @@ const loadAllProducts = async (req, res) => {
         let uniqueSubcategories = [];
         let uniqueColors = [];
         let uniqueBrands = [];
-        
+
         // Iterate over the productDetails array to collect unique values
         productDetails.forEach(product => {
             // Extract subcategory.subcategory, color, and brandName
             const subcategory = product.subcategory.subcategory;
             const color = product.color;
             const brand = product.brandName;
-        
+
             // Add unique subcategory to the array if not already present
             if (!uniqueSubcategories.includes(subcategory)) {
                 uniqueSubcategories.push(subcategory);
             }
-        
+
             // Add unique color to the array if not already present
             if (!uniqueColors.includes(color)) {
                 uniqueColors.push(color);
             }
-        
+
             // Add unique brand to the array if not already present
             if (!uniqueBrands.includes(brand)) {
                 uniqueBrands.push(brand);
             }
         });
-        
-    
+
+
 
         if (req.query.categories || req.query.colors || req.query.brands) {
             console.log("category present");
@@ -1707,48 +1739,48 @@ const loadAllProducts = async (req, res) => {
             const selectedCategories = req.query.categories ? req.query.categories.split(",") : [];
             const selectedColors = req.query.colors ? req.query.colors.split(",") : [];
             const selectedBrands = req.query.brands ? req.query.brands.split(",") : [];
-            
+
             // Filter the products based on the selected categories, colors, and brands
             let filteredProducts = productDetails.filter(product => {
                 let match = true;
-            
+
                 // Check if the product matches the selected categories
                 if (selectedCategories.length > 0 && !selectedCategories.includes(product.subcategory.subcategory)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected colors
                 if (selectedColors.length > 0 && !selectedColors.includes(product.color)) {
                     match = false;
                 }
-            
+
                 // Check if the product matches the selected brands
                 if (selectedBrands.length > 0 && !selectedBrands.includes(product.brandName)) {
                     match = false;
                 }
-            
+
                 return match;
             });
-            
 
 
-                   //search works here 
 
-                   if (searchQuery) {
-                    // Filter the previously filtered products based on the search query
-                    const regex = new RegExp(searchQuery, "i");
-                    filteredProducts = filteredProducts.filter(product => {
-                        return (
-                            regex.test(product.subcategory.subcategory) ||
-                            regex.test(product.color) ||
-                            regex.test(product.brandName)||
-                            regex.test(product.productName)
-                            // Add more fields if needed
-                        );
-                    });
-                }
-            
-                
+            //search works here 
+
+            if (searchQuery) {
+                // Filter the previously filtered products based on the search query
+                const regex = new RegExp(searchQuery, "i");
+                filteredProducts = filteredProducts.filter(product => {
+                    return (
+                        regex.test(product.subcategory.subcategory) ||
+                        regex.test(product.color) ||
+                        regex.test(product.brandName) ||
+                        regex.test(product.productName)
+                        // Add more fields if needed
+                    );
+                });
+            }
+
+
 
             console.log("Filtered Products:", filteredProducts);
             const currentPage = parseInt(req.query.page) || 1;
@@ -1756,7 +1788,7 @@ const loadAllProducts = async (req, res) => {
             const productsPerPage = 9;
             const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
             console.log("totalPages", totalPages);
-    
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             const productsForPage = filteredProducts.slice(startIndex, endIndex);
@@ -1770,14 +1802,14 @@ const loadAllProducts = async (req, res) => {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1788,21 +1820,21 @@ const loadAllProducts = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                       res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });    
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     } else {
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1813,67 +1845,67 @@ const loadAllProducts = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                    } else {   
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
-                    }   
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    } else {
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                    }
                 } else {
                     if (wishlist) {
                         const wishlistProducts = wishlist.product;
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,querydata,uniqueSubcategories,uniqueColors, uniqueBrands});  
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, querydata, uniqueSubcategories, uniqueColors, uniqueBrands });
                     } else {
-    
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors, uniqueBrands });
+
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
                 }
-            } else { 
+            } else {
                 if (sortBy === "High-to-low") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     //pagination in high to low
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-                } else if (sortBy === "Low-to-high") {   
+                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+                } else if (sortBy === "Low-to-high") {
                     const sortedProduct = filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
                         });
                     }
-                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
                 else {
                     res.render("products", {
                         allProducts: productsForPage, currentPage: currentPage,
-                        totalPages: totalPages, sectionIndex,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands
+                        totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands
                     });
                 }
-            } 
-        }else{
+            }
+        } else {
 
             console.log("category  not prsent");
             const currentPage = parseInt(req.query.page) || 1;
@@ -1881,18 +1913,18 @@ const loadAllProducts = async (req, res) => {
             const productsPerPage = 9;
             const totalPages = Math.ceil(productDetails.length / productsPerPage);
             console.log("totalPages", totalPages);
-    
+
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = currentPage * productsPerPage;
             let productsForPage = productDetails.slice(startIndex, endIndex);
-    
+
             if (searchQuery) {
                 const regex = new RegExp(searchQuery, "i");
                 productsForPage = productsForPage.filter(product => {
                     return (
                         regex.test(product.subcategory.subcategory) ||
                         regex.test(product.color) ||
-                        regex.test(product.brandName)||
+                        regex.test(product.brandName) ||
                         regex.test(product.productName)
                         // Add more fields if needed
                     );
@@ -1900,8 +1932,8 @@ const loadAllProducts = async (req, res) => {
             }
 
 
-            
-    
+
+
             if (req.session.userId) {
                 const userData = await userModel.findOne({ email: req.session.userId });
                 const message = userData;
@@ -1909,17 +1941,17 @@ const loadAllProducts = async (req, res) => {
                 //populate data collecting from product model
                 const wishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId")
                 if (sortBy === "High-to-low") {
-                    
+
                     const sortedProduct = productDetails.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1930,28 +1962,28 @@ const loadAllProducts = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-    
-    
-    
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
-    
+
+
+
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
                     } else {
-    
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories ,querydata,uniqueColors, uniqueBrands});
+
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
-    
-    
+
+
                 } else if (sortBy === "Low-to-high") {
                     const sortedProduct = productDetails.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -1962,65 +1994,65 @@ const loadAllProducts = async (req, res) => {
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata ,uniqueColors, uniqueBrands});
-    
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
                     } else {
-    
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
-    
+
                 } else {
-    
+
                     if (wishlist) {
                         const wishlistProducts = wishlist.product;
                         const products = wishlistProducts.map(item => item.productId);
                         //to filter the productid
                         const productIds = products.map(product => product._id);
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
-    
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, productIds, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
                     } else {
-    
-                        res.render("products", { allProducts: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+
+                        res.render("products", { allProducts: productsForPage, message, sectionIndex, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                     }
                 }
             } else {
-    
+
                 if (sortBy === "High-to-low") {
 
-                  
-                    
+
+
                     const sortedProduct = productDetails.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
 
-                   
+
                     //pagination in high to low
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );;
                         });
                     }
-                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages,uniqueSubcategories,querydata,uniqueColors , uniqueBrands});
-    
+                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: 1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
+
                 } else if (sortBy === "Low-to-high") {
-    
+
                     const sortedProduct = productDetails.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
                     let productsForPage = sortedProduct.slice(startIndex, endIndex);
-                    
+
                     if (searchQuery) {
                         const regex = new RegExp(searchQuery, "i");
                         productsForPage = productsForPage.filter(product => {
                             return (
                                 regex.test(product.subcategory.subcategory) ||
                                 regex.test(product.color) ||
-                                regex.test(product.brandName)||
+                                regex.test(product.brandName) ||
                                 regex.test(product.productName)
                                 // Add more fields if needed
                             );
@@ -2028,16 +2060,16 @@ const loadAllProducts = async (req, res) => {
                     }
 
 
-                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages ,uniqueSubcategories,querydata,uniqueColors, uniqueBrands});
+                    res.render("products", { allProducts: productsForPage, sectionIndex, sort: -1, currentPage: currentPage, totalPages: totalPages, uniqueSubcategories, querydata, uniqueColors, uniqueBrands });
                 }
                 else {
                     res.render("products", {
                         allProducts: productsForPage, currentPage: currentPage,
-                        totalPages: totalPages, sectionIndex,uniqueSubcategories,querydata,uniqueColors, uniqueBrands
+                        totalPages: totalPages, sectionIndex, uniqueSubcategories, querydata, uniqueColors, uniqueBrands
                     });
-                }   
-            }         
-        }      
+                }
+            }
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -2237,10 +2269,10 @@ const addToCart = async (req, res) => {
             const priceInt = parseInt(productDetails[0].price, 10)
             const quatityInt = parseInt(pQuantity, 10)
             const offerPrice = productDetails[0].offer
-               
+
             const newPrice = priceInt - (priceInt * offerPrice / 100)
             const roundedPrice = newPrice.toFixed(2)
-            const discount =  priceInt - newPrice
+            const discount = priceInt - newPrice
             const totalDiscount = discount * quatityInt
 
 
@@ -2257,7 +2289,7 @@ const addToCart = async (req, res) => {
                 name: productDetails[0].productName,
                 quantity: pQuantity,
                 price: roundedPrice,
-                discount:totalDiscount,
+                discount: totalDiscount,
                 productImage: productDetails[0].productImage,
                 total: roundedTotal,
             }
@@ -2284,7 +2316,7 @@ const addToCart = async (req, res) => {
         const newPrice = priceInt - (priceInt * offerPrice / 100)
         const roundedPrice = newPrice.toFixed(2)
         const roundedTotal = (newPrice * quatityInt).toFixed(2)
-        const discount = priceInt - newPrice 
+        const discount = priceInt - newPrice
         const totaldiscount = discount * quatityInt
         const subTotal = newPrice * quatityInt
         // inserting new user cart details---------    
@@ -2295,7 +2327,7 @@ const addToCart = async (req, res) => {
                 name: productDetails[0].productName,
                 quantity: pQuantity,
                 price: roundedPrice,
-                discount:totaldiscount,
+                discount: totaldiscount,
                 productImage: productDetails[0].productImage,
                 total: roundedTotal,
 
@@ -2315,81 +2347,81 @@ const addToCart = async (req, res) => {
 //============================add from wishlist======================================//
 //----------------------------------------------------------------------------------// 
 
-const addCartFromWishlist = async (req,res)=>{
+const addCartFromWishlist = async (req, res) => {
 
     console.log(req.body);
 
-if(req.session.userId){
-    const pId = req.body.productId
-    const userDetails = await userModel.findOne({ email: req.session.userId })
-    const userId = userDetails._id
-   const userCart = await cartModel.findOne({userId: userId})
-   console.log(userCart,"userCart");
-   productDetails = await productModel.find({ _id: pId }).populate("subcategory");
-   console.log(" productDetails",productDetails);
-if(userCart){
-    console.log("this if is working");
-    const price = productDetails[0].price
-    const offerPrice = productDetails[0].subcategory.offerPercentage
-    const newPrice =  price - (price * offerPrice / 100)
-    const roundedPrice = newPrice.toFixed(2)
-    const userCart = await cartModel.find({ userId: userId })
-    const subTotalValue = userCart[0].subTotal;
-    const newSubTotal = subTotalValue + newPrice 
-    const roundedSubTotal = newSubTotal.toFixed(2);
-    const roundedTotal = newPrice.toFixed(2)
+    if (req.session.userId) {
+        const pId = req.body.productId
+        const userDetails = await userModel.findOne({ email: req.session.userId })
+        const userId = userDetails._id
+        const userCart = await cartModel.findOne({ userId: userId })
+        console.log(userCart, "userCart");
+        productDetails = await productModel.find({ _id: pId }).populate("subcategory");
+        console.log(" productDetails", productDetails);
+        if (userCart) {
+            console.log("this if is working");
+            const price = productDetails[0].price
+            const offerPrice = productDetails[0].subcategory.offerPercentage
+            const newPrice = price - (price * offerPrice / 100)
+            const roundedPrice = newPrice.toFixed(2)
+            const userCart = await cartModel.find({ userId: userId })
+            const subTotalValue = userCart[0].subTotal;
+            const newSubTotal = subTotalValue + newPrice
+            const roundedSubTotal = newSubTotal.toFixed(2);
+            const roundedTotal = newPrice.toFixed(2)
 
-    const newProduct = {
-        productId: productDetails[0]._id,
-        name: productDetails[0].productName,
-        quantity:1,
-        price: roundedPrice,
-        productImage: productDetails[0].productImage,
-        total: roundedTotal,
-    }
+            const newProduct = {
+                productId: productDetails[0]._id,
+                name: productDetails[0].productName,
+                quantity: 1,
+                price: roundedPrice,
+                productImage: productDetails[0].productImage,
+                total: roundedTotal,
+            }
 
-    await cartModel.updateOne(
-        { userId: userId  },
-        {
-            $push: { product: newProduct },
-            $set: { subTotal: roundedSubTotal }
+            await cartModel.updateOne(
+                { userId: userId },
+                {
+                    $push: { product: newProduct },
+                    $set: { subTotal: roundedSubTotal }
+                }
+            );
+
+
+        } else {
+
+
+            console.log("no cart product is working..");
+            const price = productDetails[0].price
+            const offerPrice = productDetails[0].subcategory.offerPercentage
+            const newPrice = price - (price * offerPrice / 100)
+            const roundedPrice = newPrice.toFixed(2)
+            const userCart = await cartModel({
+                userId: userId,
+                product: [{
+                    productId: productDetails[0]._id,
+                    name: productDetails[0].productName,
+                    quantity: 1,
+                    price: roundedPrice,
+                    productImage: productDetails[0].productImage,
+                    total: roundedPrice,
+
+
+                }],
+                subTotal: roundedPrice
+            })
+            await userCart.save()
+
+
         }
-    );
 
+        const data = "ok"
+        res.status(200).json(data)
 
-}else{
-
-
-console.log("no cart product is working..");
-const price = productDetails[0].price
-const offerPrice = productDetails[0].subcategory.offerPercentage
-const newPrice =  price - (price * offerPrice / 100)
-const roundedPrice = newPrice.toFixed(2)
-    const userCart = await cartModel({
-        userId: userId ,
-        product: [{
-            productId: productDetails[0]._id,
-            name: productDetails[0].productName,
-            quantity:1,
-            price: roundedPrice,
-            productImage: productDetails[0].productImage,
-            total: roundedPrice,
-
-
-        }],
-        subTotal: roundedPrice
-    })
-    await userCart.save()
-
-    
-}
-
-const data = "ok"
-res.status(200).json(data)
-
-}else{
-    res.redirect("/login")
-}
+    } else {
+        res.redirect("/login")
+    }
 
 }
 
@@ -2405,41 +2437,46 @@ const cartDelete = async (req, res) => {
     // console.log( typeof productId);
     // console.log(productId);
     // console.log("session id",req.session.userId);
+    if (req.session.userId) {
+        const userDetails = await userModel.findOne({ email: req.session.userId })
+        const userId = userDetails._id
 
-    const userDetails = await userModel.findOne({ email: req.session.userId })
-    const userId = userDetails._id
+        const subTotal = await cartModel.findOne({ userId: userId, "product.productId": productId });
+        const deletedProduct = subTotal.product.find(item => item.productId === productId)
+        const total = deletedProduct.total
+        const cartSubTotal = subTotal.subTotal
+        console.log("cart subtotal", cartSubTotal);
+        console.log("deleted product total", total);
+        const updatedCart = await cartModel.updateOne(
+            { userId: userId },
+            { $pull: { product: { productId: productId } } }
+        );
 
-    const subTotal = await cartModel.findOne({ userId: userId, "product.productId": productId });
-    const deletedProduct = subTotal.product.find(item => item.productId === productId)
-    const total = deletedProduct.total
-    const cartSubTotal = subTotal.subTotal
-    console.log("cart subtotal", cartSubTotal);
-    console.log("deleted product total", total);
-    const updatedCart = await cartModel.updateOne(
-        { userId: userId },
-        { $pull: { product: { productId: productId } } }
-    );
+        const deleteSubTotal = await cartModel.find({ userId: userId })
 
-    const deleteSubTotal = await cartModel.find({ userId: userId })
+        //  console.log("updated subtotal is",deleteSubTotal);
+        if (deleteSubTotal) {
+            if (deleteSubTotal.length > 0 && deleteSubTotal[0].product.length === 0) {
 
-    //  console.log("updated subtotal is",deleteSubTotal);
-    if (deleteSubTotal) {
-        if (deleteSubTotal.length > 0 && deleteSubTotal[0].product.length === 0) {
+                console.log("no more product");
+                await cartModel.deleteOne({ userId: userId })
+            }
+            else {
+                const updatedSubTotal = cartSubTotal - total
+                console.log(updatedSubTotal);
+                await cartModel.updateOne({ userId: userId }, { $set: { subTotal: updatedSubTotal } })
+                console.log("subtotal updated");
 
-            console.log("no more product");
-            await cartModel.deleteOne({ userId: userId })
+            }
         }
-        else {
-            const updatedSubTotal = cartSubTotal - total
-            console.log(updatedSubTotal);
-            await cartModel.updateOne({ userId: userId }, { $set: { subTotal: updatedSubTotal } })
-            console.log("subtotal updated");
+        res.json({
+            products: updatedCart
+        });
 
-        }
+
+    } else {
+        res.redirect("/login")
     }
-    res.json({
-        products: updatedCart
-    });
 }
 
 
@@ -2470,13 +2507,13 @@ const updateQuantity = async (req, res) => {
                     const price = (product.price).toFixed(2);
                     const total = (newQuantity * price).toFixed(2);
                     const offer = productDetaills[0].offer
-                    const newPrice = productDetaills[0].price - (productDetaills[0].price * offer/100)
-                    const discount = productDetaills[0].price  - newPrice
+                    const newPrice = productDetaills[0].price - (productDetaills[0].price * offer / 100)
+                    const discount = productDetaills[0].price - newPrice
                     const totalDiscount = discount * newQuantity
                     console.log("new total", total);
                     await cartModel.updateOne(
                         { userId: userId, "product.productId": productId },
-                        { $set: { "product.$.total": total,"product.$.discount": totalDiscount } }
+                        { $set: { "product.$.total": total, "product.$.discount": totalDiscount } }
                     );
                     const userCart = await cartModel.find({ userId: userId })
                     if (userCart.length > 0) {
@@ -2508,6 +2545,7 @@ const updateQuantity = async (req, res) => {
         console.error("Error updating quantity:", error);
         res.status(500).json({ success: false, error: "Internal server error" });
     }
+
 };
 
 //----------------------------------------------------------------------------------// 
@@ -2516,16 +2554,20 @@ const updateQuantity = async (req, res) => {
 
 
 const userAccount = async (req, res) => {
-    if (req.session.userId) {
-        const userData = await userModel.findOne({ email: req.session.userId })
-        const message = userData
-        const userId = userData._id
-        const addressdetails = await addressModel.find({ userId: userId })
-        const orderDetails = await orderModel.find({ userId: userId });
-        res.render("userAccount", { message, addressdetails, orderDetails });
-    }
-    else {
-        res.redirect("/login")
+    try {
+        if (req.session.userId) {
+            const userData = await userModel.findOne({ email: req.session.userId })
+            const message = userData
+            const userId = userData._id
+            const addressdetails = await addressModel.find({ userId: userId })
+            const orderDetails = await orderModel.find({ userId: userId });
+            res.render("userAccount", { message, addressdetails, orderDetails });
+        }
+        else {
+            res.redirect("/login")
+        }
+    } catch (error) {
+        console.error(error);
     }
 }
 
@@ -2536,20 +2578,24 @@ const userAccount = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const userOrders = async (req, res) => {
-
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
         const userId = userData._id
         const addressdetails = await addressModel.find({ userId: userId })
         const orderDetails = await orderModel.find({ userId: userId });
-        console.log("orderDetails",orderDetails);
+        console.log("orderDetails", orderDetails);
         res.render("userOrders", { message, addressdetails, orderDetails });
     }
     else {
         res.redirect("/login")
 
     }
+} catch (error) {
+    console.error(error);
+}
+    
 }
 
 
@@ -2558,7 +2604,7 @@ const userOrders = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const userAddress = async (req, res) => {
-
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
@@ -2571,6 +2617,9 @@ const userAddress = async (req, res) => {
         res.redirect("/login")
 
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -2579,6 +2628,7 @@ const userAddress = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const addAddress = async (req, res) => {
+    try { 
     const {
         name,
         phone,
@@ -2627,7 +2677,9 @@ const addAddress = async (req, res) => {
     const newAddress = await addressModel.find({ userId: userId })
     console.log("new address", newAddress);
     res.status(200).json({ newAddress });
-
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -2636,7 +2688,7 @@ const addAddress = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const deleteAddress = async (req, res) => {
-
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const message = userData
@@ -2652,6 +2704,9 @@ const deleteAddress = async (req, res) => {
     else {
         res.redirect("/login")
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -2659,7 +2714,7 @@ const deleteAddress = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const loadCheckout = async (req, res) => {
-
+    try {
     if (req.session.userId) {
 
         const userData = await userModel.findOne({ email: req.session.userId })
@@ -2681,31 +2736,36 @@ const loadCheckout = async (req, res) => {
 
         const userCart = await cartModel.findOne({ userId: userId })
 
-        
-        if(userCart.product.length > 0 ){
-        if (error === 'address_not_selected') {
 
-            res.render('checkout', { userAddress, message, userCart, error: 'can not continue without selecting an address' });
-        } else if (!userCart) {
+        if (userCart && userCart.product && userCart.product.length > 0) {
+            if (error === 'address_not_selected') {
 
-            res.render('checkout', { userAddress, message, userCart, error: 'your cart is empty' });
+                res.render('checkout', { userAddress, message, userCart, error: 'can not continue without selecting an address' });
+            } else if (!userCart) {
+
+                res.render('checkout', { userAddress, message, userCart, error: 'your cart is empty' });
+            }
+
+            else {
+
+                const userWallet = await walletModel.find({ userId: userId })
+                const walletBalance = userWallet[0].balance
+                console.log(walletBalance, "walletBalance");
+                res.render("checkout", { userAddress, userCart, message, walletBalance })
+            }
+
+        } else {
+
+            await cartModel.deleteOne({ userId: userId });
+            res.redirect("/cart")
         }
-
-        else {
-
-            const userWallet = await walletModel.find({ userId: userId })
-            const walletBalance = userWallet[0].balance
-            console.log(walletBalance, "walletBalance");
-            res.render("checkout", { userAddress, userCart, message, walletBalance })
-        }
-
-    }else{
-res.redirect("/cart")
-    }
     }
     else {
         res.redirect("/login")
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -2714,6 +2774,7 @@ res.redirect("/cart")
 
 
 const loadOrder = async (req, res) => {
+    try {
 
     const userData = await userModel.findOne({ email: req.session.userId })
     const userId = userData._id
@@ -2746,7 +2807,8 @@ const loadOrder = async (req, res) => {
                             } else {
                                 // The product is less than one
                                 console.log("this else is working");
-                                res.redirect("/login");
+                                const newSubTotal = userCart.subTotal - coupenDetails.discountAmount
+                                res.render("payment", { cartDetails, subTotal: newSubTotal, selectedAddressId })
                                 return; // Return here to prevent further processing
                             }
                         }
@@ -2803,7 +2865,7 @@ const loadOrder = async (req, res) => {
                                 name: product.name,
                                 quantity: product.quantity,
                                 price: product.price,
-                                discount:product.discount,
+                                discount: product.discount,
                                 total: product.total,
                                 paymentType: "COD",
                                 productImage: product.productImage
@@ -2842,7 +2904,7 @@ const loadOrder = async (req, res) => {
                     const userAddress = await addressModel.findOne({ userId: userId });
                     if (userAddress) {
                         console.log("this.....");
-                        console.log("userCart",userCart);
+                        console.log("userCart", userCart);
                         const selectedAddress = userAddress.address.find(n => n._id.toString() === selectedAddressId.toString());
                         const orderDetails = orderModel({
                             userId: userId,
@@ -2996,7 +3058,7 @@ const loadOrder = async (req, res) => {
                                 quantity: product.quantity,
                                 price: product.price,
                                 total: product.total,
-                                discount:product.discount,
+                                discount: product.discount,
                                 paymentType: 'Online Payment',
 
                                 productImage: product.productImage
@@ -3050,16 +3112,22 @@ const loadOrder = async (req, res) => {
     } else {
         res.redirect("/login");
     }
+} catch (error) {
+    console.error(error);
+}
 
 }
 
 
 
 const OrderComplete = (req, res) => {
-
+    try {
     console.log(req.body);
 
     res.render("orderConfirm")
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -3069,6 +3137,7 @@ const OrderComplete = (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const paymentCompleted = async (req, res) => {
+    try {
     const { subtotal, addressId, response } = req.body;
     console.log(response);
 
@@ -3098,7 +3167,7 @@ const paymentCompleted = async (req, res) => {
                     price: product.price,
                     total: product.total,
                     paymentType: "ONLINE",
-                    discount:product.discount,
+                    discount: product.discount,
                     productImage: product.productImage
                 })),
                 subTotal: subtotal
@@ -3120,36 +3189,39 @@ const paymentCompleted = async (req, res) => {
 
     // If user cart not found, send an empty response
     res.status(200).json();
+} catch (error) {
+    console.error(error);
+}
 };
 
 
 //----------------------------------------------------------------------------------// 
 //========================online retryPayment============================================//
 //----------------------------------------------------------------------------------// 
-const retryPayment =  async (req, res) => {
+const retryPayment = async (req, res) => {
     try {
         const orderId = req.body.orderId;
         console.log(orderId, "orderId");
-     failedOredr = await orderModel.findOne({_id:orderId})
-console.log(" failedOredr", failedOredr);
+        failedOredr = await orderModel.findOne({ _id: orderId })
+        console.log(" failedOredr", failedOredr);
 
 
 
-res.render("rePayment", {failedOredr})
+        res.render("rePayment", { failedOredr })
     } catch (error) {
         // Handle any errors that occurred during the execution of the function
         console.error('An error occurred:', error);
-        
+
     }
 };
 
 //----------------------------------------------------------------------------------// 
 //==========================payment  completed============================================//
 //----------------------------------------------------------------------------------// 
-const retryPaymentCompleted = async (req,res)=>{
-
+const retryPaymentCompleted = async (req, res) => {
+    try {
     //here upate the order payment status trueadmin status
-console.log("retryPayment completed");
+    console.log("retryPayment completed");
     console.log(req.body);
     console.log(req.body.failedOrderId);
     const orderId = req.body.failedOrderId
@@ -3161,27 +3233,33 @@ console.log("retryPayment completed");
     await order.save();
 
     res.status(200).json();
+} catch (error) {
+    console.error(error);
+}
 }
 
 
-const rePaymentFailed = (req,res)=>{
- 
+const rePaymentFailed = (req, res) => {
+    try {
     if (req.session.userId) {
-      
+
         res.status(200).json({ success: true, message: 'Failed payment handled successfully.' });
 
-    }else{
+    } else {
 
         res.redirect("/login")
 
-    } 
+    }
+} catch (error) {
+    console.error(error);
+}
 }
 //----------------------------------------------------------------------------------// 
 //==========================cancel order============================================//
 //----------------------------------------------------------------------------------// 
 
 const orderCancel = async (req, res) => {
-
+    try {
     if (req.session.userId) {
         const userData = userModel.findOne({ email: req.session.userId })
         const userId = userData._id
@@ -3251,7 +3329,9 @@ const orderCancel = async (req, res) => {
     } else {
         res.redirect("/login");
     }
-
+} catch (error) {
+    console.error(error);
+}
 
 }
 
@@ -3304,7 +3384,7 @@ const loadOrderStatus = async (req, res) => {
 
 const orderStatus = async (req, res) => {
 
-
+    try {
     const { productId, orderId } = req.body
 
     console.log(productId);
@@ -3317,7 +3397,9 @@ const orderStatus = async (req, res) => {
 
 
     res.status(200).json();
-
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -3326,7 +3408,8 @@ const orderStatus = async (req, res) => {
 //----------------------------------------------------------------------------------// 
 
 const returnRequest = async (req, res) => {
-    const { productId, returnReason, orderId } = req.body;
+    try {
+          const { productId, returnReason, orderId } = req.body;
     console.log("productId", productId);
     console.log("orderid", orderId);
     console.log("productId", typeof productId);
@@ -3342,6 +3425,9 @@ const returnRequest = async (req, res) => {
         console.error("Error occurred while processing return request:", error);
         res.status(500).json({ error: "Internal server error" });
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -3353,39 +3439,43 @@ const returnRequest = async (req, res) => {
 //========================== user wishlist==========================================//
 //----------------------------------------------------------------------------------// 
 const userWishlist = async (req, res) => {
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId });
         const userId = userData._id;
 
         const message = userData
         const userWishlist = await wishlistModel.findOne({ userId: userId }).populate("product.productId");
-  
+
         if (userWishlist) {
             let productDetails = [];
             userWishlist.product.forEach(product => {
                 productDetails.push(product.productId); // Pushing the productId object directly
             });
-let cartProduct = await cartModel.findOne({userId:userId})
-console.log("cartProduct",cartProduct);
-let cartPresent = [];
-if (cartProduct && cartProduct.product) {
-    cartPresent = cartProduct.product.map(product => product.productId);
-}
-console.log("cartPresent",cartPresent);
-              res.render("userWishlist", { productDetails,cartPresent, message });
+            let cartProduct = await cartModel.findOne({ userId: userId })
+            console.log("cartProduct", cartProduct);
+            let cartPresent = [];
+            if (cartProduct && cartProduct.product) {
+                cartPresent = cartProduct.product.map(product => product.productId);
+            }
+            console.log("cartPresent", cartPresent);
+            res.render("userWishlist", { productDetails, cartPresent, message });
         } else {
             res.render("userWishlist", { message });
         }
     } else {
         res.redirect("/login");
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 
 
 const editDetails = async (req, res) => {
 
-
+    try {
     const { name, mobile } = req.body
 
     await userModel.updateOne(
@@ -3394,12 +3484,16 @@ const editDetails = async (req, res) => {
     );
 
     res.status(200).json("ok");
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
 //========================== add wishlist==========================================//
 //----------------------------------------------------------------------------------// 
 const addWishlist = async (req, res) => {
+    try {
     console.log(req.body.productId);
     const { productId } = req.body
     if (req.session.userId) {
@@ -3447,12 +3541,15 @@ const addWishlist = async (req, res) => {
     else {
         res.redirect("/login")
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //removing product from wishlist
 
 const removeWishlist = async (req, res) => {
-
+    try {
     const productId = req.body.productId
 
     if (req.session.userId) {
@@ -3479,6 +3576,9 @@ const removeWishlist = async (req, res) => {
     } else {
 
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 
@@ -3488,7 +3588,8 @@ const removeWishlist = async (req, res) => {
 
 const addUserCoupon = async (req, res) => {
 
-    console.log("req.body", req.body);
+    try {
+           console.log("req.body", req.body);
     const { coupon } = req.body
     console.log(coupon);
     console.log(typeof coupon);
@@ -3550,6 +3651,9 @@ const addUserCoupon = async (req, res) => {
     } else {
         res.redirect("/login")
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -3558,7 +3662,7 @@ const addUserCoupon = async (req, res) => {
 
 
 const loadWallet = async (req, res) => {
-
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const userId = userData._id
@@ -3570,6 +3674,9 @@ const loadWallet = async (req, res) => {
     else {
         res.redirect("/login")
     }
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -3578,7 +3685,7 @@ const loadWallet = async (req, res) => {
 
 const userCoupon = async (req, res) => {
 
-
+    try {
     if (req.session.userId) {
         const userData = await userModel.findOne({ email: req.session.userId })
         const userId = userData._id
@@ -3593,7 +3700,9 @@ const userCoupon = async (req, res) => {
     else {
         res.redirect("/login")
     }
-
+} catch (error) {
+    console.error(error);
+}
 }
 
 //----------------------------------------------------------------------------------// 
@@ -3708,41 +3817,41 @@ const paymentfailed = async (req, res) => {
 
     try {
         // Extract payment and order information from the request body
-console.log("payment failed..",req.body);
- const addressId =   req.body.addressId    
+        console.log("payment failed..", req.body);
+        const addressId = req.body.addressId
 
 
 
 
-const userData = await userModel.findOne({ email: req.session.userId })
-const userId = userData._id
-const message = userData
+        const userData = await userModel.findOne({ email: req.session.userId })
+        const userId = userData._id
+        const message = userData
 
-const userCart = await cartModel.findOne({ userId: userId })
-const userAddress = await addressModel.findOne({ userId: userId })
-const selectedAddress = userAddress.address.find(n => n._id.toString() === addressId.toString());
-console.log("selectedAddress",selectedAddress);
-console.log(userCart,"userCart");
+        const userCart = await cartModel.findOne({ userId: userId })
+        const userAddress = await addressModel.findOne({ userId: userId })
+        const selectedAddress = userAddress.address.find(n => n._id.toString() === addressId.toString());
+        console.log("selectedAddress", selectedAddress);
+        console.log(userCart, "userCart");
 
-const orderDetails = orderModel({
-    userId: userId,
-    address: selectedAddress,
+        const orderDetails = orderModel({
+            userId: userId,
+            address: selectedAddress,
 
-    product: userCart.product.map(product => ({
-        productId: product.productId,
-        name: product.name,
-        quantity: product.quantity,
-        price: product.price,
-        total: product.total,
-        adminStatus:6,
-        paymentType: "Online Payment",
-        productImage: product.productImage
-    })),
-    subTotal: userCart.subTotal,
-    paymentStatus:false
-});
-await orderDetails.save();
-await cartModel.deleteOne({ userId: userId });
+            product: userCart.product.map(product => ({
+                productId: product.productId,
+                name: product.name,
+                quantity: product.quantity,
+                price: product.price,
+                total: product.total,
+                adminStatus: 6,
+                paymentType: "Online Payment",
+                productImage: product.productImage
+            })),
+            subTotal: userCart.subTotal,
+            paymentStatus: false
+        });
+        await orderDetails.save();
+        await cartModel.deleteOne({ userId: userId });
 
 
 
@@ -3760,19 +3869,21 @@ await cartModel.deleteOne({ userId: userId });
 
 const failedPage = async (req, res) => {
 
-
+    try {
 
     const data = "payment not completed"
     if (req.session.userId) {
-      
+
         res.render("orderConfirm", { data })
 
-    }else{
+    } else {
 
         res.redirect("/login")
 
     }
-   
+} catch (error) {
+    console.error(error);
+}
 }
 
 module.exports = {
@@ -3826,5 +3937,5 @@ module.exports = {
     loadWallet,
     userCoupon,
     loadInvoice,
-   
+
 }
