@@ -17,7 +17,7 @@ app.use(
   })
 );
 function connectDb() {
-  mongoose.connect("mongodb+srv://athulprathap96:athul@123@cluster0.irbd3lh.mongodb.net/").then(() => {
+  mongoose.connect("mongodb+srv://athulprathap96:Athul123@cluster0.y7oo3pf.mongodb.net/").then(() => {
     console.log("db connected....")
   }).catch((error) => {
     console.log(error.message)
