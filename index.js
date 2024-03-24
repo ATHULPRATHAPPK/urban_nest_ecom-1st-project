@@ -17,7 +17,7 @@ app.use(
   })
 );
 function connectDb() {
-  mongoose.connect("mongodb://127.0.0.1:27017/ecommerce").then(() => {
+  mongoose.connect("mongodb+srv://athulprathap96:athul@123@cluster0.irbd3lh.mongodb.net/").then(() => {
     console.log("db connected....")
   }).catch((error) => {
     console.log(error.message)
