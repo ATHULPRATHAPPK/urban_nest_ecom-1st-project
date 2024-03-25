@@ -2710,6 +2710,70 @@ const deleteAddress = async (req, res) => {
 }
 
 //----------------------------------------------------------------------------------// 
+//==========================edit address details============================================//
+//----------------------------------------------------------------------------------// 
+const loadEditAddress = async (req, res) => {
+    try {
+        const addressId = req.params.id;
+        const userData = await userModel.findOne({ email: req.session.userId });
+        const userId = userData._id;
+     
+        
+        const userAddress = await addressModel.findOne({ userId: userId, address: { $elemMatch: { _id: addressId } } });
+        
+        const address = userAddress.address.find(addr => addr._id.toString() === addressId );
+   
+        res.json(address);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+//----------------------------------------------------------------------------------// 
+//==========================editing  address============================================//
+//----------------------------------------------------------------------------------// 
+
+const editAddress = async (req,res)=>{
+
+console.log(req.body);
+try {
+    // Extract data from the request body
+    const { name, phone, building, city, district, state, pincode, addressId } = req.body;
+    
+    // Construct the update object with the new data
+    const updateData = {
+        name: name,
+        phone: phone,
+        building: building,
+        city: city,
+        district: district,
+        state: state,
+        pincode: pincode
+    };
+
+    // Find and update the document where the address ID matches
+    const updatedAddress = await addressModel.findOneAndUpdate(
+        { 'address._id': addressId },
+        { $set: { 'address.$': updateData } },
+        { new: true }
+    );
+
+    // Check if the address was updated successfully
+    if (!updatedAddress) {
+        return res.status(404).json({ error: 'Address not found' });
+    }
+
+    // Send the updated address back to the client
+    res.json(updatedAddress);
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+}
+
+}
+//----------------------------------------------------------------------------------// 
 //==========================loadCheckout============================================//
 //----------------------------------------------------------------------------------// 
 
@@ -3917,6 +3981,8 @@ module.exports = {
 
     addAddress,
     deleteAddress,
+    loadEditAddress,
+    editAddress,
     loadCheckout,
     loadOrder,
     OrderComplete,

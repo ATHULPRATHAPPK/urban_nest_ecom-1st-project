@@ -54,6 +54,8 @@ userRouter.post('/editDetails',controllers.editDetails)
 
 userRouter.post('/addAddress',controllers.addAddress)
 userRouter.post('/deleteaddress', controllers.deleteAddress);
+userRouter.get("/edit-address/:id",controllers.loadEditAddress)
+userRouter.post('/editAddress',controllers.editAddress)
 userRouter.get("/checkout",controllers.loadCheckout)
 userRouter.post("/order",controllers.loadOrder)
 userRouter.get("/orderConfirm",controllers.OrderComplete)
