@@ -288,7 +288,9 @@
             </a>
             </li>
         </ul>
+        
       </nav>
+      
 
       <!-- partial -->
 
@@ -396,6 +398,7 @@
           </div>
         </div> -->
       <!--  ------------------------------------------------->
+      
       <div class="container">
         <div class="col-lg-12 mt-3">
           <div class="card">
@@ -408,7 +411,7 @@
                 <table class="table table-bordered table-striped">
                   <thead class="thead-dark">
                     <tr>
-                      <th>Serial No</th>
+                 
                       <th>User Name</th>
                       <th>Delivery Address</th>
                       <th>Product Name</th>
@@ -426,9 +429,7 @@
                             <% order.product.forEach((product, productIndex) => { %>
                                 <% if (product.adminStatus !== 6) { %> <!-- Exclude products with adminStatus 6 -->
                                     <tr>
-                                        <td>
-                                            <%= serialNo++ %>
-                                        </td>
+                                        
                                         <td>
                                             <%= order.address.name %>
                                         </td>
@@ -508,9 +509,45 @@
                             <td colspan="6">No orders found</td>
                         </tr>
                     <% } %>
+
                 </tbody>
                 
+                </table> 
+                <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+                  <ul class="pagination">
+                      <% if (currentPage> 1) { %>
+                          <li class="page-item">
+                              <a class="page-link" href="#"
+                                  onclick="updatePaginationTablet(<%= currentPage - 1 %>)"
+                                  aria-label="Previous">
+                                  <span aria-hidden="true">&laquo;</span>
+                              </a>
+                          </li>
+                          <% } %>
+                
+                              <% for (let i=1; i <=totalPages; i++) { %>
+                                  <li
+                                      class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                      <a class="page-link" href="#"
+                                          onclick="updatePaginationTablet(<%= i %>)">
+                                          <%= i %>
+                                      </a>
+                                  </li>
+                                  <% } %>
+                
+                                      <% if (currentPage < totalPages) { %>
+                                          <li class="page-item">
+                                              <a class="page-link" href="#"
+                                                  onclick="updatePaginationTablet(<%= currentPage + 1 %>)"
+                                                  aria-label="Next">
+                                                  <span aria-hidden="true">&raquo;</span>
+                                              </a>
+                                          </li>
+                                          <% } %>
+                  </ul>
+                </nav>
               </div>
+              
 
               <!--------for order status selecting--------------------------------  -->
               <script>
@@ -604,12 +641,73 @@
       </div>
 
     </div>
-
-    <!-- main-panel ends -->
-
+    
+  
   </div>
+
+  <script>
+    // Function to update the pagination query parameter without reloading the page
+    function updatePaginationLaptop(pageNumber) {
+        // Get the current URL
+        let currentUrl = window.location.href;
+
+        // Parse the URL to get its components
+        let url = new URL(currentUrl);
+        let params = new URLSearchParams(url.search);
+
+        // Set the 'page' query parameter to the new page number
+        params.set('page', pageNumber);
+
+        // Remove the 'page' query parameter if pageNumber is 1
+        if (pageNumber === 1) {
+            params.delete('page');
+        }
+
+        // Construct the new URL with updated query parameters
+        let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+        // Replace the current URL with the new URL
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        window.location.reload()
+    }
+</script>
+
+
+<script>
+    // Function to update the pagination query parameter without reloading the page
+    function updatePaginationTablet(pageNumber) {
+        // Get the current URL
+        let currentUrl = window.location.href;
+
+        // Parse the URL to get its components
+        let url = new URL(currentUrl);
+        let params = new URLSearchParams(url.search);
+
+        // Set the 'page' query parameter to the new page number
+        params.set('page', pageNumber);
+
+        // Remove the 'page' query parameter if pageNumber is 1
+        if (pageNumber === 1) {
+            params.delete('page');
+        }
+
+        // Construct the new URL with updated query parameters
+        let newUrl = `${url.origin}${url.pathname}?${params.toString()}${url.hash}`;
+
+        // Replace the current URL with the new URL
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        window.location.reload()
+    }
+</script>
+
+  
   <!-- page-body-wrapper ends -->
-  </div>
+
+
+  
+  
   <!-- container-scroller -->
   <!-- plugins:js -->
   <!-- Include SweetAlert library -->
@@ -647,6 +745,7 @@
   <!-- endinject -->
   <!-- Custom js for this page -->
   <!-- End custom js for this page -->
+  
 </body>
 
 </html>

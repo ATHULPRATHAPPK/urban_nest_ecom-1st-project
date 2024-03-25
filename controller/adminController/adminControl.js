@@ -657,9 +657,19 @@ const deleteSession = (req, res) => {
 const userdeatails = async (req, res) => {
 
     try {
-        const userdata = await userModel.find({ is_deleted: 0 })
+        const currentPage = parseInt(req.query.page) || 1;
+        console.log("ujhdgshfsiuvh page", currentPage);
+        const productsPerPage = 10;
 
-        res.render("userTable", { users: userdata })
+        const userdataAll = await userModel.find({ is_deleted: 0 })
+
+        const totalPages = Math.ceil(userdataAll.length / productsPerPage);
+        console.log("totalPages", totalPages);
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = currentPage * productsPerPage;
+        const  userdata =userdataAll.slice(startIndex, endIndex);
+        res.render("userTable", { users: userdata,currentPage: currentPage,
+            totalPages: totalPages })
     }
     catch (error) {
         console.log(error);
@@ -718,7 +728,7 @@ const userdelete = async (req, res) => {
 
 const loadProductManage = async (req, res) => {
     try {
-        const ProductTable = await productModel.find({ is_deleted: true }).populate("subcategory");
+        const ProductTableAll = await productModel.find({ is_deleted: true }).populate("subcategory");
         let offerDetails = await offerModel.find();
 
         const formatDate = (dateString) => {
@@ -733,6 +743,12 @@ const loadProductManage = async (req, res) => {
         const currentDate = formatDate(new Date().toISOString());
         const currentDateObj = new Date(currentDate.split('/').reverse().join('/'));
 
+        const currentPage = parseInt(req.query.page) || 1;
+        const productsPerPage = 10;
+        const totalPages = Math.ceil(ProductTableAll.length / productsPerPage);
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = currentPage * productsPerPage;
+        const  ProductTable =ProductTableAll.slice(startIndex, endIndex);
         // Filter offerDetails array to keep only offers with end dates greater than the current date
         offerDetails = offerDetails.filter(offer => {
             const endDateParts = offer.endDate.split('/');
@@ -740,7 +756,8 @@ const loadProductManage = async (req, res) => {
             return endDateObj > currentDateObj;
         });
 
-        res.render("productManagment", { ProductTable, offerDetails, currentDate });
+        res.render("productManagment", { ProductTable, offerDetails, currentDate ,currentPage: currentPage,
+            totalPages: totalPages});
     } catch (error) {
         console.log(error);
         res.status(500).send("Internal Server Error");
@@ -1256,11 +1273,19 @@ const productDelete = async (req, res) => {
 const loadOrders = async (req, res) => {
 
     try {
-    const userOrders = await orderModel.find().populate("userId")
 
+    const userOrdersAll = await orderModel.find().populate("userId")
 
-
-    res.render("userOrders", { userOrders })
+  const currentPage = parseInt(req.query.page) || 1;
+        console.log("ujhdgshfsiuvh page", currentPage);
+        const productsPerPage = 10;
+        const totalPages = Math.ceil(userOrdersAll.length / productsPerPage);
+        console.log("totalPages", totalPages);
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = currentPage * productsPerPage;
+        const userOrders =userOrdersAll.slice(startIndex, endIndex);
+    res.render("userOrders", { userOrders,currentPage: currentPage,
+        totalPages: totalPages })
 } catch (error) {
     console.error(error);
 }
