@@ -1,4 +1,4 @@
-<!DOCTYPE html>   
+<!DOCTYPE html>
 <html lang="en">
 
 
@@ -85,9 +85,7 @@
                                         </li>
                                     <% } else { %>
                                         
-                                      
                                     <% } %>
-                                    
                                     
 
                                 </ul>
@@ -112,18 +110,7 @@
                         </a>
                     </div><!-- End .header-left -->
 
-                    <div class="header-center">
-                        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
-                                <div class="header-search-wrapper search-wrapper-wide">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                    </div>
+                   
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
@@ -134,32 +121,31 @@
                                 <p>Compare</p>
                             </a>
 
-                          
                         </div><!-- End .compare-dropdown -->
 
                         <div class="wishlist">
                             <a href="/userWishlist" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
-                                    <!-- <span class="wishlist-count badge">3</span> -->
+                                    <!-- <span class="wishlist-count badge">0</span> -->
                                 </div>
                                 <p>Wishlist</p>
                             </a>
                         </div><!-- End .compare-dropdown -->
 
                         <div class="dropdown cart-dropdown">
-                            
-                            <a  href="/cart" class="dropdown-toggle " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                            <a href="/cart" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <div class="icon">
-                                    
                                     <form method="post" action="/cart">
-                                        
                                     <i class="icon-shopping-cart"></i>
                                     <!-- <span class="cart-count">2</span> -->
                                 </form>
                                 </div>
                                 <p>Cart</p>
                             </a> 
+                       
+
+                           
                         </div><!-- End .cart-dropdown -->
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
@@ -167,329 +153,96 @@
 
             <div class="header-bottom sticky-header">
                 <div class="container">
-                   >
+                    <div class="header-left">
+                        <div class="dropdown category-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Browse Categories">
+                                Browse Categories <i class="icon-angle-down"></i>
+                            </a>
 
-                    
+                            <div class="dropdown-menu">
+                                <nav class="side-nav">
+                                    <ul class="menu-vertical sf-arrows">
+                                        <li class="item-lead"><a href="/user-mobiles">Mobiles</a></li>
+                                        <li class="item-lead"><a href="/user-laptops">Laptops</a></li>
+                                        <li class="item-lead"><a href="/user-tablets">Tablets</a></li>
+                                       
+                                        
+                                    </ul><!-- End .menu-vertical -->
+                                </nav><!-- End .side-nav -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .category-dropdown -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-center">
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                <li class="megamenu-container active">
+                                    <a  class="sf-with">Home</a>
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
+                                  
+                                </li>
+                                <li>
+                                    <a href="/user-allProducts" class="sf-with">All Products</a>
+
+                                    
+                                </li>
+                                <li>
+                                    <a href="/user-mobiles" class="sf-with-ul">Mobiles</a>
+
+                                 
+                                </li>
+                                <li>
+                                    <a href="/user-laptops" class="sf-with-ul">Laptops</a>
+
+                                  
+                                </li>
+                                <li>
+                                    <a href="/user-tablets" class="sf-with-ul">Tablets</a>
+
+                                  
+                                </li>
+                             
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-center -->
 
                     <div class="header-right">
-                        <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+                     
                     </div>
                 </div><!-- End .container -->
             </div><!-- End .header-bottom -->
         </header><!-- End .header -->
 
-
         <main class="main">
-        	<div class="page-header text-center" style="background-image: url('user/assets/images/page-header-bg.jpg')">
-        		<div class="container">
-        			<h1 class="page-title">Shopping Cart<span>Shop</span></h1>
-        		</div><!-- End .container -->
-        	</div><!-- End .page-header -->
-            <nav aria-label="breadcrumb" class="breadcrumb-nav">
+            <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/user-allProducts">Shop</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Shopping Cart</li>
+                       
+                        <li class="breadcrumb-item active" aria-current="page">404</li>
                     </ol>
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
-            <div class="page-content">
-            	<div class="cart">
-	                <div class="container">
-	                	<div id="refreshing-div" class="row">
-	                		<div class="col-lg-9">
-
-<!-- ------------------------------cart product details table--------------------------------------------------- -->
-
-<!-- no user prsent  -->
-
-<% if(locals.noCartDetails) { %>
-
-
-
-<div class="text-center"> <h2>YOUR CART IS EMPTY</h2></div>
-
-
-
-
-
-<% }  else   { %>
-<!-- ------------------------------- -->
-   <% if(locals.userCartDetails)  {  %>
-
-	                			<table class="table table-cart table-mobile">
-									<thead>
-										<tr>
-											<th>Product</th>
-											<th>Price</th>
-											<th>Quantity</th>
-											<th>Total</th>
-											<th></th>
-										</tr>
-									</thead>
-
-									<tbody>
-                                       
-                                        <% userCartDetails.forEach((cartItem) => { %>
-                                            <% cartItem.product.forEach((product) => { %>
-
-
-                                           
-                                                <tr>
-                                                    
-                                                    <td class="product-col">
-                                                        
-                                                            <div class="product">
-                                                                <figure class="product-media">
-                                                                    <a href="#">
-                                                                        <img src="/uploads/<%= product.productImage[0].resizedFile %>" alt="Product image">
-                                                                    </a>
-                                                                </figure>
-                                            
-                                                                <h3 class="product-title">
-                                                                    <a href="#"><%= product.name %></a>
-                                                                </h3>
-                                                            </div><!-- End .product -->
- 
-                                                    </td>
-
-<% if(product.stock==0) { %>
-
-<td>out of stock</td>
-
- <% } else { %>
-
-                                                    <td class="price-col"><%= product.price %></td>
-
-                 
-                                                    <td class="quantity-col">
-                                                        <div class="cart-product-quantity">
-                                                            <input 
-                                                                type="number" 
-                                                                class="form-control quantity-input" 
-                                                                value="<%= product.quantity %>" 
-                                                                min="1" 
-                                                                max="10" 
-                                                                step="1" 
-                                                                data-decimals="0" 
-                                                                required
-                                                                oninput="updateTotalPrice(this, '<%= product.price %>', '<%= product.productId %>')"
-                                                            >
-                                                        </div> 
-
-                                                        <% if(product.stock <= 3 ) { %>
-                                                        <p style="color: red;">only  <%=product.stock %> stock left</p>
-
-                                                      <%  }%>
-                                         </td>
-
-
-
-                          
-
-                                         <script>
-
-                                            function updateTotalPrice(inputElement, productPrice, productId) {
-                                                const quantity = inputElement.value;
-                                                const totalPriceElement = inputElement.closest('tr').querySelector('.total-col');
-                                            
-                                                // const total = quantity * productPrice;
-                                                // totalPriceElement.textContent = `₹${total.toFixed(2)}`;
-                                            
-                                                // Update the quantity in the backend
-
-                                                updateQuantity(productId, quantity);
-                                            }
-                                            
-                                            function updateQuantity(productId, newQuantity) {
-                                                fetch('/updateQuantity', {
-                                                    method: 'POST', 
-                                                    headers: {
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    body: JSON.stringify({ productId: productId, quantity: newQuantity })
-                                                })
-                                                .then(response => {
-                                                    if (response.ok) {
-                                                        window.location.reload()
-                                                      
-                                                       
-                                                    }
-                                                })
-                                                .catch(error => {
-                                                    console.error('Error:', error);
-                                                });
-                                            }
-                                            
-                                            </script>
-                                            
-<!-- 
-                                                    <td class="quantity-col">
-                                                        <div class="cart-product-quantity">
-                                                            <input type="number" class="form-control" value="<%= product.quantity %>" min="1" max="10" step="1" data-decimals="0" required>
-                                                        </div>
-
-
-                                                    </td> -->
-
-
-
-
-
-                                                    <td class="total-col"><%= product.total %></td>
-                                                    <%  } %>
-                                                    <td class="remove-col">
-                                                        <a  class="btn-remove" data-product-id="<%= product.productId %>"><i class="icon-close"></i></a>
-                                                    </td>
-                                                    
-                                                    <!-- Add code to display price, quantity, total, and remove button for each product -->
-                                                </tr>
-
-                                                
-                                          
-                                                <% }) %>
-                                    <%})%>  
-                                  
-                                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function() {
-                                            const removeLinks = document.querySelectorAll('.btn-remove');
-                                            
-                                            removeLinks.forEach(function(link) {
-                                                link.addEventListener('click', function(event) {
-                                                    event.preventDefault(); // Prevent the default link behavior
-                                                    
-                                                    const productId = this.getAttribute('data-product-id');
-                                                    
-                                                    // Show SweetAlert confirmation dialog
-                                                    Swal.fire({
-                                                        title: "Are you sure?",
-                                                        text: "Do you want to delete the product from the cart!",
-                                                        icon: "warning",
-                                                        showCancelButton: true,
-                                                        confirmButtonColor: '#d33',
-                                                        cancelButtonColor: '#3085d6',
-                                                        confirmButtonText: 'Yes, delete it!',
-                                                        cancelButtonText: 'No, cancel!'
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            fetch('/cartDelete', {
-                                                                method: 'POST',
-                                                                headers: {
-                                                                    'Content-Type': 'application/json'
-                                                                },
-                                                                body: JSON.stringify({ productId: productId })
-                                                            })
-                                                            .then(response => {
-                                                                if (!response.ok) {
-                                                                    throw new Error('Network response was not ok');
-                                                                }
-                                                                return response.json();
-                                                            })
-                                                            .then(data => {
-                                                                // Handle response data, if needed
-                                                                console.log(data);
-                                                                // Reload the page or update the cart view
-                                                                location.reload();
-                                                            })
-                                                            .catch(error => {
-                                                                // Handle error
-                                                                console.error('Error:', error);
-                                                            });
-                                                        } else {
-                                                            // User canceled
-                                                            Swal.fire("Product deletion canceled!", "", "info");
-                                                        }
-                                                    });
-                                                });
-                                            });
-                                        });
-                                    </script>
-                                    
-                                    
-                                    
-                                    
-										
-									</tbody>
-								</table><!-- End .table table-wishlist -->
-
-
-  
-    <!-------------------------------------------------------------------- ---------------------------------------------------- -->
-	                			<div class="cart-bottom">
-			            			
-
-			            		
-		            			</div><!-- End .cart-bottom -->
-	                		</div><!-- End .col-lg-9 -->
-	                		<aside class="col-lg-3">
-	                			<div class="summary summary-cart">
-	                				<h3 class="summary-title">Cart Total</h3><!-- End .summary-title -->
-    
-	                				<table class="table table-summary">
-	                					<tbody>
-	                						<tr class="summary-subtotal">
-	                							<td>Subtotal:</td>
-	                							<td> $<%= userCartDetails[0].subTotal %></td>
-	                						</tr><!-- End .summary-subtotal -->
-	                						<tr class="summary-shipping">
-	                							<td>Shipping:</td>
-	                							<td>&nbsp;</td>
-	                						</tr>
-
-	                						<tr class="summary-shipping-row">
-	                							<td>
-													<div class="custom-control custom-radio">
-														<input type="radio" id="free-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="free-shipping">Free Shipping</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$0.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
-
-	                					
-
-	                					
-
-	                						<tr class="summary-shipping-estimate">
-	                						
-
-
-                                                
-	                						</tr><!-- End .summary-shipping-estimate -->
-
-	                						<tr class="summary-total">
-	                							<td>Total:</td>
-	                							<td> $<%= userCartDetails[0].subTotal %></td>
-	                						</tr><!-- End .summary-total -->
-	                					</tbody>
-	                				</table><!-- End .table table-summary -->
-                         
-	                				<a href="/checkout" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
-	                			</div><!-- End .summary -->
-
-		            			<a href="/cart" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
-
-                                <% }%>
-
-
-                                <% } %> 
-	                		</aside><!-- End .col-lg-3 -->
-	                	</div><!-- End .row -->
-	                </div><!-- End .container -->
-                </div><!-- End .cart -->
-            </div><!-- End .page-content -->
+        	<div class="error-content text-center" style="background-image: url(/user/assets/images/backgrounds/error-bg.jpg)">
+            	<div class="container">
+            		<h1 class="error-title">Error 404</h1><!-- End .error-title -->
+            		<p>We are sorry, the page you've requested is not available.</p>
+            		<a href="/" class="btn btn-outline-primary-2 btn-minwidth-lg">
+            			<span>BACK TO HOMEPAGE</span>
+            			<i class="icon-long-arrow-right"></i>
+            		</a>
+            	</div><!-- End .container -->
+        	</div><!-- End .error-content text-center -->
         </main><!-- End .main -->
 
         <footer class="footer">
-        	<div class="footer-middle">
+        	<div class="footer-middle border-0">
 	            <div class="container">
 	            	<div class="row">
 	            		<div class="col-sm-6 col-lg-3">
 	            			<div class="widget widget-about">
-	            				<img src="user/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
+	            				<img src="/user/assets/images/logo.png" class="footer-logo" alt="Footer Logo" width="105" height="25">
 	            				<p>Praesent dapibus, neque id cursus ucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. </p>
 
 	            				<div class="social-icons">
@@ -552,7 +305,7 @@
 	        	<div class="container">
 	        		<p class="footer-copyright">Copyright © 2019 Molla Store. All Rights Reserved.</p><!-- End .footer-copyright -->
 	        		<figure class="footer-payments">
-	        			<img src="user/assets/images/payments.png" alt="Payment methods" width="272" height="20">
+	        			<img src="/user/assets/images/payments.png" alt="Payment methods" width="272" height="20">
 	        		</figure><!-- End .footer-payments -->
 	        	</div><!-- End .container -->
 	        </div><!-- End .footer-bottom -->
@@ -576,7 +329,7 @@
             <nav class="mobile-nav">
                 <ul class="mobile-menu">
                     <li class="active">
-                        <a href="/">Home</a>
+                        <a href="index.html">Home</a>
 
                         <ul>
                             <li><a href="index-1.html">01 - furniture store</a></li>
@@ -847,35 +600,16 @@
     </div><!-- End .modal -->
 
     <!-- Plugins JS File -->
-
-    <script>
-        document.getElementById('signOutBtn').addEventListener('click', function () {
-            Swal.fire({
-                title: 'Do you want to sign out?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, sign out!',
-                cancelButtonText: 'Cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect to the sign-out route
-                    window.location.href = '/user-logout';
-                }
-            });
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="user/assets/js/jquery.min.js"></script>
-    <script src="user/assets/js/bootstrap.bundle.min.js"></script>
-    <script src="user/assets/js/jquery.hoverIntent.min.js"></script>
-    <script src="user/assets/js/jquery.waypoints.min.js"></script>
-    <script src="user/assets/js/superfish.min.js"></script>
-    <script src="user/assets/js/owl.carousel.min.js"></script>
-    <script src="user/assets/js/bootstrap-input-spinner.js"></script>
+    <script src="/user/assets/js/jquery.min.js"></script>
+    <script src="/user/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/user/assets/js/jquery.waypoints.min.js"></script>
+    <script src="/user/assets/js/superfish.min.js"></script>
+    <script src="/user/assets/js/owl.carousel.min.js"></script>
     <!-- Main JS File -->
-    <script src="user/assets/js/main.js"></script>
+    <script src="/user/assets/js/main.js"></script>
 </body>
 
 
-<!-- molla/cart.html  22 Nov 2019 09:55:06 GMT -->
+<!-- molla/404.html  22 Nov 2019 10:04:04 GMT -->
 </html>

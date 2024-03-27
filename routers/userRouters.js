@@ -80,6 +80,12 @@ userRouter.post("/removeWishlist",controllers.removeWishlist )
 userRouter.post("/userCoupon",controllers.addUserCoupon)
 userRouter.get("/couponDash",controllers.userCoupon)
 userRouter.get("/downloadInvoice/:productId",controllers.loadInvoice )
+userRouter.get('/error', (req, res) => {
+  res.render("404");
+});
+userRouter.get('*', (req, res) => {
+  res.redirect('/error');
+});
 
 
 module.exports= userRouter
