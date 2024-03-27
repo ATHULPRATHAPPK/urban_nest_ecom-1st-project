@@ -2858,6 +2858,7 @@ const loadOrder = async (req, res) => {
                 if (couponCode) {
 
                     const coupenDetails = await couponModel.findOne({ code: couponCode })
+                    let coupenReduction = coupenDetails.discountAmount
                     const cartDetails = await cartModel.findOne({ userId: userId }).populate("userId")
                     const userCart = await cartModel.findOne({ userId: userId })
                     for (const cartProduct of userCart.product) {
@@ -2879,8 +2880,8 @@ const loadOrder = async (req, res) => {
                     }
 
                     const newSubTotal = userCart.subTotal - coupenDetails.discountAmount
-
-                    res.render("payment", { cartDetails, subTotal: newSubTotal, selectedAddressId })
+                    console.log("coupenReduction...",coupenReduction)
+                    res.render("payment", { cartDetails, subTotal: newSubTotal, selectedAddressId, coupenReduction })
 
                 } else {
 
@@ -3202,9 +3203,9 @@ const OrderComplete = (req, res) => {
 
 const paymentCompleted = async (req, res) => {
     try {
-    const { subtotal, addressId, response } = req.body;
+        const { subtotal, addressId, response , coupenReduction } = req.body;
     console.log(response);
-
+    console.log("coupenReduction...",coupenReduction)
 
     // Retrieve user data
     const userData = await userModel.findOne({ email: req.session.userId });
@@ -3212,6 +3213,12 @@ const paymentCompleted = async (req, res) => {
 
     // Retrieve user cart
     const userCart = await cartModel.findOne({ userId: userId });
+    const numberOfProductsInCart = userCart.product.length
+    let productPerReduction = 0; 
+    if (coupenReduction !== null) {
+        productPerReduction = coupenReduction / numberOfProductsInCart;
+    }
+    
     const userAddress = await addressModel.findOne({ userId: userId })
     if (userCart) {
         // Check if userAddress is defined and has the address property
@@ -3232,6 +3239,7 @@ const paymentCompleted = async (req, res) => {
                     total: product.total,
                     paymentType: "ONLINE",
                     discount: product.discount,
+                    coupondiscount :  productPerReduction,
                     productImage: product.productImage
                 })),
                 subTotal: subtotal
@@ -3341,7 +3349,7 @@ const orderCancel = async (req, res) => {
 
         const paymentType = cancelledProduct.product[0].paymentType
         if (paymentType === "ONLINE") {
-            const cancelledAmount = cancelledProduct.product[0].total;
+            const cancelledAmount = cancelledProduct.product[0].total - cancelledProduct.product[0].coupondiscount ;
             const userId = cancelledProduct.userId;
             const currentDate = new Date();
             const day = currentDate.getDate();

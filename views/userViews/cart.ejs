@@ -1,13 +1,14 @@
-<!DOCTYPE html>   
+<!DOCTYPE html>
 <html lang="en">
 
 
 <!-- molla/index-4.html  22 Nov 2019 09:53:08 GMT -->
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Molla - Bootstrap eCommerce Template</title>
+    <title>product page</title>
     <meta name="keywords" content="HTML5 Template">
     <meta name="description" content="Molla - Bootstrap eCommerce Template">
     <meta name="author" content="p-themes">
@@ -51,32 +52,15 @@
                                 <a href="#">Links</a>
                                 <ul>
                                     <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">USD</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">Eur</a></li>
-                                                    <li><a href="#">Usd</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
+                                     
                                     </li>
                                     <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">English</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">English</a></li>
-                                                    <li><a href="#">French</a></li>
-                                                    <li><a href="#">Spanish</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
+                                     
                                     </li>
                                     <% if (locals.message) { %>
                                         <li class="nav-item dropdown">
                                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <%= locals.message %>
+                                                <%= locals.message.name %>
                                             </a>
                                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                                 <a class="dropdown-item btn" href="/account" id="">Account</a>    
@@ -84,11 +68,9 @@
                                             </div>
                                         </li>
                                     <% } else { %>
-                                        
-                                      
+                                       
                                     <% } %>
-                                    
-                                    
+
 
                                 </ul>
                             </li>
@@ -97,8 +79,8 @@
 
                 </div><!-- End .container -->
             </div><!-- End .header-top -->
-            
-<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
+
+            <!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->
             <div class="header-middle">
                 <div class="container">
                     <div class="header-left">
@@ -106,39 +88,35 @@
                             <span class="sr-only">Toggle mobile menu</span>
                             <i class="icon-bars"></i>
                         </button>
-                        
+
                         <a href="" class="logo">
                             <img src="/user/assets\images\logo nest.png" alt="Urban Nest" width="105" height="25">
                         </a>
                     </div><!-- End .header-left -->
 
-                    <div class="header-center">
-                        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
-                            <form action="#" method="get">
-                                <div class="header-search-wrapper search-wrapper-wide">
-                                    <label for="q" class="sr-only">Search</label>
-                                    <button class="btn btn-primary" type="submit"><i class="icon-search"></i></button>
-                                    <input type="search" class="form-control" name="q" id="q" placeholder="Search product ..." required>
-                                </div><!-- End .header-search-wrapper -->
-                            </form>
-                        </div><!-- End .header-search -->
-                    </div>
+                
 
                     <div class="header-right">
                         <div class="dropdown compare-dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" data-display="static"
+                                title="Compare Products" aria-label="Compare Products">
                                 <div class="icon">
-                                    <i class="icon-random"></i>
+                              
                                 </div>
-                                <p>Compare</p>
+                             
                             </a>
 
-                          
+                           
                         </div><!-- End .compare-dropdown -->
 
+
+                        <!-- -------------------------------------------wishliht------------------------------------------------- -->
+
+
+
                         <div class="wishlist">
-                            <a href="/userWishlist" title="Wishlist">
+                            <a href="wishlist.html" title="Wishlist">
                                 <div class="icon">
                                     <i class="icon-heart-o"></i>
                                     <!-- <span class="wishlist-count badge">3</span> -->
@@ -147,36 +125,100 @@
                             </a>
                         </div><!-- End .compare-dropdown -->
 
-                        <div class="dropdown cart-dropdown">
-                            
-                            <a  href="/cart" class="dropdown-toggle " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+
+
+
+
+
+                        <!-- --------------------------------- cart---------------------------------------------------- -->
+
+
+                        <div class="wishlist">
+                            <a href="wishlist.html" title="Wishlist">
                                 <div class="icon">
-                                    
-                                    <form method="post" action="/cart">
-                                        
                                     <i class="icon-shopping-cart"></i>
-                                    <!-- <span class="cart-count">2</span> -->
-                                </form>
+                                    <!-- <span class="wishlist-count badge">3</span> -->
                                 </div>
                                 <p>Cart</p>
-                            </a> 
-                        </div><!-- End .cart-dropdown -->
+                            </a>
+                        </div><!-- End .compare-dropdown -->
+                        <!-- ------------------------------------------------------------------------------------------------- -->
+
+
+
+
+
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->
 
             <div class="header-bottom sticky-header">
                 <div class="container">
-                   >
+                    <div class="header-left">
+                        <div class="dropdown category-dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" data-display="static"
+                                title="Browse Categories">
+                                Browse Categories <i class="icon-angle-down"></i>
+                            </a>
 
-                    
+                            <div class="dropdown-menu">
+                                <nav class="side-nav">
+                                    <ul class="menu-vertical sf-arrows">
+                                        <li class="item-lead"><a href="#">Mobiles</a></li>
+                                        <li class="item-lead"><a href="#">Laptops</a></li>
+                                        <li class="item-lead"><a href="#">Tablets</a></li>
+
+
+                                    </ul><!-- End .menu-vertical -->
+                                </nav><!-- End .side-nav -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .category-dropdown -->
+                    </div><!-- End .header-left -->
+
+                    <div class="header-center">
+                        <nav class="main-nav">
+                            <ul class="menu sf-arrows">
+                                <li >
+                                  
+                                    <a href="/" class="sf-with">Home</a>
+                                    <!-- ----------------------------------------------------------------------------------------------------------------------------------------------- -->
+
+                                </li>
+                                <li>
+                                    <a href="/user-allProducts" class="sf-with">All Products</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="/user-mobiles" class="sf-with-ul">Mobiles</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="/user-laptops" class="sf-with-ul">Laptops</a>
+
+
+                                </li>
+                                <li>
+                                    <a href="/user-tablets" class="sf-with-ul">Tablets</a>
+
+
+                                </li>
+
+                            </ul><!-- End .menu -->
+                        </nav><!-- End .main-nav -->
+                    </div><!-- End .header-center -->
 
                     <div class="header-right">
-                        <i class="la la-lightbulb-o"></i><p>Clearance<span class="highlight">&nbsp;Up to 30% Off</span></p>
+                    
+                      
                     </div>
                 </div><!-- End .container -->
             </div><!-- End .header-bottom -->
         </header><!-- End .header -->
+
+
 
 
         <main class="main">

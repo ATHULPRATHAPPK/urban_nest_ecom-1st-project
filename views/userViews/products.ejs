@@ -53,28 +53,9 @@
                                 <a href="#">Links</a>
                                 <ul>
                                     <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">USD</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">Eur</a></li>
-                                                    <li><a href="#">Usd</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
+                                       
                                     </li>
-                                    <li>
-                                        <div class="header-dropdown">
-                                            <a href="#">English</a>
-                                            <div class="header-menu">
-                                                <ul>
-                                                    <li><a href="#">English</a></li>
-                                                    <li><a href="#">French</a></li>
-                                                    <li><a href="#">Spanish</a></li>
-                                                </ul>
-                                            </div><!-- End .header-menu -->
-                                        </div>
-                                    </li>
+                               
                             </li>
                             <% if (locals.message) { %>
                                 <li class="nav-item dropdown">
@@ -202,9 +183,9 @@
                                 aria-haspopup="true" aria-expanded="false" data-display="static"
                                 title="Compare Products" aria-label="Compare Products">
                                 <div class="icon">
-                                    <i class="icon-random"></i>
+                                   
                                 </div>
-                                <p>Compare</p>
+                          
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-right">
@@ -895,17 +876,17 @@
                                                             </a></h3><!-- End .product-title -->
                                                         <div class="product-price">
                                                             <% if (n.offer> 0) { %>
-                                                                $ <strike style="color: lightslategrey;">
+                                                                ₹  <strike style="color: lightslategrey;">
                                                                     <%= n.price %>
                                                                 </strike>&nbsp;&nbsp;
                                                                 <% discountedPrice=n.price - (n.price *
                                                                     n.offer / 100) %>
-                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    ₹  <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
                                                                         <span style="color: black; font-size: smaller;">
                                                                             <%= n.offer %> % offer
                                                                         </span>
                                                                         <% } else { %>
-                                                                            $    <%= n.price %>
+                                                                            ₹   <%= n.price %>
                                                                                 <% } %>
 
                                                         </div><!-- End .product-price -->
@@ -1088,17 +1069,17 @@
                                                                             </a></h3><!-- End .product-title -->
                                                                             <div class="product-price">
                                                                                 <% if (n.offer> 0) { %>
-                                                                                    $ <strike style="color: lightslategrey;">
+                                                                                    ₹  <strike style="color: lightslategrey;">
                                                                                         <%= n.price %>
                                                                                     </strike>&nbsp;&nbsp;
                                                                                     <% discountedPrice=n.price - (n.price *
                                                                                         n.offer / 100) %>
-                                                                                        $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                        ₹  <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
                                                                                             <span style="color: black; font-size: smaller;">
                                                                                                 <%= n.offer %> % offer
                                                                                             </span>
                                                                                             <% } else { %>
-                                                                                                $    <%= n.price %>
+                                                                                                ₹  <%= n.price %>
                                                                                                     <% } %>
                     
                                                                             </div><!-- End .product-price -->
@@ -1287,17 +1268,17 @@
                                                                                         <!-- End .product-title -->
                                                                                         <div class="product-price">
                                                                                             <% if (n.offer> 0) { %>
-                                                                                                $ <strike style="color: lightslategrey;">
+                                                                                                ₹  <strike style="color: lightslategrey;">
                                                                                                     <%= n.price %>
                                                                                                 </strike>&nbsp;&nbsp;
                                                                                                 <% discountedPrice=n.price - (n.price *
                                                                                                     n.offer / 100) %>
-                                                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                    ₹  <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
                                                                                                         <span style="color: black; font-size: smaller;">
                                                                                                             <%= n.offer %> % offer
                                                                                                         </span>
                                                                                                         <% } else { %>
-                                                                                                            $    <%= n.price %>
+                                                                                                            ₹    <%= n.price %>
                                                                                                                 <% } %>
                                 
                                                                                         </div><!-- End .product-price -->
@@ -1517,17 +1498,17 @@
                                                                                                         <!-- End .product-title -->
                                                                                                         <div class="product-price">
                                                                                                             <% if (n.offer> 0) { %>
-                                                                                                                $ <strike style="color: lightslategrey;">
+                                                                                                                ₹ <strike style="color: lightslategrey;">
                                                                                                                     <%= n.price %>
                                                                                                                 </strike>&nbsp;&nbsp;
                                                                                                                 <% discountedPrice=n.price - (n.price *
                                                                                                                     n.offer / 100) %>
-                                                                                                                    $ <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                                                                    ₹  <%= discountedPrice %> &nbsp;&nbsp;&nbsp;&nbsp;
                                                                                                                         <span style="color: black; font-size: smaller;">
                                                                                                                             <%= n.offer %> % offer
                                                                                                                         </span>
                                                                                                                         <% } else { %>
-                                                                                                                            $    <%= n.price %>
+                                                                                                                            ₹   <%= n.price %>
                                                                                                                                 <% } %>
                                                 
                                                                                                         </div><!-- End .product-price -->
@@ -2364,31 +2345,8 @@
 
 
     <footer class="footer">
-        <div class="cta bg-image bg-dark pt-4 pb-5 mb-0"
-            style="background-image: url(/user/assets/images/demos/demo-4/bg-5.jpg);">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-sm-10 col-md-8 col-lg-6">
-                        <div class="cta-heading text-center">
-                            <h3 class="cta-title text-white">Get The Latest Deals</h3><!-- End .cta-title -->
-                            <p class="cta-desc text-white">and receive <span class="font-weight-normal">$20
-                                    coupon</span> for first shopping</p><!-- End .cta-desc -->
-                        </div><!-- End .text-center -->
-
-                        <form action="#">
-                            <div class="input-group input-group-round">
-                                <input type="email" class="form-control form-control-white"
-                                    placeholder="Enter your Email Address" aria-label="Email Adress" required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="submit"><span>Subscribe</span><i
-                                            class="icon-long-arrow-right"></i></button>
-                                </div><!-- .End .input-group-append -->
-                            </div><!-- .End .input-group -->
-                        </form>
-                    </div><!-- End .col-sm-10 col-md-8 col-lg-6 -->
-                </div><!-- End .row -->
-            </div><!-- End .container -->
-        </div><!-- End .cta -->
+      
+       
         <div class="footer-middle">
             <div class="container">
                 <div class="row">

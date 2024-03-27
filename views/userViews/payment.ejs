@@ -58,7 +58,7 @@
         const addressId = '<%= locals.selectedAddressId %>';
         const name = '<%= locals.cartDetails.userId.name %>';
         const email = '<%= locals.cartDetails.userId.email %>';
-
+        const coupenReduction = parseInt('<%= locals.coupenReduction %>')
         var rzp = new Razorpay({
             key: 'rzp_test_hdRlvOizJD5EhB',
             amount: subTotal,
@@ -67,7 +67,7 @@
             description: 'Purchase Description',
             image: 'logo.png',
             handler: function (response) {
-                const data = { subtotal: subTotal / 100, addressId, response };
+                const data = { subtotal: subTotal / 100, addressId, response,coupenReduction };
 
                 fetch('/processPayment', {
                     method: 'POST',

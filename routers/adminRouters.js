@@ -97,7 +97,12 @@ adminRouter.get("/offers",adminMiddleware.isLogin,controllers.OffersDash)
 adminRouter.post("/applyProductOffer",adminMiddleware.isLogin,controllers.createOffer)
 
 adminRouter.post("/adminApply-product-offer",adminMiddleware.isLogin,controllers.addOfferToProduct)
-
+adminRouter.get('/error', (req, res) => {
+    res.render("404");
+  });
+  adminRouter.get('*', (req, res) => {
+    res.redirect('/error');
+  });
 
 
 module.exports = adminRouter
